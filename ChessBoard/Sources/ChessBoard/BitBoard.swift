@@ -144,7 +144,7 @@ public extension BitBoard {
         h8
     ]
     
-    public var reversedRanks: BitBoard {
+    var reversedRanks: BitBoard {
         //return board with ranks (rows) in reverse order
         var result: BitBoard = 0
         let board = self
@@ -162,9 +162,9 @@ public extension BitBoard {
     }
     
     public var stringBoard: String {
+        
         let header = "  a b c d e f g h\n"
         var result = ""
-        
         let reversedRanks = self.reversedRanks
         
         result += header
