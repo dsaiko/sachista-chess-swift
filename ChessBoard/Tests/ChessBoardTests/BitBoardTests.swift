@@ -1,17 +1,17 @@
 import XCTest
 @testable import ChessBoard
 
-class MaskTests: XCTestCase {
+class BitBoardTests: XCTestCase {
 
-    func assertBoardLooksLike(_ board: UInt64, string: () -> String) {
+    func assertBoardLooksLike(_ board: BitBoard, string: () -> String) {
         XCTAssertEqual(
-            Board.toString(board: board).trimmingCharacters(in: .whitespacesAndNewlines),
+            board.stringBoard.trimmingCharacters(in: .whitespacesAndNewlines),
             string().trimmingCharacters(in: .whitespacesAndNewlines)
         )
     }
 
     func testA8H1() {
-        assertBoardLooksLike(Mask.a8h1[0]) {
+        assertBoardLooksLike(BitBoard.a8h1[0]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -25,7 +25,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a8h1[1]) {
+        assertBoardLooksLike(BitBoard.a8h1[1]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -39,7 +39,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a8h1[2]) {
+        assertBoardLooksLike(BitBoard.a8h1[2]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -53,7 +53,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a8h1[3]) {
+        assertBoardLooksLike(BitBoard.a8h1[3]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -67,7 +67,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a8h1[4]) {
+        assertBoardLooksLike(BitBoard.a8h1[4]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -81,7 +81,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a8h1[5]) {
+        assertBoardLooksLike(BitBoard.a8h1[5]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -95,7 +95,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a8h1[6]) {
+        assertBoardLooksLike(BitBoard.a8h1[6]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -109,7 +109,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a8h1[7]) {
+        assertBoardLooksLike(BitBoard.a8h1[7]) {
             """
               a b c d e f g h
             8 x - - - - - - - 8
@@ -123,7 +123,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a8h1[8]) {
+        assertBoardLooksLike(BitBoard.a8h1[8]) {
             """
               a b c d e f g h
             8 - x - - - - - - 8
@@ -137,7 +137,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a8h1[9]) {
+        assertBoardLooksLike(BitBoard.a8h1[9]) {
             """
               a b c d e f g h
             8 - - x - - - - - 8
@@ -151,7 +151,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a8h1[10]) {
+        assertBoardLooksLike(BitBoard.a8h1[10]) {
             """
               a b c d e f g h
             8 - - - x - - - - 8
@@ -165,7 +165,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a8h1[11]) {
+        assertBoardLooksLike(BitBoard.a8h1[11]) {
             """
               a b c d e f g h
             8 - - - - x - - - 8
@@ -179,7 +179,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a8h1[12]) {
+        assertBoardLooksLike(BitBoard.a8h1[12]) {
             """
               a b c d e f g h
             8 - - - - - x - - 8
@@ -193,7 +193,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a8h1[13]) {
+        assertBoardLooksLike(BitBoard.a8h1[13]) {
             """
               a b c d e f g h
             8 - - - - - - x - 8
@@ -207,7 +207,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a8h1[14]) {
+        assertBoardLooksLike(BitBoard.a8h1[14]) {
             """
               a b c d e f g h
             8 - - - - - - - x 8
@@ -227,7 +227,7 @@ class MaskTests: XCTestCase {
         
     func testA1H8() {
 
-        assertBoardLooksLike(Mask.a1h8[0]) {
+        assertBoardLooksLike(BitBoard.a1h8[0]) {
             """
               a b c d e f g h
             8 x - - - - - - - 8
@@ -242,7 +242,7 @@ class MaskTests: XCTestCase {
             """
         }
 
-        assertBoardLooksLike(Mask.a1h8[1]) {
+        assertBoardLooksLike(BitBoard.a1h8[1]) {
             """
               a b c d e f g h
             8 - x - - - - - - 8
@@ -256,7 +256,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a1h8[2]) {
+        assertBoardLooksLike(BitBoard.a1h8[2]) {
             """
               a b c d e f g h
             8 - - x - - - - - 8
@@ -270,7 +270,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a1h8[3]) {
+        assertBoardLooksLike(BitBoard.a1h8[3]) {
             """
               a b c d e f g h
             8 - - - x - - - - 8
@@ -284,7 +284,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a1h8[4]) {
+        assertBoardLooksLike(BitBoard.a1h8[4]) {
             """
               a b c d e f g h
             8 - - - - x - - - 8
@@ -298,7 +298,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a1h8[5]) {
+        assertBoardLooksLike(BitBoard.a1h8[5]) {
             """
               a b c d e f g h
             8 - - - - - x - - 8
@@ -312,7 +312,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a1h8[6]) {
+        assertBoardLooksLike(BitBoard.a1h8[6]) {
             """
               a b c d e f g h
             8 - - - - - - x - 8
@@ -326,7 +326,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a1h8[7]) {
+        assertBoardLooksLike(BitBoard.a1h8[7]) {
             """
               a b c d e f g h
             8 - - - - - - - x 8
@@ -340,7 +340,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a1h8[8]) {
+        assertBoardLooksLike(BitBoard.a1h8[8]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -354,7 +354,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a1h8[9]) {
+        assertBoardLooksLike(BitBoard.a1h8[9]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -368,7 +368,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a1h8[10]) {
+        assertBoardLooksLike(BitBoard.a1h8[10]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -382,7 +382,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a1h8[11]) {
+        assertBoardLooksLike(BitBoard.a1h8[11]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -396,7 +396,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a1h8[12]) {
+        assertBoardLooksLike(BitBoard.a1h8[12]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -410,7 +410,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a1h8[13]) {
+        assertBoardLooksLike(BitBoard.a1h8[13]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -424,7 +424,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.a1h8[14]) {
+        assertBoardLooksLike(BitBoard.a1h8[14]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -442,7 +442,7 @@ class MaskTests: XCTestCase {
     }
     
     func testFile() {
-        assertBoardLooksLike(Mask.file[0]) {
+        assertBoardLooksLike(BitBoard.file[0]) {
             """
               a b c d e f g h
             8 x - - - - - - - 8
@@ -457,7 +457,7 @@ class MaskTests: XCTestCase {
             """
         }
         
-        assertBoardLooksLike(Mask.file[1]) {
+        assertBoardLooksLike(BitBoard.file[1]) {
             """
               a b c d e f g h
             8 - x - - - - - - 8
@@ -472,7 +472,7 @@ class MaskTests: XCTestCase {
             """
         }
         
-        assertBoardLooksLike(Mask.file[2]) {
+        assertBoardLooksLike(BitBoard.file[2]) {
             """
               a b c d e f g h
             8 - - x - - - - - 8
@@ -486,7 +486,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.file[3]) {
+        assertBoardLooksLike(BitBoard.file[3]) {
             """
               a b c d e f g h
             8 - - - x - - - - 8
@@ -500,7 +500,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.file[4]) {
+        assertBoardLooksLike(BitBoard.file[4]) {
             """
               a b c d e f g h
             8 - - - - x - - - 8
@@ -514,7 +514,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.file[5]) {
+        assertBoardLooksLike(BitBoard.file[5]) {
             """
               a b c d e f g h
             8 - - - - - x - - 8
@@ -528,7 +528,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.file[6]) {
+        assertBoardLooksLike(BitBoard.file[6]) {
             """
               a b c d e f g h
             8 - - - - - - x - 8
@@ -543,7 +543,7 @@ class MaskTests: XCTestCase {
             """
         }
             
-        assertBoardLooksLike(Mask.file[7]) {
+        assertBoardLooksLike(BitBoard.file[7]) {
             """
               a b c d e f g h
             8 - - - - - - - x 8
@@ -560,7 +560,7 @@ class MaskTests: XCTestCase {
     }
 
     func testRank() {
-        assertBoardLooksLike(Mask.rank[0]) {
+        assertBoardLooksLike(BitBoard.rank[0]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -575,7 +575,7 @@ class MaskTests: XCTestCase {
             """
         }
         
-        assertBoardLooksLike(Mask.rank[1]) {
+        assertBoardLooksLike(BitBoard.rank[1]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -589,7 +589,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.rank[2]) {
+        assertBoardLooksLike(BitBoard.rank[2]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -603,7 +603,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.rank[3]) {
+        assertBoardLooksLike(BitBoard.rank[3]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -617,7 +617,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.rank[4]) {
+        assertBoardLooksLike(BitBoard.rank[4]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -631,7 +631,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.rank[5]) {
+        assertBoardLooksLike(BitBoard.rank[5]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -645,7 +645,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.rank[6]) {
+        assertBoardLooksLike(BitBoard.rank[6]) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -659,7 +659,7 @@ class MaskTests: XCTestCase {
               a b c d e f g h
             """
         }
-        assertBoardLooksLike(Mask.rank[7]) {
+        assertBoardLooksLike(BitBoard.rank[7]) {
             """
               a b c d e f g h
             8 x x x x x x x x 8
@@ -678,7 +678,7 @@ class MaskTests: XCTestCase {
     
     func testBasicMasks() {
         
-        assertBoardLooksLike(Mask.frame) {
+        assertBoardLooksLike(BitBoard.frame) {
             """
               a b c d e f g h
             8 x x x x x x x x 8
@@ -694,7 +694,7 @@ class MaskTests: XCTestCase {
         }
         
         
-        assertBoardLooksLike(Mask.universe) {
+        assertBoardLooksLike(BitBoard.universe) {
             """
               a b c d e f g h
             8 x x x x x x x x 8
@@ -709,7 +709,7 @@ class MaskTests: XCTestCase {
             """
         }
         
-        assertBoardLooksLike(Mask.empty) {
+        assertBoardLooksLike(BitBoard.empty) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -724,7 +724,7 @@ class MaskTests: XCTestCase {
             """
         }
         
-        assertBoardLooksLike(Mask.fileA) {
+        assertBoardLooksLike(BitBoard.fileA) {
             """
               a b c d e f g h
             8 x - - - - - - - 8
@@ -739,7 +739,7 @@ class MaskTests: XCTestCase {
             """
         }
         
-        assertBoardLooksLike(Mask.fileH) {
+        assertBoardLooksLike(BitBoard.fileH) {
             """
               a b c d e f g h
             8 - - - - - - - x 8
@@ -755,7 +755,7 @@ class MaskTests: XCTestCase {
         }
         
         
-        assertBoardLooksLike(Mask.rank1) {
+        assertBoardLooksLike(BitBoard.rank1) {
             """
               a b c d e f g h
             8 - - - - - - - - 8
@@ -770,7 +770,7 @@ class MaskTests: XCTestCase {
             """
         }
 
-        assertBoardLooksLike(Mask.rank8) {
+        assertBoardLooksLike(BitBoard.rank8) {
             """
               a b c d e f g h
             8 x x x x x x x x 8
@@ -787,7 +787,7 @@ class MaskTests: XCTestCase {
     }
     
     func testFields() {
-        assertBoardLooksLike(Mask.a1) {
+        assertBoardLooksLike(BitBoard.a1) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -801,7 +801,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.b1) {
+        assertBoardLooksLike(BitBoard.b1) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -815,7 +815,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.c1) {
+        assertBoardLooksLike(BitBoard.c1) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -829,7 +829,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.d1) {
+        assertBoardLooksLike(BitBoard.d1) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -843,7 +843,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.e1) {
+        assertBoardLooksLike(BitBoard.e1) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -857,7 +857,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.f1) {
+        assertBoardLooksLike(BitBoard.f1) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -871,7 +871,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.g1) {
+        assertBoardLooksLike(BitBoard.g1) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -885,7 +885,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.h1) {
+        assertBoardLooksLike(BitBoard.h1) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -899,7 +899,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.a2) {
+        assertBoardLooksLike(BitBoard.a2) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -913,7 +913,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.b2) {
+        assertBoardLooksLike(BitBoard.b2) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -927,7 +927,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.c2) {
+        assertBoardLooksLike(BitBoard.c2) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -941,7 +941,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.d2) {
+        assertBoardLooksLike(BitBoard.d2) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -955,7 +955,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.e2) {
+        assertBoardLooksLike(BitBoard.e2) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -969,7 +969,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.f2) {
+        assertBoardLooksLike(BitBoard.f2) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -983,7 +983,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.g2) {
+        assertBoardLooksLike(BitBoard.g2) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -997,7 +997,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.h2) {
+        assertBoardLooksLike(BitBoard.h2) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1011,7 +1011,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.a3) {
+        assertBoardLooksLike(BitBoard.a3) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1025,7 +1025,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.b3) {
+        assertBoardLooksLike(BitBoard.b3) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1039,7 +1039,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.c3) {
+        assertBoardLooksLike(BitBoard.c3) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1053,7 +1053,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.d3) {
+        assertBoardLooksLike(BitBoard.d3) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1067,7 +1067,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.e3) {
+        assertBoardLooksLike(BitBoard.e3) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1081,7 +1081,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.f3) {
+        assertBoardLooksLike(BitBoard.f3) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1095,7 +1095,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.g3) {
+        assertBoardLooksLike(BitBoard.g3) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1109,7 +1109,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.h3) {
+        assertBoardLooksLike(BitBoard.h3) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1123,7 +1123,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.a4) {
+        assertBoardLooksLike(BitBoard.a4) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1137,7 +1137,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.b4) {
+        assertBoardLooksLike(BitBoard.b4) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1151,7 +1151,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.c4) {
+        assertBoardLooksLike(BitBoard.c4) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1165,7 +1165,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.d4) {
+        assertBoardLooksLike(BitBoard.d4) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1179,7 +1179,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.e4) {
+        assertBoardLooksLike(BitBoard.e4) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1193,7 +1193,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.f4) {
+        assertBoardLooksLike(BitBoard.f4) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1207,7 +1207,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.g4) {
+        assertBoardLooksLike(BitBoard.g4) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1221,7 +1221,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.h4) {
+        assertBoardLooksLike(BitBoard.h4) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1235,7 +1235,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.a5) {
+        assertBoardLooksLike(BitBoard.a5) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1249,7 +1249,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.b5) {
+        assertBoardLooksLike(BitBoard.b5) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1263,7 +1263,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.c5) {
+        assertBoardLooksLike(BitBoard.c5) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1277,7 +1277,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.d5) {
+        assertBoardLooksLike(BitBoard.d5) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1291,7 +1291,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.e5) {
+        assertBoardLooksLike(BitBoard.e5) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1305,7 +1305,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.f5) {
+        assertBoardLooksLike(BitBoard.f5) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1319,7 +1319,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.g5) {
+        assertBoardLooksLike(BitBoard.g5) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1333,7 +1333,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.h5) {
+        assertBoardLooksLike(BitBoard.h5) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1347,7 +1347,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.a6) {
+        assertBoardLooksLike(BitBoard.a6) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1361,7 +1361,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.b6) {
+        assertBoardLooksLike(BitBoard.b6) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1375,7 +1375,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.c6) {
+        assertBoardLooksLike(BitBoard.c6) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1389,7 +1389,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.d6) {
+        assertBoardLooksLike(BitBoard.d6) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1403,7 +1403,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.e6) {
+        assertBoardLooksLike(BitBoard.e6) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1417,7 +1417,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.f6) {
+        assertBoardLooksLike(BitBoard.f6) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1431,7 +1431,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.g6) {
+        assertBoardLooksLike(BitBoard.g6) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1445,7 +1445,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.h6) {
+        assertBoardLooksLike(BitBoard.h6) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1459,7 +1459,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.a7) {
+        assertBoardLooksLike(BitBoard.a7) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1473,7 +1473,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.b7) {
+        assertBoardLooksLike(BitBoard.b7) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1487,7 +1487,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.c7) {
+        assertBoardLooksLike(BitBoard.c7) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1501,7 +1501,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.d7) {
+        assertBoardLooksLike(BitBoard.d7) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1515,7 +1515,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.e7) {
+        assertBoardLooksLike(BitBoard.e7) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1529,7 +1529,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.f7) {
+        assertBoardLooksLike(BitBoard.f7) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1543,7 +1543,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.g7) {
+        assertBoardLooksLike(BitBoard.g7) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1557,7 +1557,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.h7) {
+        assertBoardLooksLike(BitBoard.h7) {
             """
       a b c d e f g h
     8 - - - - - - - - 8
@@ -1571,7 +1571,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.a8) {
+        assertBoardLooksLike(BitBoard.a8) {
             """
       a b c d e f g h
     8 x - - - - - - - 8
@@ -1585,7 +1585,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.b8) {
+        assertBoardLooksLike(BitBoard.b8) {
             """
       a b c d e f g h
     8 - x - - - - - - 8
@@ -1599,7 +1599,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.c8) {
+        assertBoardLooksLike(BitBoard.c8) {
             """
       a b c d e f g h
     8 - - x - - - - - 8
@@ -1613,7 +1613,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.d8) {
+        assertBoardLooksLike(BitBoard.d8) {
             """
       a b c d e f g h
     8 - - - x - - - - 8
@@ -1627,7 +1627,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.e8) {
+        assertBoardLooksLike(BitBoard.e8) {
             """
       a b c d e f g h
     8 - - - - x - - - 8
@@ -1641,7 +1641,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.f8) {
+        assertBoardLooksLike(BitBoard.f8) {
             """
       a b c d e f g h
     8 - - - - - x - - 8
@@ -1655,7 +1655,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.g8) {
+        assertBoardLooksLike(BitBoard.g8) {
             """
       a b c d e f g h
     8 - - - - - - x - 8
@@ -1669,7 +1669,7 @@ class MaskTests: XCTestCase {
       a b c d e f g h
     """
         }
-        assertBoardLooksLike(Mask.h8) {
+        assertBoardLooksLike(BitBoard.h8) {
             """
       a b c d e f g h
     8 - - - - - - - x 8
