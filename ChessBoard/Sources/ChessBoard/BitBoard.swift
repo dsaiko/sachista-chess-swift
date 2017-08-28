@@ -1,30 +1,13 @@
-//
-//  Mask.swift
-//  Created by Dusan Saiko on 22/08/2017.
-//
+//  Created by Dusan Saiko (dusan@saiko.cz) on 22/08/2017.
+//  Licensed under https://opensource.org/licenses/MIT
 
 import Foundation
 
 public typealias BitBoard = UInt64
 
 public extension BitBoard {
-    private typealias `Self` = BitBoard
+    typealias `Self` = BitBoard
     
-    enum Index: Int {
-        case a1 = 00; case b1 = 01; case c1 = 02; case d1 = 03; case e1 = 04; case f1 = 05; case g1 = 06; case h1 = 07
-        case a2 = 08; case b2 = 09; case c2 = 10; case d2 = 11; case e2 = 12; case f2 = 13; case g2 = 14; case h2 = 15
-        case a3 = 16; case b3 = 17; case c3 = 18; case d3 = 19; case e3 = 20; case f3 = 21; case g3 = 22; case h3 = 23
-        case a4 = 24; case b4 = 25; case c4 = 26; case d4 = 27; case e4 = 28; case f4 = 29; case g4 = 30; case h4 = 31
-        case a5 = 32; case b5 = 33; case c5 = 34; case d5 = 35; case e5 = 36; case f5 = 37; case g5 = 38; case h5 = 39
-        case a6 = 40; case b6 = 41; case c6 = 42; case d6 = 43; case e6 = 44; case f6 = 45; case g6 = 46; case h6 = 47
-        case a7 = 48; case b7 = 49; case c7 = 50; case d7 = 51; case e7 = 52; case f7 = 53; case g7 = 54; case h7 = 55
-        case a8 = 56; case b8 = 57; case c8 = 58; case d8 = 59; case e8 = 60; case f8 = 61; case g8 = 62; case h8 = 63
-        
-        var bitBoard: BitBoard {
-            return 1 << self.rawValue
-        }
-    }
-
     public static let a1 = BitBoard(1) << 0
     public static let b1 = BitBoard(1) << 1
     public static let c1 = BitBoard(1) << 2
@@ -159,55 +142,5 @@ public extension BitBoard {
         h8
     ]
     
-    var reversedRanks: BitBoard {
-        //return board with ranks (rows) in reverse order
-        var result: BitBoard = 0
-        let board = self
-        
-        result |= (board >> 56)   &  Self.rank1
-        result |= ((board >> 48)  &  Self.rank1) << 8
-        result |= ((board >> 40)  &  Self.rank1) << 16
-        result |= ((board >> 32)  &  Self.rank1) << 24
-        result |= ((board >> 24)  &  Self.rank1) << 32
-        result |= ((board >> 16)  &  Self.rank1) << 40
-        result |= ((board >> 8)   &  Self.rank1) << 48
-        result |= (board          &  Self.rank1) << 56
-        
-        return result
-    }
-    
-    public var stringBoard: String {
-        
-        let header = "  a b c d e f g h\n"
-        var result = ""
-        let reversedRanks = self.reversedRanks
-        
-        result += header
-        
-        for i in 0..<64 {
-            if (i % 8) == 0 {
-                if (i > 0) {
-                    //print right column digit
-                    result += "\(9 - (i / 8))"
-                    result += "\n"
-                }
-                
-                //print left column digit
-                result += "\(8 - (i / 8))"
-                result += " "
-            }
-            
-            if(reversedRanks & (1 << i) != 0) {
-                result += "x "
-            } else {
-                result += "- "
-            }
-        }
-        
-        result += "1\n" //last right column digit
-        result += header //footer
-        
-        return result
-    }
 }
 
