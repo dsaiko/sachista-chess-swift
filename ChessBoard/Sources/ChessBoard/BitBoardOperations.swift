@@ -1,39 +1,39 @@
-//  Created by Dusan Saiko (dusan@saiko.cz) on 22/08/2017.
+//  Created by Dusan Saiko (dusan@saiko.cz)
 //  Licensed under https://opensource.org/licenses/MIT
 
 import Foundation
 
 public extension BitBoard {
     
-    var oneNorth:       BitBoard { return self << 8 }
-    var oneSouth:       BitBoard { return self >> 8 }
+    public var oneNorth:       BitBoard { return self << 8 }
+    public var oneSouth:       BitBoard { return self >> 8 }
     
-    var oneEast:        BitBoard { return (self << 1) & ~Self.fileA }
-    var oneNorthEast:   BitBoard { return (self << 9) & ~Self.fileA }
-    var oneSouthEast:   BitBoard { return (self >> 7) & ~Self.fileA }
+    public var oneEast:        BitBoard { return (self << 1) & ~.fileA }
+    public var oneNorthEast:   BitBoard { return (self << 9) & ~.fileA }
+    public var oneSouthEast:   BitBoard { return (self >> 7) & ~.fileA }
     
-    var oneWest:        BitBoard { return (self >> 1) & ~Self.fileH }
-    var oneSouthWest:   BitBoard { return (self >> 9) & ~Self.fileH }
-    var oneNorthWest:   BitBoard { return (self << 7) & ~Self.fileH }
+    public var oneWest:        BitBoard { return (self >> 1) & ~.fileH }
+    public var oneSouthWest:   BitBoard { return (self >> 9) & ~.fileH }
+    public var oneNorthWest:   BitBoard { return (self << 7) & ~.fileH }
     
-    var mirrorVertical: BitBoard {
+    public var mirrorVertical: BitBoard {
         //return board with ranks (rows) in reverse order
         var result: BitBoard = 0
         let board = self
         
-        result |= (board >> 56)   &  Self.rank1
-        result |= ((board >> 48)  &  Self.rank1) << 8
-        result |= ((board >> 40)  &  Self.rank1) << 16
-        result |= ((board >> 32)  &  Self.rank1) << 24
-        result |= ((board >> 24)  &  Self.rank1) << 32
-        result |= ((board >> 16)  &  Self.rank1) << 40
-        result |= ((board >> 8)   &  Self.rank1) << 48
-        result |= (board          &  Self.rank1) << 56
+        result |= (board >> 56)   &  .rank1
+        result |= ((board >> 48)  &  .rank1) << 8
+        result |= ((board >> 40)  &  .rank1) << 16
+        result |= ((board >> 32)  &  .rank1) << 24
+        result |= ((board >> 24)  &  .rank1) << 32
+        result |= ((board >> 16)  &  .rank1) << 40
+        result |= ((board >> 8)   &  .rank1) << 48
+        result |= (board          &  .rank1) << 56
         
         return result
     }
     
-    var flipA1H8: BitBoard {
+    public var flipA1H8: BitBoard {
         //Flips around A1H8 diagonal
         let k1 = BitBoard(0x5500550055005500)
         let k2 = BitBoard(0x3333000033330000)
@@ -51,7 +51,7 @@ public extension BitBoard {
         return b
     }
     
-    var mirrorHorizontal: BitBoard {
+    public var mirrorHorizontal: BitBoard {
         //mirrors the bitboard horizontally
         let k1 = BitBoard(0x5555555555555555)
         let k2 = BitBoard(0x3333333333333333)
@@ -66,14 +66,12 @@ public extension BitBoard {
     }
     
     public var stringBoard: String {
-        
-        let header = "  a b c d e f g h\n"
-        var result = ""
         let reversedRanks = self.mirrorVertical
+        var result = ""
         
-        result += header
+        result += ChessBoard.header
         
-        for i in 0..<64 {
+        for i in 0 ..< BitBoard.bitWidth {
             if (i % 8) == 0 {
                 if (i > 0) {
                     //print right column digit
@@ -94,9 +92,28 @@ public extension BitBoard {
         }
         
         result += "1\n" //last right column digit
-        result += header //footer
+        result += ChessBoard.header //footer
         
         return result
+    }
+    
+    public var indeces: [Index] {
+        var result = [Index]()
+        
+        var board = self
+        while board != 0 {
+            result.append(Index(rawValue: board.bitPop())!)
+        }
+        
+        return result
+    }
+    
+    public mutating func bitPop() -> Int {
+        assert(self != 0)
+        
+        let i = self.trailingZeroBitCount
+        self &= self - 1
+        return i
     }
 }
 

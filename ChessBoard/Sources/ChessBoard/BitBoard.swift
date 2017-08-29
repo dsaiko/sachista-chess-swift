@@ -1,4 +1,4 @@
-//  Created by Dusan Saiko (dusan@saiko.cz) on 22/08/2017.
+//  Created by Dusan Saiko (dusan@saiko.cz)
 //  Licensed under https://opensource.org/licenses/MIT
 
 import Foundation
@@ -6,7 +6,6 @@ import Foundation
 public typealias BitBoard = UInt64
 
 public extension BitBoard {
-    typealias `Self` = BitBoard
     
     public static let a1 = BitBoard(1) << 0
     public static let b1 = BitBoard(1) << 1
@@ -141,6 +140,26 @@ public extension BitBoard {
         g8 | h7,
         h8
     ]
-    
-}
 
+    public init?(_ notation: String...) {
+        var result: BitBoard = .empty
+        
+        for board in notation.map({Index(notation: $0)}).map({$0?.bitBoard}) {
+            if let board = board  {
+                result |= board
+            } else {
+                return nil
+            }
+        }
+        self = result
+    }
+
+    public init(_ indeces: Index...) {
+        var result: BitBoard = .empty
+        
+        for index in indeces {
+            result |= index.bitBoard
+        }
+        self = result
+    }
+}

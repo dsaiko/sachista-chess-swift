@@ -1,4 +1,4 @@
-//  Created by Dusan Saiko (dusan@saiko.cz) on 22/08/2017.
+//  Created by Dusan Saiko (dusan@saiko.cz)
 //  Licensed under https://opensource.org/licenses/MIT
 
 import XCTest
@@ -86,6 +86,40 @@ class BitBoardOperationsTests: XCTestCase {
         XCTAssertEqual(BitBoard.file[1], BitBoard.file[6].mirrorHorizontal)
     }
 
+    func testIndeces() {
+        let board = BitBoard.a1 | BitBoard.a8 | BitBoard.h1 | BitBoard.h8 | BitBoard.f7
+        let indeces = board.indeces
+        
+        XCTAssertTrue(indeces.contains(BitBoard.Index.a1))
+        XCTAssertTrue(indeces.contains(BitBoard.Index.a8))
+        XCTAssertTrue(indeces.contains(BitBoard.Index.h1))
+        XCTAssertTrue(indeces.contains(BitBoard.Index.h8))
+        XCTAssertTrue(indeces.contains(BitBoard.Index.f7))
+    }
+    
+    func testIndecesInitializer() {
+        let board = BitBoard("a1", "a8", "h1", "h8", "f7")!
+        let indeces = board.indeces
+        
+        XCTAssertTrue(indeces.contains(BitBoard.Index.a1))
+        XCTAssertTrue(indeces.contains(BitBoard.Index.a8))
+        XCTAssertTrue(indeces.contains(BitBoard.Index.h1))
+        XCTAssertTrue(indeces.contains(BitBoard.Index.h8))
+        XCTAssertTrue(indeces.contains(BitBoard.Index.f7))
+        
+        XCTAssertEqual(BitBoard("a1", "a8", "h1", "h8", "f7"), BitBoard(BitBoard.Index.a8, BitBoard.Index.a1, BitBoard.Index.h8, BitBoard.Index.h1, BitBoard.Index.f7))
+        XCTAssertNotEqual(BitBoard("a1", "a8", "h1", "h8", "f7"), BitBoard(BitBoard.Index.h8, BitBoard.Index.h1, BitBoard.Index.f7))
+        XCTAssertNil(BitBoard("xx"))
+    }
+
+    func testBitPop() {
+        var n: BitBoard = 0b1101
+        
+        XCTAssertEqual(n.bitPop(), 0)
+        XCTAssertEqual(n.bitPop(), 2)
+        XCTAssertEqual(n.bitPop(), 3)
+        XCTAssertEqual(n, 0)
+    }
 }
 
 

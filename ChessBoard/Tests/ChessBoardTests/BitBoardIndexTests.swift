@@ -1,4 +1,4 @@
-//  Created by Dusan Saiko (dusan@saiko.cz) on 22/08/2017.
+//  Created by Dusan Saiko (dusan@saiko.cz)
 //  Licensed under https://opensource.org/licenses/MIT
 
 import XCTest
@@ -19,7 +19,7 @@ class BitBoardIndexTests: XCTestCase {
         ]
         
         XCTAssertEqual(all[0].rawValue, 0)
-        for i in 1..<64 {
+        for i in 1 ..< BitBoard.bitWidth {
             XCTAssertEqual(all[i].rawValue, all[i-1].rawValue + 1)
         }
         

@@ -1,6 +1,6 @@
-//  Created by Dusan Saiko (dusan@saiko.cz) on 22/08/2017.
+//  Created by Dusan Saiko (dusan@saiko.cz)
 //  Licensed under https://opensource.org/licenses/MIT
-//
+
 
 import Foundation
 
@@ -8,7 +8,7 @@ public extension BitBoard {
     
     static private let a1NotationCodes = "a1".unicodeScalars.filter{$0.isASCII}.map{Int($0.value)}
     
-    enum Index: Int, CustomStringConvertible {
+    public enum Index: Int, CustomStringConvertible {
         case a1 = 00; case b1 = 01; case c1 = 02; case d1 = 03; case e1 = 04; case f1 = 05; case g1 = 06; case h1 = 07
         case a2 = 08; case b2 = 09; case c2 = 10; case d2 = 11; case e2 = 12; case f2 = 13; case g2 = 14; case h2 = 15
         case a3 = 16; case b3 = 17; case c3 = 18; case d3 = 19; case e3 = 20; case f3 = 21; case g3 = 22; case h3 = 23
@@ -18,32 +18,32 @@ public extension BitBoard {
         case a7 = 48; case b7 = 49; case c7 = 50; case d7 = 51; case e7 = 52; case f7 = 53; case g7 = 54; case h7 = 55
         case a8 = 56; case b8 = 57; case c8 = 58; case d8 = 59; case e8 = 60; case f8 = 61; case g8 = 62; case h8 = 63
         
-        var bitBoard: BitBoard {
+        public var bitBoard: BitBoard {
             return 1 << self.rawValue
         }
         
-        var fileIndex: Int {
+        public var fileIndex: Int {
             return self.rawValue % 8
         }
         
-        var rankIndex: Int {
+        public var rankIndex: Int {
             return self.rawValue / 8
         }
 
-        init?(notation: String) {
+        public init?(notation: String) {
             guard notation.count == 2 else {
                 return nil
             }
 
             let values = notation.unicodeScalars.filter{$0.isASCII}.map{Int($0.value)}
 
-            self.init(rawValue: Int(((values[0] - Self.a1NotationCodes[0]) + ((values[1] - Self.a1NotationCodes[1]) << 3))))
+            self.init(rawValue: Int(((values[0] - BitBoard.a1NotationCodes[0]) + ((values[1] - BitBoard.a1NotationCodes[1]) << 3))))
         }
         
         public var description: String {
             //can use unwrapped optionals as we know the values of enum cases
-            let file = Character(UnicodeScalar(Int(self.rawValue % 8) + Self.a1NotationCodes[0])!)
-            let rank = Character(UnicodeScalar(Int(self.rawValue / 8) + Self.a1NotationCodes[1])!)
+            let file = Character(UnicodeScalar(Int(self.rawValue % 8) + BitBoard.a1NotationCodes[0])!)
+            let rank = Character(UnicodeScalar(Int(self.rawValue / 8) + BitBoard.a1NotationCodes[1])!)
             return "\(file)\(rank)"
         }
     }
