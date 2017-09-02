@@ -29,4 +29,8 @@ class ChessBoardStringConversionsTests: XCTestCase {
         ChessBoard.standard.assertLooksLike(contentOf: "chessboard-standard")
         ChessBoard().assertLooksLike(contentOf: "chessboard-empty")
     }
+    
+    func testFenString() {
+        print(ChessBoard.standard.fenString)
+    }
 }
