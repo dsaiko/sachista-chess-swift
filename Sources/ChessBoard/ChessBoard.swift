@@ -85,6 +85,8 @@ public struct Pieces {
  */
 public struct ChessBoard {
 
+    private static let zobristChecksum = ZobristChecksum()
+    
     public let nextMove:                PieceColor
     public let whitePieces:             Pieces
     public let blackPieces:             Pieces
@@ -93,6 +95,8 @@ public struct ChessBoard {
     public let enPassantTarget:         BitBoard.Index?
     public let halfMoveClock:           Int
     public let fullMoveNumber:          Int
+    public let zobristChecksum:         UInt64?
+    
 
     public var allPieces: BitBoard {
         return whitePieces.all | blackPieces.all
@@ -116,6 +120,15 @@ public struct ChessBoard {
         self.enPassantTarget =          enPassantTarget
         self.halfMoveClock =            halfMoveClock
         self.fullMoveNumber =           fullMoveNumber
+        
+        self.zobristChecksum =         ChessBoard.zobristChecksum.compute(
+            nextMove: nextMove,
+            whitePieces: whitePieces,
+            blackPieces: blackPieces,
+            whiteCastlingOptions: whiteCastlingOptions,
+            blackCastlingOptions: blackCastlingOptions,
+            enPassantTarget: enPassantTarget
+        )
     }
     
     /**
@@ -171,5 +184,13 @@ public struct ChessBoard {
             .blackPawn:     blackPieces.pawn,
         ]
     }
+    
+
 }
 
+extension ChessBoard: Equatable {
+    
+    public static func ==(lhs: ChessBoard, rhs: ChessBoard) -> Bool {
+        return lhs.zobristChecksum == rhs.zobristChecksum
+    }
+}
