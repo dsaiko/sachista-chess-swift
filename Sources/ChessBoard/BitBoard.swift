@@ -5,6 +5,9 @@ import Foundation
 
 public typealias BitBoard = UInt64
 
+/**
+ Representation of 8x8 bit board
+ */
 public extension BitBoard {
     
     public static let a1 = BitBoard(1) << 0

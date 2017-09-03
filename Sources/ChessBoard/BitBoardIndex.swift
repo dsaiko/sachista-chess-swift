@@ -4,6 +4,9 @@
 
 import Foundation
 
+/**
+ Representation of bit board index (for example c3) and its translation back to bit board
+ */
 public extension BitBoard {
     
     static private let a1NotationCodes = "a1".unicodeScalars.filter{$0.isASCII}.map{Int($0.value)}

@@ -65,6 +65,10 @@ public extension BitBoard {
         return b
     }
     
+    /**
+     BitBoard as string representation
+     - Note: can not override description from UInt64
+     */
     public var stringBoard: String {
         let reversedRanks = self.mirrorVertical
         var result = ""
@@ -97,6 +101,9 @@ public extension BitBoard {
         return result
     }
     
+    /**
+     Returns all fields which are set on the board as array of BitBoard.Index
+     */
     public var indeces: [Index] {
         var result = [Index]()
         
@@ -108,6 +115,10 @@ public extension BitBoard {
         return result
     }
     
+    /**
+     - Returns: Index of first bit set. This bit is reset on "self"
+     - Requires: self != 0
+     */
     public mutating func bitPop() -> Int {
         assert(self != 0)
         
