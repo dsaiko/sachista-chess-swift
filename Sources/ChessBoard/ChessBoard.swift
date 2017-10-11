@@ -4,20 +4,20 @@
 import Foundation
 
 /**
-     Representation of chess piece color.
-     String enum with 'w' and 'b' values.
- */
-public enum PieceColor: String {
-    case white = "w"
-    case black = "b"
-}
-
-/**
      Representation of chess piece.
      Enum of string values 'KQRBNP' respective 'kqrbnp'.
      Can return piece color.
  */
-public enum Piece: String {
+public enum Piece: String, CustomStringConvertible {
+    /**
+     Representation of chess piece color.
+     String enum with 'w' and 'b' values.
+     */
+    public enum Color: String {
+        case white = "w"
+        case black = "b"
+    }
+    
     case whiteKing      = "K"
     case whiteQueen     = "Q"
     case whiteRook      = "R"
@@ -32,13 +32,17 @@ public enum Piece: String {
     case blackKnight    = "n"
     case blackPawn      = "p"
 
-    public var color: PieceColor {
+    public var color: Color {
         switch self {
         case .whiteKing, .whiteQueen, .whiteRook, .whiteBishop, .whiteKnight, .whitePawn:
             return .white
         default:
             return .black
         }
+    }
+    
+    public var description: String {
+        return rawValue
     }
 }
 
@@ -66,9 +70,7 @@ public struct Pieces {
     public let rook:    BitBoard
     public let pawn:    BitBoard
     
-    public var all: BitBoard {
-        return king | queen | bishop | knight | rook | pawn
-    }
+    private(set) lazy var all = king | queen | bishop | knight | rook | pawn
     
     public init(king: BitBoard = .empty, queen: BitBoard = .empty, bishop: BitBoard = .empty, knight: BitBoard = .empty, rook: BitBoard = .empty, pawn: BitBoard = .empty) {
         self.king   = king
@@ -82,28 +84,29 @@ public struct Pieces {
 
 /**
  Chessboard representation
+ TODO PERFORMANCE: class??
  */
 public struct ChessBoard {
-
-    private static let zobristChecksum = ZobristChecksum()
     
-    public let nextMove:                PieceColor
-    public let whitePieces:             Pieces
-    public let blackPieces:             Pieces
+    public let nextMove:                Piece.Color
+    private(set) var whitePieces:       Pieces
+    private(set) var blackPieces:       Pieces
     public let whiteCastlingOptions:    CastlingOptions
     public let blackCastlingOptions:    CastlingOptions
     public let enPassantTarget:         BitBoard.Index?
     public let halfMoveClock:           Int
     public let fullMoveNumber:          Int
-    public let zobristChecksum:         UInt64?
     
-
-    public var allPieces: BitBoard {
-        return whitePieces.all | blackPieces.all
-    }
+    private(set) lazy var zobristChecksum   = ZobristChecksum.compute(board: self)
+    private(set) lazy var allPieces         = whitePieces.all | blackPieces.all
+    private(set) lazy var opponentPieces    = nextMove == .white ? blackPieces.all : whitePieces.all
+    private(set) lazy var whereCanMoveBoard = nextMove == .white ? ~whitePieces.all : ~blackPieces.all
+    private(set) lazy var opponentColor     = nextMove == .white ? Piece.Color.black : Piece.Color.white
+    private(set) lazy var kingBoard         = nextMove == .white ? whitePieces.king : blackPieces.king
+    private(set) lazy var kingIndex         = BitBoard.Index(rawValue: kingBoard.trailingZeroBitCount)!  //TODO PERFORMANCE: Int??
     
     public init(
-        nextMove: PieceColor = .white,
+        nextMove: Piece.Color = .white,
         whitePieces: Pieces = Pieces(),
         blackPieces: Pieces = Pieces(),
         whiteCastlingOptions: CastlingOptions = CastlingOptions(),
@@ -120,15 +123,6 @@ public struct ChessBoard {
         self.enPassantTarget =          enPassantTarget
         self.halfMoveClock =            halfMoveClock
         self.fullMoveNumber =           fullMoveNumber
-        
-        self.zobristChecksum =         ChessBoard.zobristChecksum.compute(
-            nextMove: nextMove,
-            whitePieces: whitePieces,
-            blackPieces: blackPieces,
-            whiteCastlingOptions: whiteCastlingOptions,
-            blackCastlingOptions: blackCastlingOptions,
-            enPassantTarget: enPassantTarget
-        )
     }
     
     /**
@@ -184,13 +178,5 @@ public struct ChessBoard {
             .blackPawn:     blackPieces.pawn,
         ]
     }
-    
-
 }
 
-extension ChessBoard: Equatable {
-    
-    public static func ==(lhs: ChessBoard, rhs: ChessBoard) -> Bool {
-        return lhs.zobristChecksum == rhs.zobristChecksum
-    }
-}

@@ -15,6 +15,21 @@ public extension BitBoard {
     public var oneWest:        BitBoard { return (self >> 1) & ~.fileH }
     public var oneSouthWest:   BitBoard { return (self >> 9) & ~.fileH }
     public var oneNorthWest:   BitBoard { return (self << 7) & ~.fileH }
+
+    public func shift(dx: Int, dy: Int) -> BitBoard {
+        var board = self
+        
+        //up or down
+        if dy > 0 { board <<= dy * 8 }
+        if dy < 0 { board >>= (-dy) * 8 }
+        
+        //left / right
+        for _ in 0 ..< dx { board = board.oneEast }
+        for _ in 0 ..< -dx { board = board.oneWest }
+
+        return board
+    }
+    
     
     public var mirrorVertical: BitBoard {
         //return board with ranks (rows) in reverse order
@@ -109,7 +124,7 @@ public extension BitBoard {
         
         var board = self
         while board != 0 {
-            result.append(Index(rawValue: board.bitPop())!)
+            result.append(board.bitPop())
         }
         
         return result
@@ -119,12 +134,14 @@ public extension BitBoard {
      - Returns: Index of first bit set. This bit is reset on "self"
      - Requires: self != 0
      */
-    public mutating func bitPop() -> Int {
+    public mutating func bitPop() -> BitBoard.Index {
         assert(self != 0)
         
         let i = self.trailingZeroBitCount
         self &= self - 1
-        return i
+        
+        //TODO PERFORMANCE: Int?
+        return BitBoard.Index(rawValue: i)!
     }
 }
 

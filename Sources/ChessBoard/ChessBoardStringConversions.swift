@@ -97,7 +97,7 @@ extension ChessBoard: CustomStringConvertible {
         outputItem("")
         
         // 2) Output next move
-        result += " \(nextMove == .white ? PieceColor.white.rawValue : PieceColor.black.rawValue) "
+        result += " \(nextMove == .white ? Piece.Color.white.rawValue : Piece.Color.black.rawValue) "
 
         // 3) output castling
         var castling = ""
@@ -179,7 +179,7 @@ extension ChessBoard: CustomStringConvertible {
         )
 
         // 2) next move color
-        guard let nextMove = PieceColor(rawValue: String(sections.removeFirst())) else {
+        guard let nextMove = Piece.Color(rawValue: String(sections.removeFirst())) else {
             return nil
         }
         

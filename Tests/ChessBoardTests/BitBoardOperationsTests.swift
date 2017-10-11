@@ -115,9 +115,9 @@ class BitBoardOperationsTests: XCTestCase {
     func testBitPop() {
         var n: BitBoard = 0b1101
         
-        XCTAssertEqual(n.bitPop(), 0)
-        XCTAssertEqual(n.bitPop(), 2)
-        XCTAssertEqual(n.bitPop(), 3)
+        XCTAssertEqual(n.bitPop(), BitBoard.Index(rawValue: 0))
+        XCTAssertEqual(n.bitPop(), BitBoard.Index(rawValue: 2))
+        XCTAssertEqual(n.bitPop(), BitBoard.Index(rawValue: 3))
         XCTAssertEqual(n, 0)
     }
 }
