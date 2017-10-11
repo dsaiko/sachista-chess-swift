@@ -5,9 +5,11 @@ import Foundation
 
 public class MoveGeneratorPawn: MoveGenerator {
     
-    struct Cache {
+    //TODO: struct?
+    class Cache {
 
-        struct PregeneratedInfo {
+        //TODO: struct?
+        class PregeneratedInfo {
             let moves:          [BitBoard]
             let doubleMoves:    [BitBoard]
             let attacks:        [BitBoard]
@@ -49,6 +51,8 @@ public class MoveGeneratorPawn: MoveGenerator {
     
     func moves(board: ChessBoard) -> [Move] {
         let emptyBoard = board.allPieces
+        
+        return []
         
 //        int whiteBaseRank;
 //        int blackBaseRank;

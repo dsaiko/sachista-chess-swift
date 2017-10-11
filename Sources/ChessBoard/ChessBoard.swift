@@ -62,7 +62,7 @@ public struct CastlingOptions {
 /**
      Chess set for one side.
  */
-public struct Pieces {
+public class Pieces {
     public let king:    BitBoard
     public let queen:   BitBoard
     public let bishop:  BitBoard
@@ -86,11 +86,11 @@ public struct Pieces {
  Chessboard representation
  TODO PERFORMANCE: class??
  */
-public struct ChessBoard {
+public class ChessBoard {
     
     public let nextMove:                Piece.Color
-    private(set) var whitePieces:       Pieces
-    private(set) var blackPieces:       Pieces
+    public let whitePieces:             Pieces
+    public let blackPieces:             Pieces
     public let whiteCastlingOptions:    CastlingOptions
     public let blackCastlingOptions:    CastlingOptions
     public let enPassantTarget:         BitBoard.Index?

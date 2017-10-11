@@ -123,7 +123,7 @@ extension ChessBoard: CustomStringConvertible {
     /**
          Create chessboard from FEN
      */
-    public init?(fenString: String) {
+    convenience public init?(fenString: String) {
         var sections = fenString.trimmingCharacters(in: .whitespacesAndNewlines).split(separator: " ")
         if sections.count != 4 && sections.count != 6 {
             return nil
