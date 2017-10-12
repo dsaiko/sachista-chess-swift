@@ -97,12 +97,15 @@ public class ChessBoard {
     public let halfMoveClock:           Int
     public let fullMoveNumber:          Int
     
+    //TODO PERFORMANCE: lazy or not? vs computed
     private(set) lazy var zobristChecksum   = ZobristChecksum.compute(board: self)
     private(set) lazy var allPieces         = whitePieces.all | blackPieces.all
+    private(set) lazy var emptyBoard        = ~allPieces
+    private(set) lazy var piecesToMove      = nextMove == .white ? whitePieces : blackPieces
     private(set) lazy var opponentPieces    = nextMove == .white ? blackPieces.all : whitePieces.all
-    private(set) lazy var whereCanMoveBoard = nextMove == .white ? ~whitePieces.all : ~blackPieces.all
+    private(set) lazy var emptyOrOpponent   = nextMove == .white ? ~whitePieces.all : ~blackPieces.all
     private(set) lazy var opponentColor     = nextMove == .white ? Piece.Color.black : Piece.Color.white
-    private(set) lazy var kingBoard         = nextMove == .white ? whitePieces.king : blackPieces.king
+    private(set) lazy var kingBoard         = piecesToMove.king
     private(set) lazy var kingIndex         = BitBoard.Index(rawValue: kingBoard.trailingZeroBitCount)!  //TODO PERFORMANCE: Int??
     
     public init(

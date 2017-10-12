@@ -24,8 +24,8 @@ public extension BitBoard {
         if dy < 0 { board >>= (-dy) * 8 }
         
         //left / right
-        for _ in 0 ..< dx { board = board.oneEast }
-        for _ in 0 ..< -dx { board = board.oneWest }
+        if dx > 0 { for _ in 0 ..< dx { board = board.oneEast }}
+        if dx < 0 { for _ in 0 ..< -dx { board = board.oneWest }}
 
         return board
     }
