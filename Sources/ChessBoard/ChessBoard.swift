@@ -84,7 +84,7 @@ public class Pieces {
 
 /**
  Chessboard representation
- TODO PERFORMANCE: class??
+ TODO PERFORMANCE: class?? final??
  */
 public class ChessBoard {
     
@@ -107,6 +107,12 @@ public class ChessBoard {
     private(set) lazy var opponentColor     = nextMove == .white ? Piece.Color.black : Piece.Color.white
     private(set) lazy var kingBoard         = piecesToMove.king
     private(set) lazy var kingIndex         = BitBoard.Index(rawValue: kingBoard.trailingZeroBitCount)!  //TODO PERFORMANCE: Int??
+
+    static let moveGenerators: [MoveGenerator] = [
+        MoveGeneratorPawn(),
+        MoveGeneratorKing(),
+        MoveGeneratorKnight()
+    ]
     
     public init(
         nextMove: Piece.Color = .white,
@@ -126,6 +132,20 @@ public class ChessBoard {
         self.enPassantTarget =          enPassantTarget
         self.halfMoveClock =            halfMoveClock
         self.fullMoveNumber =           fullMoveNumber
+    }
+    
+    func isBitmaskUnderAttack(color: Piece.Color, board: BitBoard) -> Bool {
+        //TODO PERFORMANCE: order of moveGenerators
+        //TODO PERFORMANCE: lazy var instead of loop? how many times this is called?
+        //TODO PERFORMANCE: is this used only for castling?
+        
+        for moveGenerator in ChessBoard.moveGenerators {
+            if (moveGenerator.attacks(board: self, color: color) & board) != 0 {
+                return true
+            }
+        }
+        
+        return false
     }
     
     /**

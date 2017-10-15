@@ -80,5 +80,9 @@ class ChessBoardStringConversionsTests: XCTestCase {
         XCTAssertNil(ChessBoard(fenString: "rnbqkbCr/pppppppp/9/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"))
         XCTAssertNil(ChessBoard(fenString: "7B/6B1/5B2/4B3/3B4/2B5/1B6 w - - 0 1"))
         XCTAssertNil(ChessBoard(fenString: "w"))
+        
+
+        //test castling error correction
+        XCTAssertEqual(ChessBoard(fenString: "1n6/8/4n3/8/5n2/1n1n4/3K4/8 w KQkq - 0 1")!.fenString, "1n6/8/4n3/8/5n2/1n1n4/3K4/8 w - - 0 1")
     }
 }

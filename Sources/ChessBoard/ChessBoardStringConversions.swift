@@ -206,7 +206,12 @@ extension ChessBoard: CustomStringConvertible {
                 }
             }
         }
-        
+        //castling correction
+        whiteKingCastling  =  whiteKingCastling && ((whitePieces.king & .e1) != .empty) && ((whitePieces.rook & .h1) != .empty)
+        whiteQueenCastling =  whiteQueenCastling && ((whitePieces.king & .e1) != .empty) && ((whitePieces.rook & .a1) != .empty)
+        blackKingCastling  =  blackKingCastling && ((blackPieces.king & .e8) != .empty) && ((blackPieces.rook & .h8) != .empty)
+        blackQueenCastling =  blackQueenCastling && ((blackPieces.king & .e8) != .empty) && ((blackPieces.rook & .a8) != .empty)
+
         // 4) enPassantTarget
         let enPassantTargetString = sections.removeFirst()
         var enPassantTarget: BitBoard.Index?

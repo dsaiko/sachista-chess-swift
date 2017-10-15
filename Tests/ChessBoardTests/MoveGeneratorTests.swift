@@ -1,0 +1,74 @@
+//  Created by Dusan Saiko (dusan@saiko.cz)
+//  Licensed under https://opensource.org/licenses/MIT
+
+import XCTest
+@testable import ChessBoard
+
+class MoveGeneratorTests: XCTestCase {
+    
+    func boardFrom(file: String) -> ChessBoard {
+        let filePath = URL(fileURLWithPath: #file).deletingLastPathComponent().appendingPathComponent("\(BitBoardTests.resourceFolder)/\(file).txt", isDirectory: false)
+        var body = (try! String(contentsOf: filePath))
+        body = body
+            .replacingOccurrences(of: "[abcdefgh12345678]", with: "", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .components(separatedBy: .whitespaces).joined()
+            .replacingOccurrences(of: "-", with: "1")
+            .components(separatedBy: .newlines).joined(separator: "/")
+        
+        return ChessBoard(fenString: "\(body) w KQkq -")!
+    }
+    
+    func numberOfMoves(file: String) -> Int {
+        let board = boardFrom(file: file)
+        return numberOfMoves(fen: board.fenString)
+    }
+    
+    func numberOfMoves(fen: String) -> Int {
+        let board = ChessBoard(fenString: fen)!
+
+        var count = 0
+        for moveGenerator in ChessBoard.moveGenerators {
+            count += moveGenerator.moves(board: board).count
+        }
+        
+        return count
+    }
+    
+    func testPawns() {
+        XCTAssertEqual(2, numberOfMoves(file: "moves-pawn-01"))
+        XCTAssertEqual(0, numberOfMoves(file: "moves-pawn-02"))
+        XCTAssertEqual(3, numberOfMoves(file: "moves-pawn-03"))
+        XCTAssertEqual(4, numberOfMoves(file: "moves-pawn-04"))
+        XCTAssertEqual(2, numberOfMoves(file: "moves-pawn-05"))
+        XCTAssertEqual(12, numberOfMoves(file: "moves-pawn-06"))
+
+        XCTAssertEqual(2, numberOfMoves(fen: "111n1n111/11111111/11n11pP1/11111111/11111111/11n1n1n1/11111111/11111111 w KQkq f7 0 1"))
+    }
+    
+    func testKing() {
+        //TODO: legalMoves
+        XCTAssertEqual(8,   numberOfMoves(file: "moves-king-01"))
+//        XCTAssertEqual(26,  numberOfMoves(file: "moves-king-02"))
+//        XCTAssertEqual(24,  numberOfMoves(file: "moves-king-03"))
+//        XCTAssertEqual(4,   numberOfLegalMoves(file: "moves-king-04"))
+//        XCTAssertEqual(19,  numberOfMoves(file: "moves-king-05"))
+//        XCTAssertEqual(1,   numberOfLegalMoves(file: "moves-king-06"))
+//        XCTAssertEqual(0,   numberOfLegalMoves(file: "moves-king-07"))
+//        XCTAssertEqual(18,  numberOfMoves(file: "moves-king-08"))
+//        XCTAssertEqual(20,  numberOfMoves(file: "moves-king-09"))
+//        XCTAssertEqual(19,  numberOfMoves(file: "moves-king-10"))
+//        XCTAssertEqual(14,  numberOfMoves(file: "moves-king-11"))
+//        XCTAssertEqual(15,  numberOfMoves(file: "moves-king-12"))
+//        XCTAssertEqual(1,   numberOfLegalMoves(file: "moves-king-13"))
+    }
+    
+    func testKnight() {
+        XCTAssertEqual(6,   numberOfMoves(file:         "moves-knight-01"))
+        XCTAssertEqual(14,  numberOfMoves(file:         "moves-knight-02"))
+        XCTAssertEqual(23,  numberOfMoves(file:         "moves-knight-03"))
+        //XCTAssertEqual(1,   numberOfLegalMoves(file: "moves-knight-04"))
+        //XCTAssertEqual(3,   numberOfLegalMoves(file: "moves-knight-05"))
+    }
+}
+

@@ -35,3 +35,4 @@ protocol MoveGenerator {
     func moves(board: ChessBoard) -> [Move]
 }
 
+
