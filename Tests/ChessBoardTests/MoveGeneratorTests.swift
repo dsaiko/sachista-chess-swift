@@ -70,5 +70,16 @@ class MoveGeneratorTests: XCTestCase {
         //XCTAssertEqual(1,   numberOfLegalMoves(file: "moves-knight-04"))
         //XCTAssertEqual(3,   numberOfLegalMoves(file: "moves-knight-05"))
     }
+    
+    func testRook() {
+        XCTAssertEqual(14,  numberOfMoves(file:         "moves-rook-01"))
+        XCTAssertEqual(2,   numberOfMoves(file:         "moves-rook-02"))
+        XCTAssertEqual(8,   numberOfMoves(file:         "moves-rook-03"))
+        XCTAssertEqual(12,  numberOfMoves(file:         "moves-rook-04"))
+        XCTAssertEqual(17,  numberOfMoves(file:         "moves-rook-05"))
+        XCTAssertEqual(3,   numberOfMoves(file:         "moves-rook-06"))
+        XCTAssertEqual(5,   numberOfMoves(file:         "moves-rook-07"))
+        XCTAssertEqual(13,  numberOfMoves(file:         "moves-rook-08"))
+    }
 }
 

@@ -111,7 +111,8 @@ public class ChessBoard {
     static let moveGenerators: [MoveGenerator] = [
         MoveGeneratorPawn(),
         MoveGeneratorKing(),
-        MoveGeneratorKnight()
+        MoveGeneratorKnight(),
+        MoveGeneratorRook()
     ]
     
     public init(

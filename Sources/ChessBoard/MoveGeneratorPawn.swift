@@ -6,34 +6,30 @@ import Foundation
 public class MoveGeneratorPawn: MoveGenerator {
     
     //TODO: struct?
-    private class Cache {
-
-        //TODO: struct?
-        class PregeneratedInfo {
-            var moves          = [BitBoard](repeating: .empty, count: 64)
-            var doubleMoves    = [BitBoard](repeating: .empty, count: 64)
-            var attacks        = [BitBoard](repeating: .empty, count: 64)
-            
-            init(color: Piece.Color) {
-                for i in 0 ..< 64 {
-                    let piece = BitBoard.Index(rawValue: i)!.bitBoard
-                    
-                    if color == .white {
-                        moves[i]        = piece.shift(dx: 0, dy: 1)
-                        doubleMoves[i]  = piece.shift(dx: 0, dy: 2)
-                        attacks[i]      = piece.shift(dx: 1, dy: 1) | piece.shift(dx: -1, dy: 1)
-                    } else {
-                        moves[i]        = piece.shift(dx: 0, dy: -1)
-                        doubleMoves[i]  = piece.shift(dx: 0, dy: -2)
-                        attacks[i]      = piece.shift(dx: 1, dy: -1) | piece.shift(dx: -1, dy: -1)
-                    }
+    class CachedMoves {
+        var moves          = [BitBoard](repeating: .empty, count: 64)
+        var doubleMoves    = [BitBoard](repeating: .empty, count: 64)
+        var attacks        = [BitBoard](repeating: .empty, count: 64)
+        
+        init(color: Piece.Color) {
+            for i in 0 ..< 64 {
+                let piece = BitBoard.Index(rawValue: i)!.bitBoard
+                
+                if color == .white {
+                    moves[i]        = piece.shift(dx: 0, dy: 1)
+                    doubleMoves[i]  = piece.shift(dx: 0, dy: 2)
+                    attacks[i]      = piece.shift(dx: 1, dy: 1) | piece.shift(dx: -1, dy: 1)
+                } else {
+                    moves[i]        = piece.shift(dx: 0, dy: -1)
+                    doubleMoves[i]  = piece.shift(dx: 0, dy: -2)
+                    attacks[i]      = piece.shift(dx: 1, dy: -1) | piece.shift(dx: -1, dy: -1)
                 }
             }
         }
-        
-        static let white = PregeneratedInfo(color: .white)
-        static let black = PregeneratedInfo(color: .black)
     }
+        
+    let cachedMovesWhite = CachedMoves(color: .white)
+    let cachedMovesBlack = CachedMoves(color: .black)
     
     func attacks(board: ChessBoard, color: Piece.Color) -> BitBoard {
         //TODO PERFORMANCE: pregenerated??
@@ -41,7 +37,7 @@ public class MoveGeneratorPawn: MoveGenerator {
     }
     
     func moves(board: ChessBoard) -> [Move] {
-        let cache   = board.nextMove == .white ? Cache.white : Cache.black
+        let cache   = board.nextMove == .white ? cachedMovesWhite : cachedMovesBlack
         var pieces  = board.piecesToMove.pawn
         let piece   = board.nextMove == .white ? Piece.whitePawn : Piece.blackPawn
         var result  = [Move]()
