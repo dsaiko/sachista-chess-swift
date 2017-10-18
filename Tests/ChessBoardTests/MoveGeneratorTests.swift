@@ -45,21 +45,21 @@ class MoveGeneratorTests: XCTestCase {
 
         XCTAssertEqual(2, numberOfMoves(fen: "111n1n111/11111111/11n11pP1/11111111/11111111/11n1n1n1/11111111/11111111 w KQkq f7 0 1"))
     }
-    
+
     func testKing() {
         //TODO: legalMoves
         XCTAssertEqual(8,   numberOfMoves(file: "moves-king-01"))
-//        XCTAssertEqual(26,  numberOfMoves(file: "moves-king-02"))
-//        XCTAssertEqual(24,  numberOfMoves(file: "moves-king-03"))
+        XCTAssertEqual(26,  numberOfMoves(file: "moves-king-02"))
+        XCTAssertEqual(24,  numberOfMoves(file: "moves-king-03"))
 //        XCTAssertEqual(4,   numberOfLegalMoves(file: "moves-king-04"))
-//        XCTAssertEqual(19,  numberOfMoves(file: "moves-king-05"))
+        XCTAssertEqual(19,  numberOfMoves(file: "moves-king-05"))
 //        XCTAssertEqual(1,   numberOfLegalMoves(file: "moves-king-06"))
 //        XCTAssertEqual(0,   numberOfLegalMoves(file: "moves-king-07"))
-//        XCTAssertEqual(18,  numberOfMoves(file: "moves-king-08"))
-//        XCTAssertEqual(20,  numberOfMoves(file: "moves-king-09"))
-//        XCTAssertEqual(19,  numberOfMoves(file: "moves-king-10"))
-//        XCTAssertEqual(14,  numberOfMoves(file: "moves-king-11"))
-//        XCTAssertEqual(15,  numberOfMoves(file: "moves-king-12"))
+        XCTAssertEqual(18,  numberOfMoves(file: "moves-king-08"))
+        XCTAssertEqual(20,  numberOfMoves(file: "moves-king-09"))
+        XCTAssertEqual(19,  numberOfMoves(file: "moves-king-10"))
+        XCTAssertEqual(14,  numberOfMoves(file: "moves-king-11"))
+        XCTAssertEqual(15,  numberOfMoves(file: "moves-king-12"))
 //        XCTAssertEqual(1,   numberOfLegalMoves(file: "moves-king-13"))
     }
     
@@ -80,6 +80,17 @@ class MoveGeneratorTests: XCTestCase {
         XCTAssertEqual(3,   numberOfMoves(file:         "moves-rook-06"))
         XCTAssertEqual(5,   numberOfMoves(file:         "moves-rook-07"))
         XCTAssertEqual(13,  numberOfMoves(file:         "moves-rook-08"))
+    }
+    
+    func testBishop() {
+        XCTAssertEqual(7,   numberOfMoves(file:         "moves-bishop-01"))
+        XCTAssertEqual(13,  numberOfMoves(file:         "moves-bishop-02"))
+        XCTAssertEqual(4,   numberOfMoves(file:         "moves-bishop-03"))
+        XCTAssertEqual(4,   numberOfMoves(file:         "moves-bishop-04"))
+        XCTAssertEqual(17,  numberOfMoves(file:         "moves-bishop-05"))
+        XCTAssertEqual(7,   numberOfMoves(file:         "moves-bishop-06"))
+        XCTAssertEqual(10,  numberOfMoves(file:         "moves-bishop-07"))
+
     }
 }
 

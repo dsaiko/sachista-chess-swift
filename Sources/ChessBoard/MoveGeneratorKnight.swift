@@ -26,14 +26,14 @@ public class MoveGeneratorKnight: MoveGenerator {
     }
     
     func attacks(board: ChessBoard, color: Piece.Color) -> BitBoard {
-        var pieces = board.piecesToMove.knight
+        var pieces = color == .white ? board.whitePieces.knight : board.blackPieces.knight
         if pieces == .empty {
             return .empty
         }
-        
+
         var attacks: BitBoard = .empty
         while pieces != .empty {
-            attacks = cachedMoves[pieces.bitPop().rawValue]
+            attacks |= cachedMoves[pieces.bitPop().rawValue]
         }
         
         return attacks

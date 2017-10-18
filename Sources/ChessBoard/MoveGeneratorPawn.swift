@@ -7,11 +7,15 @@ public class MoveGeneratorPawn: MoveGenerator {
     
     //TODO: struct?
     class CachedMoves {
-        var moves          = [BitBoard](repeating: .empty, count: 64)
-        var doubleMoves    = [BitBoard](repeating: .empty, count: 64)
-        var attacks        = [BitBoard](repeating: .empty, count: 64)
+        let moves          : [BitBoard]
+        let doubleMoves    : [BitBoard]
+        let attacks        : [BitBoard]
         
         init(color: Piece.Color) {
+            var moves          = [BitBoard](repeating: .empty, count: 64)
+            var doubleMoves    = [BitBoard](repeating: .empty, count: 64)
+            var attacks        = [BitBoard](repeating: .empty, count: 64)
+
             for i in 0 ..< 64 {
                 let piece = BitBoard.Index(rawValue: i)!.bitBoard
                 
@@ -25,6 +29,10 @@ public class MoveGeneratorPawn: MoveGenerator {
                     attacks[i]      = piece.shift(dx: 1, dy: -1) | piece.shift(dx: -1, dy: -1)
                 }
             }
+            
+            self.moves = moves
+            self.doubleMoves = doubleMoves
+            self.attacks = attacks
         }
     }
         

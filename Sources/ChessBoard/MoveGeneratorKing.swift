@@ -37,7 +37,7 @@ public class MoveGeneratorKing: MoveGenerator {
     }
 
     func attacks(board: ChessBoard, color: Piece.Color) -> BitBoard {
-        let king = board.piecesToMove.king
+        let king = color == .white ? board.whitePieces.king : board.blackPieces.king
         if king == .empty {
             return .empty
         }

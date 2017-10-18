@@ -5,14 +5,21 @@ import Foundation
 
 public class MoveGeneratorRook: MoveGenerator {
     
-    var rankShift = [Int](repeating: 0, count: 64)
-    var rankMask  = [BitBoard](repeating: 0, count: 64)
-    var fileMask  = [BitBoard](repeating: 0, count: 64)
-    var fileMagic = [BitBoard](repeating: 0, count: 64)
-    var rankMoves = [[BitBoard]](repeating: [BitBoard](repeating: .empty, count: 64), count: 64)
-    var fileMoves = [[BitBoard]](repeating: [BitBoard](repeating: .empty, count: 64), count: 64)
+    var rankShift: [Int]
+    var rankMask:  [BitBoard]
+    var fileMask:  [BitBoard]
+    var fileMagic: [BitBoard]
+    var rankMoves: [[BitBoard]]
+    var fileMoves: [[BitBoard]]
 
     init() {
+        var rankShift = [Int](repeating: 0, count: 64)
+        var rankMask  = [BitBoard](repeating: 0, count: 64)
+        var fileMask  = [BitBoard](repeating: 0, count: 64)
+        var fileMagic = [BitBoard](repeating: 0, count: 64)
+        var rankMoves = [[BitBoard]](repeating: [BitBoard](repeating: .empty, count: 64), count: 64)
+        var fileMoves = [[BitBoard]](repeating: [BitBoard](repeating: .empty, count: 64), count: 64)
+        
         let MAGIC_FILE: [BitBoard] = [
             0x8040201008040200,
             0x4020100804020100,
@@ -139,6 +146,13 @@ public class MoveGeneratorRook: MoveGenerator {
                 fileMoves[i][n] = moves
             }
         }
+        
+        self.rankShift = rankShift
+        self.rankMask = rankMask
+        self.fileMask = fileMask
+        self.fileMagic = fileMagic
+        self.rankMoves = rankMoves
+        self.fileMoves = fileMoves
     }
 
     //TODO PERFORMANCE: try experimenting with inline?
@@ -152,7 +166,7 @@ public class MoveGeneratorRook: MoveGenerator {
     }
     
     func attacks(board: ChessBoard, color: Piece.Color) -> BitBoard {
-        var pieces = board.piecesToMove.rook | board.piecesToMove.queen
+        var pieces = color == .white ? (board.whitePieces.rook | board.whitePieces.queen) : (board.blackPieces.rook | board.blackPieces.queen)
         var attacks: BitBoard = .empty
         
         //for all rooks
@@ -169,7 +183,7 @@ public class MoveGeneratorRook: MoveGenerator {
         for (piece, var pieces) in [
             (board.nextMove == .white ? Piece.whiteRook : Piece.blackRook, board.piecesToMove.rook),
             (board.nextMove == .white ? Piece.whiteQueen : Piece.blackQueen, board.piecesToMove.queen)
-            ] {
+        ] {
 
             //for all rooks
             while pieces != .empty {

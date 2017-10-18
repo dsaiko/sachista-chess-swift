@@ -112,7 +112,8 @@ public class ChessBoard {
         MoveGeneratorPawn(),
         MoveGeneratorKing(),
         MoveGeneratorKnight(),
-        MoveGeneratorRook()
+        MoveGeneratorRook(),
+        MoveGeneratorBishop()
     ]
     
     public init(
