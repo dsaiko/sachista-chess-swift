@@ -46,7 +46,7 @@ class ZobristChecksum {
     static let rndCastlingBlackKing     = ZobristChecksum.rnd.rand64()
     static let rndCastlingBlackQueen    = ZobristChecksum.rnd.rand64()
     static let rndEnPassantFile         = ZobristChecksum.rndArray(size: 8)
-    static let rndPieces                = ZobristChecksum.rndArray2D(size1: 12, size2: 64)
+    static let rndPieces                = ZobristChecksum.rndArray2D(size1: Piece.chessSet.count, size2: 64)
 
     static func compute(board: ChessBoard) -> UInt64 {
         var checksum: UInt64 = 0
@@ -94,7 +94,7 @@ class ZobristChecksum {
 
         ] {
             while (bitboard != 0) {
-                checksum ^= rndPieces[piece.zobristNumericIndex][bitboard.bitPop().rawValue]
+                checksum ^= rndPieces[piece.rawValue][bitboard.bitPop().rawValue]
             }
         }
 
@@ -118,23 +118,3 @@ class ZobristChecksum {
     }
 }
 
-extension Piece {
-    
-    public var zobristNumericIndex: Int {
-        switch self {
-        case .whiteKing:    return 0
-        case .whiteQueen:   return 1
-        case .whiteRook:    return 2
-        case .whiteBishop:  return 3
-        case .whiteKnight:  return 4
-        case .whitePawn:    return 5
-        case .blackKing:    return 6
-        case .blackQueen:   return 7
-        case .blackRook:    return 8
-        case .blackBishop:  return 9
-        case .blackKnight:  return 10
-        case .blackPawn:    return 11
-        }
-    }
-    
-}

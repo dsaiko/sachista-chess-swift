@@ -35,7 +35,7 @@ extension ChessBoard: CustomStringConvertible {
             let c: String? = {
                 for (piece, board) in mirroredPieces {
                     if (board & test) != 0 {
-                        return piece.rawValue
+                        return piece.description
                     }
                 }
                 return nil
@@ -86,7 +86,7 @@ extension ChessBoard: CustomStringConvertible {
             let c: String? = {
                 for (piece, board) in mirroredPieces {
                     if (board & test) != 0 {
-                        return piece.rawValue
+                        return piece.description
                     }
                 }
                 return nil
@@ -101,10 +101,10 @@ extension ChessBoard: CustomStringConvertible {
 
         // 3) output castling
         var castling = ""
-        castling += whiteCastlingOptions.isKingSideCastlingAvailable ? Piece.whiteKing.rawValue : ""
-        castling += whiteCastlingOptions.isQueenSideCastlingAvailable ? Piece.whiteQueen.rawValue : ""
-        castling += blackCastlingOptions.isKingSideCastlingAvailable ? Piece.blackKing.rawValue : ""
-        castling += blackCastlingOptions.isQueenSideCastlingAvailable ? Piece.blackQueen.rawValue : ""
+        castling += whiteCastlingOptions.isKingSideCastlingAvailable ? Piece.whiteKing.description : ""
+        castling += whiteCastlingOptions.isQueenSideCastlingAvailable ? Piece.whiteQueen.description : ""
+        castling += blackCastlingOptions.isKingSideCastlingAvailable ? Piece.blackKing.description : ""
+        castling += blackCastlingOptions.isQueenSideCastlingAvailable ? Piece.blackQueen.description : ""
 
         result += castling.isEmpty ? "-" : castling
 
@@ -149,7 +149,7 @@ extension ChessBoard: CustomStringConvertible {
                 } else {
                     return nil
                 }
-            } else if let piece = Piece(rawValue: String(c))  {
+            } else if let piece = Piece(description: String(c))  {
                 for piece in pieces.keys {
                     pieces[piece]! <<= 1
                 }
@@ -193,13 +193,13 @@ extension ChessBoard: CustomStringConvertible {
         if castling != "-" {
             for c in castling {
                 switch String(c) {
-                case Piece.whiteKing.rawValue:
+                case Piece.whiteKing.description:
                     whiteKingCastling = true
-                case Piece.whiteQueen.rawValue:
+                case Piece.whiteQueen.description:
                     whiteQueenCastling = true
-                case Piece.blackKing.rawValue:
+                case Piece.blackKing.description:
                     blackKingCastling = true
-                case Piece.blackQueen.rawValue:
+                case Piece.blackQueen.description:
                     blackQueenCastling = true
                 default:
                     return nil

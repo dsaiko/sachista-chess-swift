@@ -18,6 +18,7 @@ public class MoveGeneratorKing: MoveGenerator {
     let BLACK_OOO_ATTACKS:   BitBoard = .c8 | .d8 | .e8
     
     init() {
+        //TODO: magic constant 64
         var moves = [BitBoard](repeating: .empty, count: 64)
         
         for i in 0 ..< 64 {

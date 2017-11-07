@@ -31,11 +31,11 @@ class ChessBoardStringConversionsTests: XCTestCase {
         
         for p in whitePieces {
             XCTAssertEqual(p.color, .white)
-            XCTAssertEqual(p.rawValue, p.rawValue.uppercased())
+            XCTAssertEqual(p.description, p.description.uppercased())
         }
         for p in blackPieces {
             XCTAssertEqual(p.color, .black)
-            XCTAssertEqual(p.rawValue, p.rawValue.lowercased())
+            XCTAssertEqual(p.description, p.description.lowercased())
         }
     }
 

@@ -8,7 +8,7 @@ import Foundation
      Enum of string values 'KQRBNP' respective 'kqrbnp'.
      Can return piece color.
  */
-public enum Piece: String, CustomStringConvertible {
+public enum Piece: Int, CustomStringConvertible {
     /**
      Representation of chess piece color.
      String enum with 'w' and 'b' values.
@@ -18,20 +18,28 @@ public enum Piece: String, CustomStringConvertible {
         case black = "b"
     }
     
-    case whiteKing      = "K"
-    case whiteQueen     = "Q"
-    case whiteRook      = "R"
-    case whiteBishop    = "B"
-    case whiteKnight    = "N"
-    case whitePawn      = "P"
+    case whiteKing      = 0
+    case whiteQueen
+    case whiteRook
+    case whiteBishop
+    case whiteKnight
+    case whitePawn
 
-    case blackKing      = "k"
-    case blackQueen     = "q"
-    case blackRook      = "r"
-    case blackBishop    = "b"
-    case blackKnight    = "n"
-    case blackPawn      = "p"
+    case blackKing
+    case blackQueen
+    case blackRook
+    case blackBishop
+    case blackKnight
+    case blackPawn      
 
+    init?(description: String) {
+        if let piece = Piece.chessSet.first(where: {$0.description == description }) {
+            self = piece
+        } else {
+            return nil
+        }
+    }
+    
     public var color: Color {
         switch self {
         case .whiteKing, .whiteQueen, .whiteRook, .whiteBishop, .whiteKnight, .whitePawn:
@@ -42,8 +50,36 @@ public enum Piece: String, CustomStringConvertible {
     }
     
     public var description: String {
-        return rawValue
+        switch self {
+            case .whiteKing:    return "K"
+            case .whiteQueen:   return "Q"
+            case .whiteBishop:  return "B"
+            case .whiteKnight:  return "N"
+            case .whiteRook:    return "R"
+            case .whitePawn:    return "P"
+            case .blackKing:    return "k"
+            case .blackQueen:   return "q"
+            case .blackBishop:  return "b"
+            case .blackKnight:  return "n"
+            case .blackRook:    return "r"
+            case .blackPawn:    return "p"
+        }
     }
+    
+    public static var chessSet: [Piece] = {
+        return [ .whiteKing,
+                 .whiteQueen,
+                 .whiteBishop,
+                 .whiteKnight,
+                 .whiteRook,
+                 .whitePawn,
+                 .blackKing,
+                 .blackQueen,
+                 .blackBishop,
+                 .blackKnight,
+                 .blackRook,
+                 .blackPawn]
+    }()
 }
 
 /**

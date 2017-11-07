@@ -111,7 +111,7 @@ extension ChessBoard {
             case .blackPawn:     blackPawn          ^= sourceBitBoard | targetBitBoard
         }
         
-        zobristChecksum ^= ZobristChecksum.rndPieces[move.piece.zobristNumericIndex][sourceIndex.rawValue] ^ ZobristChecksum.rndPieces[move.piece.zobristNumericIndex][targetIndex.rawValue]
+        zobristChecksum ^= ZobristChecksum.rndPieces[move.piece.rawValue][sourceIndex.rawValue] ^ ZobristChecksum.rndPieces[move.piece.rawValue][targetIndex.rawValue]
 
 //        if(piece ==  Rook) {
 //            if(board.castling[board.nextMove]) {
