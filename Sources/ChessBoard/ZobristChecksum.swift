@@ -46,8 +46,7 @@ class ZobristChecksum {
     static let rndCastlingBlackKing     = ZobristChecksum.rnd.rand64()
     static let rndCastlingBlackQueen    = ZobristChecksum.rnd.rand64()
     static let rndEnPassantFile         = ZobristChecksum.rndArray(size: 8)
-    static let rndWhitePieces           = ZobristChecksum.rndArray2D(size1: 6, size2: 64)
-    static let rndBlackPieces           = ZobristChecksum.rndArray2D(size1: 6, size2: 64)
+    static let rndPieces                = ZobristChecksum.rndArray2D(size1: 12, size2: 64)
 
     static func compute(board: ChessBoard) -> UInt64 {
         var checksum: UInt64 = 0
@@ -77,19 +76,25 @@ class ZobristChecksum {
             checksum ^= rndEnPassantFile[file]
         }
         
-        //white pieces
-        var set = board.whitePieces
-        for (index, var pieces) in [0: set.king, 1: set.queen, 2: set.bishop, 3: set.knight, 4: set.rook, 5: set.pawn] {
-            while (pieces != 0) {
-                checksum ^= rndWhitePieces[index][pieces.bitPop().rawValue]
-            }
-        }
+        //pieces
+        for (piece, var bitboard) in [
+            Piece.whiteKing:        board.whitePieces.king,
+            Piece.whiteQueen:       board.whitePieces.queen,
+            Piece.whiteBishop:      board.whitePieces.bishop,
+            Piece.whiteKnight:      board.whitePieces.knight,
+            Piece.whiteRook:        board.whitePieces.rook,
+            Piece.whitePawn:        board.whitePieces.pawn,
 
-        //black pieces
-        set = board.blackPieces
-        for (index, var pieces) in [0: set.king, 1: set.queen, 2: set.bishop, 3: set.knight, 4: set.rook, 5: set.pawn] {
-            while (pieces != 0) {
-                checksum ^= rndBlackPieces[index][pieces.bitPop().rawValue]
+            Piece.blackKing:        board.blackPieces.king,
+            Piece.blackQueen:       board.blackPieces.queen,
+            Piece.blackBishop:      board.blackPieces.bishop,
+            Piece.blackKnight:      board.blackPieces.knight,
+            Piece.blackRook:        board.blackPieces.rook,
+            Piece.blackPawn:        board.blackPieces.pawn,
+
+        ] {
+            while (bitboard != 0) {
+                checksum ^= rndPieces[piece.zobristNumericIndex][bitboard.bitPop().rawValue]
             }
         }
 
@@ -113,3 +118,23 @@ class ZobristChecksum {
     }
 }
 
+extension Piece {
+    
+    public var zobristNumericIndex: Int {
+        switch self {
+        case .whiteKing:    return 0
+        case .whiteQueen:   return 1
+        case .whiteRook:    return 2
+        case .whiteBishop:  return 3
+        case .whiteKnight:  return 4
+        case .whitePawn:    return 5
+        case .blackKing:    return 6
+        case .blackQueen:   return 7
+        case .blackRook:    return 8
+        case .blackBishop:  return 9
+        case .blackKnight:  return 10
+        case .blackPawn:    return 11
+        }
+    }
+    
+}

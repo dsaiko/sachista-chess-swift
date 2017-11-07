@@ -124,8 +124,9 @@ public class ChessBoard {
         blackCastlingOptions: CastlingOptions = CastlingOptions(),
         enPassantTarget: BitBoard.Index? = nil,
         halfMoveClock: Int = 0,
-        fullMoveNumber: Int = 1)
-    {
+        fullMoveNumber: Int = 1,
+        zobristChecksum: UInt64? = nil
+    ) {
         self.nextMove =                 nextMove
         self.whitePieces =              whitePieces
         self.blackPieces =              blackPieces
@@ -134,6 +135,10 @@ public class ChessBoard {
         self.enPassantTarget =          enPassantTarget
         self.halfMoveClock =            halfMoveClock
         self.fullMoveNumber =           fullMoveNumber
+        
+        if let zobristChecksum = zobristChecksum {
+            self.zobristChecksum = zobristChecksum
+        }
     }
     
     func isBitmaskUnderAttack(color: Piece.Color, board: BitBoard) -> Bool {

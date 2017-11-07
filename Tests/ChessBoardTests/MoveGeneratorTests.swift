@@ -35,6 +35,30 @@ class MoveGeneratorTests: XCTestCase {
         return count
     }
     
+//    func numberOfLegalMoves(fen: String) -> Int {
+//        void testLegalMoves(const int expectedCount, const ChessBoard &board)
+//        {
+//            uint64_t count = board.perft(1);
+//            if((int)count != expectedCount) {
+//                std::cout << "---------- BOARD:" << std::endl << board.toString() << std::endl;
+//
+//                MoveArray moves;
+//                MoveGenerator::moves(board, ChessBoardStats(board), moves);
+//                for(int i=0; i<moves.size(); i++) {
+//                    Move &m = moves.data[i];
+//
+//                    ChessBoard b = board;
+//                    m.applyTo(b);
+//                    if(MoveGenerator::isOpponentsKingNotUnderCheck(b, ChessBoardStats(b))) {
+//                        std::cout << "---------- VALID MOVE:" << std::endl << b.toString() << std::endl;
+//                    }
+//                }
+//
+//                LONGS_EQUAL(expectedCount, count);
+//            }
+//        }
+//    }
+    
     func testPawns() {
         XCTAssertEqual(2, numberOfMoves(file: "moves-pawn-01"))
         XCTAssertEqual(0, numberOfMoves(file: "moves-pawn-02"))
