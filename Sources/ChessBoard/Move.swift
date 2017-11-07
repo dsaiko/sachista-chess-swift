@@ -48,7 +48,7 @@ extension ChessBoard {
         let sourceBitBoard = sourceIndex.bitBoard
         let targetBitBoard = targetIndex.bitBoard
 
-        let halfMoveClock = self.halfMoveClock + 1
+        var halfMoveClock = self.halfMoveClock + 1
         var zobristChecksum = self.zobristChecksum
         var enPassantTarget = self.enPassantTarget
 
@@ -81,6 +81,7 @@ extension ChessBoard {
         }
 
         //remove castling options, will set them at the end
+        //TODO: move inline? + castling
         if isWhiteKingSideCastlingAvailable {
             zobristChecksum ^= ZobristChecksum.rndCastlingWhiteKing
         }
@@ -113,64 +114,98 @@ extension ChessBoard {
         
         zobristChecksum ^= ZobristChecksum.rndPieces[move.piece.rawValue][sourceIndex.rawValue] ^ ZobristChecksum.rndPieces[move.piece.rawValue][targetIndex.rawValue]
 
-//        if(piece ==  Rook) {
-//            if(board.castling[board.nextMove]) {
-//                if(sourceIndex == BoardIndex::A1 && board.nextMove == White)
-//                board.removeCastling(board.nextMove, QueenSide);
-//                if(sourceIndex == BoardIndex::H1 && board.nextMove == White)
-//                board.removeCastling(board.nextMove, KingSide);
-//                if(sourceIndex == BoardIndex::A8 && board.nextMove == Black)
-//                board.removeCastling(board.nextMove, QueenSide);
-//                if(sourceIndex == BoardIndex::H8 && board.nextMove == Black)
-//                board.removeCastling(board.nextMove, KingSide);
-//            }
-//        } else if(piece == King) {
-//            board.castling[board.nextMove] = None;
-//            if (sourceIndex == BoardIndex::E1 && board.nextMove == White) {
-//                //castling
-//                if (targetIndex == BoardIndex::C1) {
-//                    pieces[ Rook] ^= BitMask::A1 | BitMask::D1;
-//                    board.zobristKey ^= ChessBoard::zobrist.Z_PIECES[board.nextMove][ Rook][BoardIndex::A1] ^ ChessBoard::zobrist.Z_PIECES[board.nextMove][ Rook][BoardIndex::D1];
-//                } else if(targetIndex == BoardIndex::G1) {
-//                    pieces[ Rook] ^= BitMask::H1 | BitMask::F1;
-//                    board.zobristKey ^= ChessBoard::zobrist.Z_PIECES[board.nextMove][ Rook][BoardIndex::H1] ^ ChessBoard::zobrist.Z_PIECES[board.nextMove][ Rook][BoardIndex::F1];
-//                }
-//            }
-//            if (sourceIndex == BoardIndex::E8 && board.nextMove == Black) {
-//                //castling
-//                if (targetIndex == BoardIndex::C8) {
-//                    pieces[ Rook] ^= BitMask::A8 | BitMask::D8;
-//                    board.zobristKey ^= ChessBoard::zobrist.Z_PIECES[board.nextMove][ Rook][BoardIndex::A8] ^ ChessBoard::zobrist.Z_PIECES[board.nextMove][ Rook][BoardIndex::D8];
-//                } else if(targetIndex == BoardIndex::G8) {
-//                    pieces[ Rook] ^= BitMask::H8 | BitMask::F8;
-//                    board.zobristKey ^= ChessBoard::zobrist.Z_PIECES[board.nextMove][ Rook][BoardIndex::H8] ^ ChessBoard::zobrist.Z_PIECES[board.nextMove][ Rook][BoardIndex::F8];
-//                }
-//            }
-//        } else if(piece ==  Pawn) {
-//            board.halfMoveClock = 0;
-//
-//            int step = targetIndex - sourceIndex;
-//            if (abs(step) > 10) {
-//                board.enPassantTargetIndex = sourceIndex + (board.nextMove == White ? 8 : -8);
-//            } else if (promotionPiece != Piece::NoPiece) {
-//                pieces[Pawn] ^= target;
-//                board.zobristKey ^= ChessBoard::zobrist.Z_PIECES[board.nextMove][Pawn][targetIndex];
-//                if (promotionPiece == Queen) {
-//                    pieces[Queen] |= target;
-//                    board.zobristKey ^= ChessBoard::zobrist.Z_PIECES[board.nextMove][Queen][targetIndex];
-//                } else if (promotionPiece ==  Rook) {
-//                    pieces[Rook] |= target;
-//                    board.zobristKey ^= ChessBoard::zobrist.Z_PIECES[board.nextMove][Rook][targetIndex];
-//                } else if (promotionPiece ==  Bishop) {
-//                    pieces[Bishop] |= target;
-//                    board.zobristKey ^= ChessBoard::zobrist.Z_PIECES[board.nextMove][Bishop][targetIndex];
-//                } else if (promotionPiece ==  Knight) {
-//                    pieces[Knight] |= target;
-//                    board.zobristKey ^= ChessBoard::zobrist.Z_PIECES[board.nextMove][Knight][targetIndex];
-//                }
-//            }
-//        }
-//
+        if move.piece == .whiteRook {
+            if sourceIndex == .a1 {
+                isWhiteQueenSideCastlingAvailable = false
+            } else if sourceIndex == .h8 {
+                isWhiteKingSideCastlingAvailable = false
+            }
+        } else if move.piece == .blackRook {
+            if sourceIndex == .a8 {
+                isBlackQueenSideCastlingAvailable = false
+            } else if sourceIndex == .h8 {
+                isBlackKingSideCastlingAvailable = false
+            }
+        } else if move.piece == .whiteKing {
+            isWhiteQueenSideCastlingAvailable = false
+            isWhiteKingSideCastlingAvailable = false
+            
+            if sourceIndex == .e1 {
+                //handle castling
+                if targetIndex == .c1 {
+                    whiteRook ^= BitBoard.a1 | BitBoard.d1
+                    zobristChecksum ^= ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.a1.rawValue] ^ ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.d1.rawValue]
+                } else if targetIndex == .g1 {
+                    whiteRook ^= BitBoard.h1 | BitBoard.f1
+                    zobristChecksum ^= ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.h1.rawValue] ^ ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.f1.rawValue]
+                }
+            }
+        } else if move.piece == .blackKing {
+            isBlackQueenSideCastlingAvailable = false
+            isBlackKingSideCastlingAvailable = false
+            
+            if sourceIndex == .e8 {
+                //handle castling
+                if targetIndex == .c8 {
+                    whiteRook ^= BitBoard.a8 | BitBoard.d8
+                    zobristChecksum ^= ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.a8.rawValue] ^ ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.d8.rawValue]
+                } else if targetIndex == .g8 {
+                    whiteRook ^= BitBoard.h8 | BitBoard.f8
+                    zobristChecksum ^= ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.h8.rawValue] ^ ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.f8.rawValue]
+                }
+            }
+        } else if move.piece == .whitePawn {
+            halfMoveClock = 0
+
+            //initial pawn double move
+            if abs(targetIndex.rawValue - sourceIndex.rawValue) > 10 {
+                enPassantTarget = BitBoard.Index(rawValue: sourceIndex.rawValue + 8)!
+            } else if let promotionPiece = move.promotionPiece {
+                whitePawn ^= targetBitBoard //TODO: OR shoutld be same as XOR here
+                zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whitePawn.rawValue][targetIndex.rawValue]
+                
+                //TODO: SIMPLIFY!
+                if promotionPiece == .whiteQueen {
+                    whiteQueen |= targetBitBoard
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteQueen.rawValue][targetIndex.rawValue]
+                } else if promotionPiece == .whiteBishop {
+                    whiteBishop |= targetBitBoard
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteBishop.rawValue][targetIndex.rawValue]
+                } else if promotionPiece == .whiteKnight {
+                    whiteKnight |= targetBitBoard
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteKnight.rawValue][targetIndex.rawValue]
+                } else if promotionPiece == .whiteRook {
+                    whiteRook |= targetBitBoard
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteRook.rawValue][targetIndex.rawValue]
+                }
+            }
+        } else if move.piece == .blackPawn {
+            halfMoveClock = 0
+            
+            //initial pawn double move
+            if abs(targetIndex.rawValue - sourceIndex.rawValue) > 10 {
+                enPassantTarget = BitBoard.Index(rawValue: sourceIndex.rawValue + -8)!
+            } else if let promotionPiece = move.promotionPiece {
+                blackPawn ^= targetBitBoard //TODO: OR shoutld be same as XOR here
+                zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackPawn.rawValue][targetIndex.rawValue]
+                
+                //TODO: SIMPLIFY!
+                if promotionPiece == .blackQueen {
+                    blackQueen |= targetBitBoard
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackQueen.rawValue][targetIndex.rawValue]
+                } else if promotionPiece == .blackBishop {
+                    blackBishop |= targetBitBoard
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackBishop.rawValue][targetIndex.rawValue]
+                } else if promotionPiece == .blackKnight {
+                    blackKnight |= targetBitBoard
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackKnight.rawValue][targetIndex.rawValue]
+                } else if promotionPiece == .blackRook {
+                    blackRook |= targetBitBoard
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackRook.rawValue][targetIndex.rawValue]
+                }
+            }
+        }
+        
 //        //reset halfmoveClock if piece was captured
 //        if (isCapture) {
 //            board.halfMoveClock = 0;

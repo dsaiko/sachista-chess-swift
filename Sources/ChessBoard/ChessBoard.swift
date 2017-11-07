@@ -8,6 +8,7 @@ import Foundation
      Enum of string values 'KQRBNP' respective 'kqrbnp'.
      Can return piece color.
  */
+//TODO: try to make only 6 pieces set
 public enum Piece: Int, CustomStringConvertible {
     /**
      Representation of chess piece color.
@@ -98,6 +99,7 @@ public struct CastlingOptions {
 /**
      Chess set for one side.
  */
+//TODO: Piece vs Pieces? similar content
 public class Pieces {
     public let king:    BitBoard
     public let queen:   BitBoard
@@ -125,7 +127,7 @@ public class Pieces {
 public class ChessBoard {
     
     public let nextMove:                Piece.Color
-    public let whitePieces:             Pieces
+    public let whitePieces:             Pieces  //TODO: make pieces array?
     public let blackPieces:             Pieces
     public let whiteCastlingOptions:    CastlingOptions
     public let blackCastlingOptions:    CastlingOptions
