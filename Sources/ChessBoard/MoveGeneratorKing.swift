@@ -5,8 +5,6 @@ import Foundation
 
 public class MoveGeneratorKing: MoveGenerator {
     
-    let cachedMoves: [BitBoard]
-    
     let WHITE_OO_EMPTY:      BitBoard = .f1 | .g1
     let WHITE_OO_ATTACKS:    BitBoard = .e1 | .f1 | .g1
     let WHITE_OOO_EMPTY:     BitBoard = .b1 | .c1 | .d1
@@ -16,27 +14,34 @@ public class MoveGeneratorKing: MoveGenerator {
     let BLACK_OO_ATTACKS:    BitBoard = .e8 | .f8 | .g8
     let BLACK_OOO_EMPTY:     BitBoard = .b8 | .c8 | .d8
     let BLACK_OOO_ATTACKS:   BitBoard = .c8 | .d8 | .e8
-    
-    init() {
-        //TODO: magic constant 64
-        var moves = [BitBoard](repeating: .empty, count: 64)
-        
-        for i in 0 ..< 64 {
-            let piece = BitBoard.Index(rawValue: i)!.bitBoard
-            
-            moves[i] = piece.shift(dx: 1, dy: -1)   |
-                piece.shift(dx: 1, dy: 0)    |
-                piece.shift(dx: 1, dy: 1)    |
-                piece.shift(dx: 0, dy: -1)   |
-                piece.shift(dx: 0, dy: 1)    |
-                piece.shift(dx: -1, dy: -1)  |
-                piece.shift(dx: -1, dy: 0)   |
-                piece.shift(dx: -1, dy: 1)
-        }
-        
-        self.cachedMoves = moves
-    }
 
+    //TODO: struct?
+    class Cache {
+        let moves: [BitBoard]
+        
+        init() {
+            //TODO: magic constant 64
+            var moves = [BitBoard](repeating: .empty, count: 64)
+            
+            for i in 0 ..< 64 {
+                let piece = BitBoard.Index(rawValue: i)!.bitBoard
+                
+                moves[i] = piece.shift(dx: 1, dy: -1)   |
+                    piece.shift(dx: 1, dy: 0)    |
+                    piece.shift(dx: 1, dy: 1)    |
+                    piece.shift(dx: 0, dy: -1)   |
+                    piece.shift(dx: 0, dy: 1)    |
+                    piece.shift(dx: -1, dy: -1)  |
+                    piece.shift(dx: -1, dy: 0)   |
+                    piece.shift(dx: -1, dy: 1)
+            }
+            
+            self.moves = moves
+        }
+    }
+    
+    static let cache = Cache()
+    
     func attacks(board: ChessBoard, color: Piece.Color) -> BitBoard {
         let king = color == .white ? board.whitePieces.king : board.blackPieces.king
         if king == .empty {
@@ -45,7 +50,7 @@ public class MoveGeneratorKing: MoveGenerator {
        
         assert(king.nonzeroBitCount == 1, "There can be only one king on the board.")
         //TODO PERFORMANCE: Test withnout cache
-        return cachedMoves[king.trailingZeroBitCount]
+        return MoveGeneratorKing.cache.moves[king.trailingZeroBitCount]
     }
     
     func moves(board: ChessBoard) -> [Move] {
@@ -57,7 +62,7 @@ public class MoveGeneratorKing: MoveGenerator {
         
         let sourceIndex = board.kingIndex
         
-        var moves   = cachedMoves[sourceIndex.rawValue] & board.emptyOrOpponent
+        var moves   = MoveGeneratorKing.cache.moves[sourceIndex.rawValue] & board.emptyOrOpponent
         //TODO PERFORMANCE: Is piece necessary in Move?
         let piece   = board.nextMove == .white ? Piece.whiteKing : Piece.blackKing
 

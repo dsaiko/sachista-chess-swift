@@ -3,6 +3,7 @@
 
 import Foundation
 
+//TODO PERFORMANCE: try class?
 public struct Move: CustomStringConvertible {
     let piece:          Piece
     
@@ -36,6 +37,17 @@ protocol MoveGenerator {
 }
 
 extension ChessBoard {
+    
+    func pseudoLegalMoves() -> [Move]
+    {
+        //moves without validation of attack to king
+        return ChessBoard.moveGenerators.flatMap({ $0.moves(board: self) })
+    }
+    
+    func attacks(color: Piece.Color) -> BitBoard
+    {
+        return ChessBoard.moveGenerators.flatMap({ $0.attacks(board: self, color: color) }).reduce(BitBoard(0), { $0 | $1 })
+    }
     
     //TODO PERFORMANCE: try mutable chessboard
     //TODO PERFORMANCE: undo move
@@ -107,7 +119,7 @@ extension ChessBoard {
             case .blackKing:     blackKing          ^= sourceBitBoard | targetBitBoard
             case .blackQueen:    blackQueen         ^= sourceBitBoard | targetBitBoard
             case .blackBishop:   blackBishop        ^= sourceBitBoard | targetBitBoard
-            case .blackKnight:   blackKing          ^= sourceBitBoard | targetBitBoard
+            case .blackKnight:   blackKnight        ^= sourceBitBoard | targetBitBoard
             case .blackRook:     blackRook          ^= sourceBitBoard | targetBitBoard
             case .blackPawn:     blackPawn          ^= sourceBitBoard | targetBitBoard
         }
@@ -205,52 +217,73 @@ extension ChessBoard {
                 }
             }
         }
-        
-//        //reset halfmoveClock if piece was captured
-//        if (isCapture) {
-//            board.halfMoveClock = 0;
-//
-//            //check capture
-//            if (isEnPassant) {
-//                if(board.nextMove == White) {
-//                    board.pieces[opponentColor][Pawn] ^= BitBoard::oneSouth(target);
-//                    board.zobristKey ^= ChessBoard::zobrist.Z_PIECES[opponentColor][Pawn][targetIndex - 8];
-//                } else {
-//                    board.pieces[opponentColor][Pawn] ^= BitBoard::oneNorth(target);
-//                    board.zobristKey ^= ChessBoard::zobrist.Z_PIECES[opponentColor][Pawn][targetIndex + 8];
-//                }
-//            } else if (board.pieces[opponentColor][Bishop] & target) {
-//                board.pieces[opponentColor][Bishop] ^= target;
-//                board.zobristKey ^= ChessBoard::zobrist.Z_PIECES[opponentColor][Bishop][targetIndex];
-//            } else if (board.pieces[opponentColor][Knight] & target) {
-//                board.pieces[opponentColor][Knight] ^= target;
-//                board.zobristKey ^= ChessBoard::zobrist.Z_PIECES[opponentColor][Knight][targetIndex];
-//            } else if (board.pieces[opponentColor][Pawn] & target) {
-//                board.pieces[opponentColor][Pawn] ^= target;
-//                board.zobristKey ^= ChessBoard::zobrist.Z_PIECES[opponentColor][Pawn][targetIndex];
-//            } else if (board.pieces[opponentColor][Queen] & target) {
-//                board.pieces[opponentColor][Queen] ^= target;
-//                board.zobristKey ^= ChessBoard::zobrist.Z_PIECES[opponentColor][Queen][targetIndex];
-//            } else if (board.pieces[opponentColor][ Rook] & target) {
-//                board.pieces[opponentColor][Rook] ^= target;
-//                board.zobristKey ^= ChessBoard::zobrist.Z_PIECES[opponentColor][Rook][targetIndex];
-//
-//                if(board.nextMove == White) {
-//                    if (targetIndex == BoardIndex::A8) {
-//                        board.removeCastling(Black, QueenSide);
-//                    } else if (targetIndex == BoardIndex::H8) {
-//                        board.removeCastling(Black, KingSide);
-//                    }
-//                } else {
-//                    if (targetIndex == BoardIndex::A1) {
-//                        board.removeCastling(White, QueenSide);
-//                    } else if (targetIndex == BoardIndex::H1) {
-//                        board.removeCastling(White, KingSide);
-//                    }
-//                }
-//            }
-//        }
-//
+
+        if move.isCapture {
+            halfMoveClock = 0
+            
+            
+            if move.isEnpassant {
+                //remove captured piece
+                if move.piece == .whitePawn {
+                    blackPawn ^= targetBitBoard.oneSouth
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackPawn.rawValue][targetIndex.rawValue - 8]
+                } else {
+                    whitePawn ^= targetBitBoard.oneNorth
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whitePawn.rawValue][targetIndex.rawValue + 8]
+                }
+            } else if nextMove == .white {
+                //TODO: change to immadiate XOR and compare result
+                //TODO: simplify for both colors
+                //TODO: change order of comparisons, what about isEnpassant?
+                if (blackPawn & targetBitBoard) != 0 {
+                    blackPawn ^= targetBitBoard
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackPawn.rawValue][targetIndex.rawValue]
+                } else if (blackBishop & targetBitBoard) != 0 {
+                    blackBishop ^= targetBitBoard
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackBishop.rawValue][targetIndex.rawValue]
+                } else if (blackKnight & targetBitBoard) != 0 {
+                    blackKnight ^= targetBitBoard
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackKnight.rawValue][targetIndex.rawValue]
+                } else if (blackQueen & targetBitBoard) != 0 {
+                    blackQueen ^= targetBitBoard
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackQueen.rawValue][targetIndex.rawValue]
+                } else if (blackRook & targetBitBoard) != 0 {
+                    blackRook ^= targetBitBoard
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackRook.rawValue][targetIndex.rawValue]
+                    
+                    if targetIndex == .a8 {
+                        isBlackQueenSideCastlingAvailable = false
+                    } else if targetIndex == .h8 {
+                        isBlackKingSideCastlingAvailable = false
+                    }
+                }
+                
+            } else {
+                if (whitePawn & targetBitBoard) != 0 {
+                    whitePawn ^= targetBitBoard
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whitePawn.rawValue][targetIndex.rawValue]
+                } else if (whiteBishop & targetBitBoard) != 0 {
+                    whiteBishop ^= targetBitBoard
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteBishop.rawValue][targetIndex.rawValue]
+                } else if (whiteKnight & targetBitBoard) != 0 {
+                    whiteKnight ^= targetBitBoard
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteKnight.rawValue][targetIndex.rawValue]
+                } else if (whiteQueen & targetBitBoard) != 0 {
+                    whiteQueen ^= targetBitBoard
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteQueen.rawValue][targetIndex.rawValue]
+                } else if (whiteRook & targetBitBoard) != 0 {
+                    whiteRook ^= targetBitBoard
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteRook.rawValue][targetIndex.rawValue]
+                    
+                    if targetIndex == .a1 {
+                        isWhiteQueenSideCastlingAvailable = false
+                    } else if targetIndex == .h1 {
+                        isWhiteKingSideCastlingAvailable = false
+                    }
+                }
+            }
+        }
+
         if nextMove == .black {
             fullMoveNumber += 1
         }
@@ -276,7 +309,6 @@ extension ChessBoard {
         if isBlackQueenSideCastlingAvailable {
             zobristChecksum ^= ZobristChecksum.rndCastlingBlackQueen
         }
-        
         
         let whitePieces = Pieces(
             king:   whiteKing,

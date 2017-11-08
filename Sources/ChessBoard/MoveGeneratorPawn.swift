@@ -6,7 +6,7 @@ import Foundation
 public class MoveGeneratorPawn: MoveGenerator {
     
     //TODO: struct?
-    class CachedMoves {
+    class Cache {
         let moves          : [BitBoard]
         let doubleMoves    : [BitBoard]
         let attacks        : [BitBoard]
@@ -36,8 +36,8 @@ public class MoveGeneratorPawn: MoveGenerator {
         }
     }
         
-    let cachedMovesWhite = CachedMoves(color: .white)
-    let cachedMovesBlack = CachedMoves(color: .black)
+    static let cacheWhite = Cache(color: .white)
+    static let cacheBlack = Cache(color: .black)
     
     func attacks(board: ChessBoard, color: Piece.Color) -> BitBoard {
         //TODO PERFORMANCE: pregenerated??
@@ -45,7 +45,7 @@ public class MoveGeneratorPawn: MoveGenerator {
     }
     
     func moves(board: ChessBoard) -> [Move] {
-        let cache   = board.nextMove == .white ? cachedMovesWhite : cachedMovesBlack
+        let cache   = board.nextMove == .white ? MoveGeneratorPawn.cacheWhite : MoveGeneratorPawn.cacheBlack
         var pieces  = board.piecesToMove.pawn
         let piece   = board.nextMove == .white ? Piece.whitePawn : Piece.blackPawn
         var result  = [Move]()

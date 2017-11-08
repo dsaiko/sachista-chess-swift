@@ -126,7 +126,7 @@ public class Pieces {
  */
 public class ChessBoard {
     
-    public let nextMove:                Piece.Color
+    public let nextMove:                Piece.Color //TODO: rename to Color?
     public let whitePieces:             Pieces  //TODO: make pieces array?
     public let blackPieces:             Pieces
     public let whiteCastlingOptions:    CastlingOptions
@@ -140,7 +140,7 @@ public class ChessBoard {
     private(set) lazy var allPieces         = whitePieces.all | blackPieces.all
     private(set) lazy var emptyBoard        = ~allPieces
     private(set) lazy var piecesToMove      = nextMove == .white ? whitePieces : blackPieces
-    private(set) lazy var opponentPieces    = nextMove == .white ? blackPieces.all : whitePieces.all
+    private(set) lazy var opponentPieces    = nextMove == .white ? blackPieces.all : whitePieces.all //TODO rename to BitBOard
     private(set) lazy var emptyOrOpponent   = nextMove == .white ? ~whitePieces.all : ~blackPieces.all
     private(set) lazy var opponentColor     = nextMove == .white ? Piece.Color.black : Piece.Color.white
     private(set) lazy var kingBoard         = piecesToMove.king
@@ -183,7 +183,7 @@ public class ChessBoard {
         //TODO PERFORMANCE: order of moveGenerators
         //TODO PERFORMANCE: lazy var instead of loop? how many times this is called?
         //TODO PERFORMANCE: is this used only for castling?
-        
+        //TODO try functional variant
         for moveGenerator in ChessBoard.moveGenerators {
             if (moveGenerator.attacks(board: self, color: color) & board) != 0 {
                 return true

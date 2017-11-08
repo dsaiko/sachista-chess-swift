@@ -27,37 +27,18 @@ class MoveGeneratorTests: XCTestCase {
     func numberOfMoves(fen: String) -> Int {
         let board = ChessBoard(fenString: fen)!
 
-        var count = 0
-        for moveGenerator in ChessBoard.moveGenerators {
-            count += moveGenerator.moves(board: board).count
-        }
-        
-        return count
+        return board.pseudoLegalMoves().count
     }
     
-//    func numberOfLegalMoves(fen: String) -> Int {
-//        void testLegalMoves(const int expectedCount, const ChessBoard &board)
-//        {
-//            uint64_t count = board.perft(1);
-//            if((int)count != expectedCount) {
-//                std::cout << "---------- BOARD:" << std::endl << board.toString() << std::endl;
-//
-//                MoveArray moves;
-//                MoveGenerator::moves(board, ChessBoardStats(board), moves);
-//                for(int i=0; i<moves.size(); i++) {
-//                    Move &m = moves.data[i];
-//
-//                    ChessBoard b = board;
-//                    m.applyTo(b);
-//                    if(MoveGenerator::isOpponentsKingNotUnderCheck(b, ChessBoardStats(b))) {
-//                        std::cout << "---------- VALID MOVE:" << std::endl << b.toString() << std::endl;
-//                    }
-//                }
-//
-//                LONGS_EQUAL(expectedCount, count);
-//            }
-//        }
-//    }
+    func numberOfLegalMoves(file: String) -> UInt64 {
+        let board = boardFrom(file: file)
+        return board.perft(depth: 1)
+    }
+
+    func numberOfLegalMoves(fen: String) -> UInt64 {
+        let board = ChessBoard(fenString: fen)!
+        return board.perft(depth: 1)
+    }
     
     func testPawns() {
         XCTAssertEqual(2, numberOfMoves(file: "moves-pawn-01"))
@@ -71,28 +52,32 @@ class MoveGeneratorTests: XCTestCase {
     }
 
     func testKing() {
-        //TODO: legalMoves
-        XCTAssertEqual(8,   numberOfMoves(file: "moves-king-01"))
-        XCTAssertEqual(26,  numberOfMoves(file: "moves-king-02"))
-        XCTAssertEqual(24,  numberOfMoves(file: "moves-king-03"))
-//        XCTAssertEqual(4,   numberOfLegalMoves(file: "moves-king-04"))
-        XCTAssertEqual(19,  numberOfMoves(file: "moves-king-05"))
-//        XCTAssertEqual(1,   numberOfLegalMoves(file: "moves-king-06"))
-//        XCTAssertEqual(0,   numberOfLegalMoves(file: "moves-king-07"))
-        XCTAssertEqual(18,  numberOfMoves(file: "moves-king-08"))
-        XCTAssertEqual(20,  numberOfMoves(file: "moves-king-09"))
-        XCTAssertEqual(19,  numberOfMoves(file: "moves-king-10"))
-        XCTAssertEqual(14,  numberOfMoves(file: "moves-king-11"))
-        XCTAssertEqual(15,  numberOfMoves(file: "moves-king-12"))
-//        XCTAssertEqual(1,   numberOfLegalMoves(file: "moves-king-13"))
+        XCTAssertEqual(8,   numberOfMoves(file:         "moves-king-01"))
+        XCTAssertEqual(26,  numberOfMoves(file:         "moves-king-02"))
+        XCTAssertEqual(24,  numberOfMoves(file:         "moves-king-03"))
+        XCTAssertEqual(4,   numberOfLegalMoves(file:    "moves-king-04"))
+        XCTAssertEqual(19,  numberOfMoves(file:         "moves-king-05"))
+        XCTAssertEqual(1,   numberOfLegalMoves(file:    "moves-king-06"))
+        XCTAssertEqual(0,   numberOfLegalMoves(file:    "moves-king-07"))
+        XCTAssertEqual(18,  numberOfMoves(file:         "moves-king-08"))
+        XCTAssertEqual(20,  numberOfMoves(file:         "moves-king-09"))
+        XCTAssertEqual(19,  numberOfMoves(file:         "moves-king-10"))
+        XCTAssertEqual(14,  numberOfMoves(file:         "moves-king-11"))
+        XCTAssertEqual(15,  numberOfMoves(file:         "moves-king-12"))
+        XCTAssertEqual(1,   numberOfLegalMoves(file:    "moves-king-13"))
+    }
+    
+    func testNoKing() {
+        let board = ChessBoard(fenString: "8/p7/8/8/8/8/7P/8 w - -")!
+        XCTAssertEqual(2,   numberOfLegalMoves(fen:     board.fenString))
     }
     
     func testKnight() {
         XCTAssertEqual(6,   numberOfMoves(file:         "moves-knight-01"))
         XCTAssertEqual(14,  numberOfMoves(file:         "moves-knight-02"))
         XCTAssertEqual(23,  numberOfMoves(file:         "moves-knight-03"))
-        //XCTAssertEqual(1,   numberOfLegalMoves(file: "moves-knight-04"))
-        //XCTAssertEqual(3,   numberOfLegalMoves(file: "moves-knight-05"))
+        XCTAssertEqual(1,   numberOfLegalMoves(file:    "moves-knight-04"))
+        XCTAssertEqual(3,   numberOfLegalMoves(file:    "moves-knight-05"))
     }
     
     func testRook() {
@@ -114,7 +99,28 @@ class MoveGeneratorTests: XCTestCase {
         XCTAssertEqual(17,  numberOfMoves(file:         "moves-bishop-05"))
         XCTAssertEqual(7,   numberOfMoves(file:         "moves-bishop-06"))
         XCTAssertEqual(10,  numberOfMoves(file:         "moves-bishop-07"))
-
     }
+    
+    func testPerfT() {
+  
+//        measure {
+            XCTAssertEqual(4865609, ChessBoard.standard.perft(depth: 5))
+//        }
+        
+        
+//        for (fen, depth, result) in [
+//            ("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 5, 193690690),
+//            ("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1", 4, 43238),
+//            ("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1", 5, 15833292),
+//            ("r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1", 4, 422333),
+//            ("rnbqkb1r/pp1p1ppp/2p5/4P3/2B5/8/PPP1NnPP/RNBQK2R w KQkq - 0 6", 3, 53392),
+//            ("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10", 5, UInt64(164075551)),
+//        ] {
+//            let board = ChessBoard(fenString: fen)!
+//            XCTAssertEqual(UInt64(result), ChessBoard.standard.perft(depth: depth))
+//        }
+    }
+    
+    //TODO: test zobrist!
 }
 
