@@ -98,7 +98,6 @@ class MoveGeneratorTests: XCTestCase {
         
         for move in board.pseudoLegalMoves() {
             if move.description == "e8c8" {
-                
                 let newBoard = board.makeMove(move: move)
                 XCTAssertEqual(newBoard.zobristChecksum, ZobristChecksum.compute(board: newBoard))
             }

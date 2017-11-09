@@ -146,10 +146,10 @@ extension ChessBoard {
                 //handle castling
                 if targetIndex == .c1 {
                     whiteRook ^= BitBoard.a1 | BitBoard.d1
-                    zobristChecksum ^= ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.a1.rawValue] ^ ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.d1.rawValue]
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteRook.rawValue][BitBoard.Index.a1.rawValue] ^ ZobristChecksum.rndPieces[Piece.whiteRook.rawValue][BitBoard.Index.d1.rawValue]
                 } else if targetIndex == .g1 {
                     whiteRook ^= BitBoard.h1 | BitBoard.f1
-                    zobristChecksum ^= ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.h1.rawValue] ^ ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.f1.rawValue]
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteRook.rawValue][BitBoard.Index.h1.rawValue] ^ ZobristChecksum.rndPieces[Piece.whiteRook.rawValue][BitBoard.Index.f1.rawValue]
                 }
             }
         } else if move.piece == .blackKing {
@@ -160,10 +160,10 @@ extension ChessBoard {
                 //handle castling
                 if targetIndex == .c8 {
                     blackRook ^= BitBoard.a8 | BitBoard.d8
-                    zobristChecksum ^= ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.a8.rawValue] ^ ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.d8.rawValue]
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackRook.rawValue][BitBoard.Index.a8.rawValue] ^ ZobristChecksum.rndPieces[Piece.blackRook.rawValue][BitBoard.Index.d8.rawValue]
                 } else if targetIndex == .g8 {
                     blackRook ^= BitBoard.h8 | BitBoard.f8
-                    zobristChecksum ^= ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.h8.rawValue] ^ ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.f8.rawValue]
+                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackRook.rawValue][BitBoard.Index.h8.rawValue] ^ ZobristChecksum.rndPieces[Piece.blackRook.rawValue][BitBoard.Index.f8.rawValue]
                 }
             }
         } else if move.piece == .whitePawn {
@@ -173,7 +173,7 @@ extension ChessBoard {
             if abs(targetIndex.rawValue - sourceIndex.rawValue) > 10 {
                 enPassantTarget = BitBoard.Index(rawValue: sourceIndex.rawValue + 8)!
             } else if let promotionPiece = move.promotionPiece {
-                whitePawn ^= targetBitBoard //TODO: OR shoutld be same as XOR here
+                whitePawn ^= targetBitBoard
                 zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whitePawn.rawValue][targetIndex.rawValue]
                 
                 //TODO: SIMPLIFY!
@@ -198,7 +198,7 @@ extension ChessBoard {
             if abs(targetIndex.rawValue - sourceIndex.rawValue) > 10 {
                 enPassantTarget = BitBoard.Index(rawValue: sourceIndex.rawValue + -8)!
             } else if let promotionPiece = move.promotionPiece {
-                blackPawn ^= targetBitBoard //TODO: OR shoutld be same as XOR here
+                blackPawn ^= targetBitBoard
                 zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackPawn.rawValue][targetIndex.rawValue]
                 
                 //TODO: SIMPLIFY!
