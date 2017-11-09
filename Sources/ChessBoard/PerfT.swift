@@ -3,86 +3,106 @@
 
 import Foundation
 
-extension ChessBoard {
+/**
+ Protocol used for perfomance results caching
+ Checksum is a ChessBoard hash (ZobristKey),
+ depth is a search depth for which is the count relevant.
+ */
+public protocol PerfTCache {
+    func put(checksum: UInt64, depth: Int, count: UInt64)
+    func get(checksum: UInt64, depth: Int) -> UInt64?
+}
 
-    //optimized check for king check
-    //TODO try replace by isBitMaskUnderAttack
-    //TODO what should be fce and what property? general.
-    func isOpponentsKingUnderCheck() -> Bool {
+public extension ChessBoard {
 
-        let opponentKing = (nextMove == .white ? blackPieces : whitePieces).king
-        if opponentKing == 0 { return false }
-
-        //this could be
-        //return (attacks(color: nextMove) & opponentKing) == 0
-        //but following performs better
-
-        let opponentKingIndex = opponentKing.trailingZeroBitCount
-
-        //TODO: rawValue or Int??
-        //TODO: simplify!
-        let opponentPawnCache = nextMove == .white ? MoveGeneratorPawn.cacheBlack : MoveGeneratorPawn.cacheWhite
-        if (piecesToMove.pawn & opponentPawnCache.attacks[opponentKingIndex]) != 0 {
-            return true
+    /**
+     Simple PerfT in-memory cache
+    */
+    public final class SimplePerfTCache: PerfTCache {
+        
+        /**
+         Cache record
+         */
+        private struct Record {
+            let checksum:   UInt64
+            let depth:      Int
+            let count:      UInt64
         }
-        if (piecesToMove.knight & MoveGeneratorKnight.cache.moves[opponentKingIndex]) != 0 {
-            return true
-        }
+        
+        /**
+         Shared in-memory cache of default size
+        */
+        public static let `default` = SimplePerfTCache(cacheSize: 16*1024*1024)
 
-        if (piecesToMove.king & MoveGeneratorKing.cache.moves[opponentKingIndex]) != 0 {
-            return true
+        /**
+         Used for computing index keys. If cacheSize is too small, index keys will start repeating
+        */
+        private let cacheSize: UInt64
+        
+        /**
+         On macos 10.13.1, Swift 4, dictionary is of the same performance as self managed fixed-size hash array
+         Dictionary has advantage of no overflow errors.
+        */
+        private var cache: [UInt64: Record]
+        
+        /**
+         - Parameter cacheSize: size of cache in records
+        */
+        public init(cacheSize: UInt64) {
+            self.cacheSize = cacheSize
+            self.cache = [:]
         }
-
-        let rooks = piecesToMove.rook | piecesToMove.queen
-        if (MoveGeneratorRook.cache.rankMoves[opponentKingIndex][Int((allPieces & MoveGeneratorRook.cache.rankMask[opponentKingIndex]) >> MoveGeneratorRook.cache.rankShift[opponentKingIndex])] & rooks) != 0 {
-            return true
+        
+        /**
+         Index of the record
+        */
+        private func index(checksum: UInt64, depth: Int) -> UInt64 {
+            return (cacheSize - 1 - UInt64(depth)) & checksum
         }
-        if (MoveGeneratorRook.cache.fileMoves[opponentKingIndex][Int(((allPieces & MoveGeneratorRook.cache.fileMask[opponentKingIndex]) &* MoveGeneratorRook.cache.fileMagic[opponentKingIndex]) >> 57)] & rooks) != 0 {
-            return true
+        
+        public func put(checksum: UInt64, depth: Int, count: UInt64) {
+            cache[index(checksum: checksum, depth: depth)] = Record(checksum: checksum, depth: depth, count: count)
         }
-
-        //TODO: is this already used at moveGenBishop, make lazy var
-        let bishops = piecesToMove.bishop | piecesToMove.queen
-
-        if (MoveGeneratorBishop.cache.a8H1Moves[opponentKingIndex][Int(((allPieces & MoveGeneratorBishop.cache.a8H1Mask[opponentKingIndex]) &* MoveGeneratorBishop.cache.a8H1Magic[opponentKingIndex]) >> 57)] & bishops) != 0 {
-            return true
+        
+        public func get(checksum: UInt64, depth: Int) -> UInt64? {
+            if let record = cache[index(checksum: checksum, depth: depth)],
+               record.checksum == checksum,
+               record.depth == depth
+            {
+                return record.count
+            } else {
+                return nil
+            }
         }
-
-        if (MoveGeneratorBishop.cache.a1H8Moves[opponentKingIndex][Int(((allPieces & MoveGeneratorBishop.cache.a1H8Mask[opponentKingIndex]) &* MoveGeneratorBishop.cache.a1H8Magic[opponentKingIndex]) >> 57)] & bishops) != 0 {
-            return true
-        }
-
-        return false
     }
-
-    //TODO: implement threading
-    func perft(depth: Int) -> UInt64 {
-
+    
+    //TODO: implement multi threading
+    public func perft(depth: Int, cache: PerfTCache = SimplePerfTCache.default) -> UInt64 {
+        
         if(depth < 1) { return 1 }
         
-        if let cache = PerftCache.shared.get(checksum: zobristChecksum, depth: depth) {
+        if let cache = cache.get(checksum: zobristChecksum, depth: depth) {
             return cache
         }
-
+        
         var count: UInt64 = 0
-
+        
         let attacks = self.attacks(color: opponentColor)
         let isCheck = (attacks & self.kingBoard) != 0
-
+        
         for move in pseudoLegalMoves() {
             let sourceBitBoard = move.from.bitBoard
             let isKingMove = move.piece == . whiteKing || move.piece == .blackKing
-
+            
             if depth == 1 {
-               if isKingMove || isCheck || ((sourceBitBoard & attacks) != 0) || move.isEnpassant {
+                if isKingMove || isCheck || ((sourceBitBoard & attacks) != 0) || move.isEnpassant {
                     //for depth == 1 we need to make move only in this case
-                    let nextBoard = makeMove(move: move)
-                    if !nextBoard.isOpponentsKingUnderCheck() {
+                    if !makeMove(move: move).isOpponentsKingUnderCheck() {
                         count += 1
                     }
-               } else {
-                   count += 1
-               }
+                } else {
+                    count += 1
+                }
             } else {
                 let nextBoard = makeMove(move: move)
                 if isKingMove || isCheck || ((sourceBitBoard & attacks) != 0) || move.isEnpassant {
@@ -90,49 +110,19 @@ extension ChessBoard {
                     if !nextBoard.isOpponentsKingUnderCheck() {
                         count += nextBoard.perft(depth: depth - 1)
                     }
-               } else {
-                   count += nextBoard.perft(depth: depth - 1)
-               }
+                } else {
+                    count += nextBoard.perft(depth: depth - 1)
+                }
             }
         }
         
-        PerftCache.shared.put(checksum: zobristChecksum, depth: depth, count: count)
+        cache.put(checksum: zobristChecksum, depth: depth, count: count)
         return count
     }
-}
-
-//TODO: all classes final?
-//TODO: move to inner class?
-private class PerftCache {
-    struct Record {
-        let checksum: UInt64
-        let depth: Int
-        let count: UInt64
-    }
-
-    static let shared = PerftCache()
-    
-    //TODO: make configurable
-    static let cacheSize =  16*1024*1024
-    
-    var cache = [UInt64 : Record]()
-    
-    func put(checksum: UInt64, depth: Int, count: UInt64) {
-        let index = UInt64(PerftCache.cacheSize - 1 - depth) & checksum
-        //todo set only to the field
-        cache[index] = Record(checksum: checksum, depth: depth, count: count)
-    }
-    
-    func get(checksum: UInt64, depth: Int) -> UInt64? {
-        let index = UInt64(PerftCache.cacheSize - 1 - depth) & checksum
-        if let record = cache[index], record.checksum == checksum && record.depth == depth {
-            return record.count
-        }
-        return nil
-    }
-    
     
 }
+
+
 
 
 
