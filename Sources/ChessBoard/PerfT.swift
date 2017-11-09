@@ -94,23 +94,23 @@ public extension ChessBoard {
             let sourceBitBoard = move.from.bitBoard
             let isKingMove = move.piece == . whiteKing || move.piece == .blackKing
             
-            if depth == 1 {
-                if isKingMove || isCheck || ((sourceBitBoard & attacks) != 0) || move.isEnpassant {
-                    //for depth == 1 we need to make move only in this case
-                    if !makeMove(move: move).isOpponentsKingUnderCheck() {
-                        count += 1
-                    }
-                } else {
-                    count += 1
-                }
-            } else {
+            if isKingMove || isCheck || ((sourceBitBoard & attacks) != 0) || move.isEnpassant {
+                //need to validate move
+                
                 let nextBoard = makeMove(move: move)
-                if isKingMove || isCheck || ((sourceBitBoard & attacks) != 0) || move.isEnpassant {
-                    //for depth == 1 we need to make move only in this case
-                    if !nextBoard.isOpponentsKingUnderCheck() {
+                if !nextBoard.isOpponentsKingUnderCheck() {
+                    if depth == 1 {
+                        count += 1
+                    } else {
                         count += nextBoard.perft(depth: depth - 1)
                     }
+                }
+            } else {
+                if depth == 1 {
+                    count += 1
                 } else {
+                    //do not need to validate legality of the move
+                    let nextBoard = makeMove(move: move)
                     count += nextBoard.perft(depth: depth - 1)
                 }
             }
