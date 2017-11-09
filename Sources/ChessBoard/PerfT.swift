@@ -102,7 +102,8 @@ extension ChessBoard {
 }
 
 //TODO: all classes final?
-class PerftCache {
+//TODO: move to inner class?
+private class PerftCache {
     struct Record {
         let checksum: UInt64
         let depth: Int
@@ -111,7 +112,8 @@ class PerftCache {
 
     static let shared = PerftCache()
     
-    static let cacheSize =  256*1024*1024
+    //TODO: make configurable
+    static let cacheSize =  16*1024*1024
     
     var cache = [UInt64 : Record]()
     
