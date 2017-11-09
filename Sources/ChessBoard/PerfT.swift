@@ -55,11 +55,14 @@ extension ChessBoard {
         return false
     }
 
-    
     //TODO: implement threading
     func perft(depth: Int) -> UInt64 {
 
         if(depth < 1) { return 1 }
+        
+        if let cache = PerftCache.shared.get(checksum: zobristChecksum, depth: depth) {
+            return cache
+        }
 
         var count: UInt64 = 0
 
@@ -92,11 +95,42 @@ extension ChessBoard {
                }
             }
         }
+        
+        PerftCache.shared.put(checksum: zobristChecksum, depth: depth, count: count)
         return count
     }
 }
 
+//TODO: all classes final?
+class PerftCache {
+    struct Record {
+        let checksum: UInt64
+        let depth: Int
+        let count: UInt64
+    }
 
+    static let shared = PerftCache()
+    
+    static let cacheSize =  16*1024*1024
+    
+    var cache = [Record?](repeating: nil, count: PerftCache.cacheSize)
+    
+    func put(checksum: UInt64, depth: Int, count: UInt64) {
+        let index = Int(UInt64(PerftCache.cacheSize - 1) & checksum)
+        //todo set only to the field
+        cache[index] = Record(checksum: checksum, depth: depth, count: count)
+    }
+    
+    func get(checksum: UInt64, depth: Int) -> UInt64? {
+        let index = Int(UInt64(PerftCache.cacheSize - 1) & checksum)
+        if let record = cache[index], record.checksum == checksum, record.depth == depth {
+            return record.count
+        }
+        return nil
+    }
+    
+    
+}
 
 
 
