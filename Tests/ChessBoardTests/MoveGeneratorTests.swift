@@ -103,7 +103,7 @@ class MoveGeneratorTests: XCTestCase {
     
     func testPerfT() {
   
-//        measure {
+//        measure { 11.057 
             XCTAssertEqual(119_060_324, ChessBoard.standard.perft(depth: 6))
 //        }
         
