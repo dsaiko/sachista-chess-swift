@@ -129,7 +129,7 @@ extension ChessBoard {
         if move.piece == .whiteRook {
             if sourceIndex == .a1 {
                 isWhiteQueenSideCastlingAvailable = false
-            } else if sourceIndex == .h8 {
+            } else if sourceIndex == .h1 {
                 isWhiteKingSideCastlingAvailable = false
             }
         } else if move.piece == .blackRook {
