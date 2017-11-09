@@ -45,12 +45,15 @@ public extension ChessBoard {
         */
         private var cache: [UInt64: Record]
         
+        let lock: DispatchQueue
+
         /**
          - Parameter cacheSize: size of cache in records
         */
         public init(cacheSize: UInt64) {
             self.cacheSize = cacheSize
             self.cache = [:]
+            self.lock = DispatchQueue(label: "\(SimplePerfTCache.self)")
         }
         
         /**
@@ -61,14 +64,22 @@ public extension ChessBoard {
         }
         
         public func put(checksum: UInt64, depth: Int, count: UInt64) {
-            cache[index(checksum: checksum, depth: depth)] = Record(checksum: checksum, depth: depth, count: count)
+            let index = self.index(checksum: checksum, depth: depth)
+            
+            lock.sync {
+                cache[index] = Record(checksum: checksum, depth: depth, count: count)
+            }
         }
         
         public func get(checksum: UInt64, depth: Int) -> UInt64? {
-            if let record = cache[index(checksum: checksum, depth: depth)],
-               record.checksum == checksum,
-               record.depth == depth
-            {
+            var record: Record?
+            let index = self.index(checksum: checksum, depth: depth)
+
+            lock.sync {
+                 record = cache[index]
+            }
+            
+            if let record = record, record.checksum == checksum && record.depth == depth {
                 return record.count
             } else {
                 return nil
@@ -76,8 +87,7 @@ public extension ChessBoard {
         }
     }
     
-    //TODO: implement multi threading
-    public func perft(depth: Int, cache: PerfTCache = SimplePerfTCache.default) -> UInt64 {
+    private func perft0(depth: Int, cache: PerfTCache = SimplePerfTCache.default) -> UInt64 {
         
         if(depth < 1) { return 1 }
         
@@ -119,10 +129,34 @@ public extension ChessBoard {
         cache.put(checksum: zobristChecksum, depth: depth, count: count)
         return count
     }
-    
+
+    public func perft(depth: Int, cache: PerfTCache = SimplePerfTCache.default) -> UInt64 {
+        if depth <= 1 { return perft0(depth:depth, cache: cache) }
+
+        var nextBoards = [ChessBoard]()
+        
+        //expand legal moves to boards
+        for move in pseudoLegalMoves() {
+            let nextBoard = makeMove(move: move)
+            if !nextBoard.isOpponentsKingUnderCheck() {
+                nextBoards.append(nextBoard)
+            }
+        }
+
+        var totalCount: UInt64 = 0
+        let lock = DispatchQueue(label: "PerfT")
+        DispatchQueue.concurrentPerform(iterations: nextBoards.count) {
+            i in
+            
+            let board = nextBoards[i]
+            let count = board.perft0(depth: depth - 1, cache: cache)
+            
+            lock.sync {
+                totalCount += count
+            }
+        }
+
+        return totalCount
+    }
 }
-
-
-
-
 
