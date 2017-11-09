@@ -111,19 +111,19 @@ class PerftCache {
 
     static let shared = PerftCache()
     
-    static let cacheSize =  16*1024*1024
+    static let cacheSize =  4*1024*1024
     
     var cache = [Record?](repeating: nil, count: PerftCache.cacheSize)
     
     func put(checksum: UInt64, depth: Int, count: UInt64) {
-        let index = Int(UInt64(PerftCache.cacheSize - 1) & checksum)
+        let index = Int(UInt64(PerftCache.cacheSize - 1 - depth) & checksum)
         //todo set only to the field
         cache[index] = Record(checksum: checksum, depth: depth, count: count)
     }
     
     func get(checksum: UInt64, depth: Int) -> UInt64? {
-        let index = Int(UInt64(PerftCache.cacheSize - 1) & checksum)
-        if let record = cache[index], record.checksum == checksum, record.depth == depth {
+        let index = Int(UInt64(PerftCache.cacheSize - 1 - depth) & checksum)
+        if let record = cache[index], record.checksum == checksum && record.depth == depth {
             return record.count
         }
         return nil
