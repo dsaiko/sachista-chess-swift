@@ -328,7 +328,7 @@ extension ChessBoard {
             pawn:   blackPawn
         )
         
-        return ChessBoard(
+        let newBoard = ChessBoard(
             nextMove:               nextMove,
             whitePieces:            whitePieces,
             blackPieces:            blackPieces,
@@ -339,6 +339,10 @@ extension ChessBoard {
             fullMoveNumber:         fullMoveNumber,
             zobristChecksum:        zobristChecksum
         )
+        
+        assert(zobristChecksum == ZobristChecksum.compute(board: newBoard))
+
+        return newBoard
     }
 }
 

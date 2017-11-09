@@ -103,9 +103,9 @@ class MoveGeneratorTests: XCTestCase {
     
     func testPerfT() {
   
-//        measure {
+        //measure {
             XCTAssertEqual(4865609, ChessBoard.standard.perft(depth: 5))
-//        }
+        //}
         
         
 //        for (fen, depth, result) in [
@@ -120,7 +120,5 @@ class MoveGeneratorTests: XCTestCase {
 //            XCTAssertEqual(UInt64(result), ChessBoard.standard.perft(depth: depth))
 //        }
     }
-    
-    //TODO: test zobrist!
 }
 
