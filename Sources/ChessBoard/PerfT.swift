@@ -7,6 +7,7 @@ import Foundation
  Protocol used for perfomance results caching
  Checksum is a ChessBoard hash (ZobristKey),
  depth is a search depth for which is the count relevant.
+ - Important: Cache needs to be synchronized as it is accessed from threads
  */
 public protocol PerfTCache {
     func put(checksum: UInt64, depth: Int, count: UInt64)
@@ -45,7 +46,10 @@ public extension ChessBoard {
         */
         private var cache: [UInt64: Record]
         
-        let lock: DispatchQueue
+        /**
+         Synchronization lock
+        */
+        private let lock: DispatchQueue
 
         /**
          - Parameter cacheSize: size of cache in records
@@ -87,7 +91,10 @@ public extension ChessBoard {
         }
     }
     
-    private func perft0(depth: Int, cache: PerfTCache = SimplePerfTCache.default) -> UInt64 {
+    /**
+     Single thread perft minimax
+    */
+    public func perft0(depth: Int, cache: PerfTCache = SimplePerfTCache.default) -> UInt64 {
         
         if(depth < 1) { return 1 }
         
@@ -130,6 +137,9 @@ public extension ChessBoard {
         return count
     }
 
+    /**
+     Multi threaded perft
+     */
     public func perft(depth: Int, cache: PerfTCache = SimplePerfTCache.default) -> UInt64 {
         if depth <= 1 { return perft0(depth:depth, cache: cache) }
 
@@ -143,20 +153,17 @@ public extension ChessBoard {
             }
         }
 
-        var totalCount: UInt64 = 0
-        let lock = DispatchQueue(label: "PerfT")
+        var totalCount: Int64 = 0
         DispatchQueue.concurrentPerform(iterations: nextBoards.count) {
             i in
             
             let board = nextBoards[i]
             let count = board.perft0(depth: depth - 1, cache: cache)
             
-            lock.sync {
-                totalCount += count
-            }
+            OSAtomicAdd64(Int64(count), &totalCount)
         }
 
-        return totalCount
+        return UInt64(totalCount)
     }
 }
 

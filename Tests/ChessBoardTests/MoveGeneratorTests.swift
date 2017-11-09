@@ -115,6 +115,7 @@ class MoveGeneratorTests: XCTestCase {
     }
     
     func testPerfT() {
+        //57.862 seconds
         XCTAssertEqual(4_865_609, ChessBoard.standard.perft(depth: 5))
         XCTAssertEqual(674_624, ChessBoard(fenString: "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -")!.perft(depth: 5))
         XCTAssertEqual(15_833_292, ChessBoard(fenString: "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1")!.perft(depth: 5))
