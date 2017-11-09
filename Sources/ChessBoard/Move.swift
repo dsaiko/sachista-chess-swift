@@ -159,10 +159,10 @@ extension ChessBoard {
             if sourceIndex == .e8 {
                 //handle castling
                 if targetIndex == .c8 {
-                    whiteRook ^= BitBoard.a8 | BitBoard.d8
+                    blackRook ^= BitBoard.a8 | BitBoard.d8
                     zobristChecksum ^= ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.a8.rawValue] ^ ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.d8.rawValue]
                 } else if targetIndex == .g8 {
-                    whiteRook ^= BitBoard.h8 | BitBoard.f8
+                    blackRook ^= BitBoard.h8 | BitBoard.f8
                     zobristChecksum ^= ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.h8.rawValue] ^ ZobristChecksum.rndPieces[move.piece.rawValue][BitBoard.Index.f8.rawValue]
                 }
             }
