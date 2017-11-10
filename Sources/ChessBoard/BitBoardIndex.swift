@@ -1,7 +1,6 @@
 //  Created by Dusan Saiko (dusan@saiko.cz)
 //  Licensed under https://opensource.org/licenses/MIT
 
-
 import Foundation
 
 /**
