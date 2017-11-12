@@ -7,7 +7,7 @@ import ChessBoard
 /**
  Performance tests executable
  */
-private class PerfT {
+private final class PerfT {
 
     let scriptName: String
     var depth: Int = 0

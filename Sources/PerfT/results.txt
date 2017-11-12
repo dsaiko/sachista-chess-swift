@@ -1,3 +1,29 @@
+*************** All classes final
+Running PerfT -v=706045033 6 "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1" ...
+---------
+Result:
+fen            : r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1
+depth          : 6
+count          : 706045033
+verification   : PASSED
+multi threaded : false
+time           : 00:01:30.414
+finished       : 2017-11-12 17:43:34 +0000
+
+*************** Refactored, pieces are in array
+Running PerfT -v=706045033 6 "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1" ...
+---------
+Result:
+fen            : r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1
+depth          : 6
+count          : 706045033
+verification   : PASSED
+multi threaded : false
+time           : 00:01:36.050
+finished       : 2017-11-12 17:33:05 +0000
+
+
+*************** All pieces individual property:
 Running PerfT -v=706045033 6 "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1" ...
 ---------
 Result:

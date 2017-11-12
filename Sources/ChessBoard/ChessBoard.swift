@@ -7,7 +7,7 @@ import Foundation
  Chessboard representation
  TODO PERFORMANCE: class?? final??
  */
-public class ChessBoard {
+public final class ChessBoard {
 
     /**
      Representation of chess piece color.

@@ -3,10 +3,10 @@
 
 import Foundation
 
-public class MoveGeneratorPawn: MoveGenerator {
+public final class MoveGeneratorPawn: MoveGenerator {
     
     //TODO: struct?
-    class Cache {
+    final class Cache {
         let moves          : [BitBoard]
         let doubleMoves    : [BitBoard]
         let attacks        : [BitBoard]

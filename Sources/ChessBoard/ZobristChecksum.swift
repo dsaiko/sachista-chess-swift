@@ -19,7 +19,7 @@ import Foundation
 /// For further analysis see
 ///   <http://vigna.di.unimi.it/ftp/papers/xorshift.pdf>
 
-class PRNG {
+final class PRNG {
     
     var x: UInt64
     
@@ -36,7 +36,7 @@ class PRNG {
     }
 }
 
-class ZobristChecksum {
+final class ZobristChecksum {
 
     static let rnd = PRNG(seed: 1070372)
 

@@ -3,10 +3,10 @@
 
 import Foundation
 
-public class MoveGeneratorBishop: MoveGenerator {
+public final class MoveGeneratorBishop: MoveGenerator {
     
     //TODO: struct?
-    class Cache {
+    final class Cache {
         let a1H8Mask: [BitBoard]
         let a1H8Magic: [BitBoard]
         let a8H1Mask: [BitBoard]

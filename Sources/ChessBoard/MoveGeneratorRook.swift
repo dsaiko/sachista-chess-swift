@@ -3,10 +3,10 @@
 
 import Foundation
 
-public class MoveGeneratorRook: MoveGenerator {
+public final class MoveGeneratorRook: MoveGenerator {
 
     //TODO: struct?
-    class Cache {
+    final class Cache {
         var rankShift: [Int]
         var rankMask:  [BitBoard]
         var fileMask:  [BitBoard]
