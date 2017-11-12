@@ -16,4 +16,38 @@ class PerftTests: XCTestCase {
         XCTAssertEqual(89_941_194, ChessBoard(fenString: "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8")!.perft(depth: 5))
     }
 
+//    func testPerftBugfix() {
+//        print("------------------------------\n\n")
+//        let fen = "R2q1rk1/p2p2pp/Q4n2/bb2p3/Npp5/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 2"
+//        let depth = 2
+//
+//        let board = ChessBoard(fenString: fen)!
+//
+//
+//        print("Fent matches: \(fen == board.fenString)")
+//        print()
+//        for i in 1 ... depth {
+//            print("Perft \(i): \(board.perft0(depth: i))")
+//        }
+//        print()
+//
+//        for move in board.pseudoLegalMoves() {
+//            let newBoard = board.makeMove(move: move)
+//            if !newBoard.isOpponentsKingUnderCheck() {
+//                print(newBoard.fenString)
+//                print("\(newBoard.perft0(depth: depth - 1))")
+//                //print("\(move): \(newBoard.perft0(depth: depth - 1)): \(newBoard.fenString)")
+//            }
+//        }
+//
+//        print()
+//        for move in board.pseudoLegalMoves() {
+//            let newBoard = board.makeMove(move: move)
+//            if !newBoard.isOpponentsKingUnderCheck() {
+//                print("./perft \"\(newBoard.fenString)\" \(depth - 1)")
+//            }
+//        }
+//
+//        print("\n\n------------------------------\n\n")
+//    }
 }

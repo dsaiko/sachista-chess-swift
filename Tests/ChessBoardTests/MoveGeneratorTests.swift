@@ -114,8 +114,6 @@ class MoveGeneratorTests: XCTestCase {
         XCTAssertEqual(10,  numberOfMoves(file:         "moves-bishop-07"))
     }
     
-
-    
     func testMove() {
         XCTAssertEqual("\(Move(piece: ChessBoard.Piece.pawn, from: .a2, to: .a3))", "a2a3")
         XCTAssertEqual("\(Move(piece: ChessBoard.Piece.pawn, from: .a7, to: .b8, isCapture: true, promotionPiece: ChessBoard.Piece.queen))", "a7b8q")
@@ -124,6 +122,14 @@ class MoveGeneratorTests: XCTestCase {
     func testEnumCount() {
         XCTAssertEqual(2, ChessBoard.Color.count)
         XCTAssertEqual(6, ChessBoard.Piece.count)
+    }
+    
+    func testCastlingOption() {
+        let board = ChessBoard(fenString: "R2q1rk1/p2p2pp/Q4n2/bb2p3/Npp5/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 2")!
+        let move = board.pseudoLegalMoves().first(where: { "\($0)" == "d8a8" })!
+        let newBoard = board.makeMove(move: move)
+        
+        XCTAssertEqual(newBoard.fenString, "q4rk1/p2p2pp/Q4n2/bb2p3/Npp5/1B3NBn/pPPP1PPP/R3K2R w KQ - 0 3")
     }
 }
 

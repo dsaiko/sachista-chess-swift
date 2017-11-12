@@ -166,10 +166,18 @@ extension ChessBoard {
                         zobristChecksum ^= ZobristChecksum.rndPieces[opponentColor][piece][targetIndex]
                         
                         if piece == .rook {
-                            if targetIndex == .a8 || targetIndex == .a1 {
-                                castlingOptions[opponentColor][Piece.queen] = false
-                            } else if targetIndex == .h8 || targetIndex == .h1 {
-                                castlingOptions[opponentColor][Piece.king] = false
+                            if sideToMove == .white {
+                                if targetIndex == .a8 {
+                                    castlingOptions[opponentColor][Piece.queen] = false
+                                } else if targetIndex == .h8 {
+                                    castlingOptions[opponentColor][Piece.king] = false
+                                }
+                            } else {
+                                if targetIndex == .a1 {
+                                    castlingOptions[opponentColor][Piece.queen] = false
+                                } else if targetIndex == .h1 {
+                                    castlingOptions[opponentColor][Piece.king] = false
+                                }
                             }
                         }
                         break
