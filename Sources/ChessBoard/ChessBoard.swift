@@ -4,147 +4,83 @@
 import Foundation
 
 /**
-     Representation of chess piece.
-     Enum of string values 'KQRBNP' respective 'kqrbnp'.
-     Can return piece color.
- */
-//TODO: try to make only 6 pieces set
-public enum Piece: Int, CustomStringConvertible {
-    /**
-     Representation of chess piece color.
-     String enum with 'w' and 'b' values.
-     */
-    public enum Color: String {
-        case white = "w"
-        case black = "b"
-    }
-    
-    case whiteKing      = 0
-    case whiteQueen
-    case whiteRook
-    case whiteBishop
-    case whiteKnight
-    case whitePawn
-
-    case blackKing
-    case blackQueen
-    case blackRook
-    case blackBishop
-    case blackKnight
-    case blackPawn      
-
-    init?(description: String) {
-        if let piece = Piece.chessSet.first(where: {$0.description == description }) {
-            self = piece
-        } else {
-            return nil
-        }
-    }
-    
-    public var color: Color {
-        switch self {
-        case .whiteKing, .whiteQueen, .whiteRook, .whiteBishop, .whiteKnight, .whitePawn:
-            return .white
-        default:
-            return .black
-        }
-    }
-    
-    public var description: String {
-        switch self {
-            case .whiteKing:    return "K"
-            case .whiteQueen:   return "Q"
-            case .whiteBishop:  return "B"
-            case .whiteKnight:  return "N"
-            case .whiteRook:    return "R"
-            case .whitePawn:    return "P"
-            case .blackKing:    return "k"
-            case .blackQueen:   return "q"
-            case .blackBishop:  return "b"
-            case .blackKnight:  return "n"
-            case .blackRook:    return "r"
-            case .blackPawn:    return "p"
-        }
-    }
-    
-    public static var chessSet: [Piece] = {
-        return [ .whiteKing,
-                 .whiteQueen,
-                 .whiteBishop,
-                 .whiteKnight,
-                 .whiteRook,
-                 .whitePawn,
-                 .blackKing,
-                 .blackQueen,
-                 .blackBishop,
-                 .blackKnight,
-                 .blackRook,
-                 .blackPawn]
-    }()
-}
-
-/**
-     Castling options for a side.
- */
-public struct CastlingOptions {
-    public let isKingSideCastlingAvailable: Bool
-    public let isQueenSideCastlingAvailable: Bool
-    
-    public init(isKingSideCastlingAvailable: Bool = false, isQueenSideCastlingAvailable: Bool = false) {
-        self.isKingSideCastlingAvailable = isKingSideCastlingAvailable
-        self.isQueenSideCastlingAvailable = isQueenSideCastlingAvailable
-    }
-}
-
-/**
-     Chess set for one side.
- */
-//TODO: Piece vs Pieces? similar content
-public class Pieces {
-    public let king:    BitBoard
-    public let queen:   BitBoard
-    public let bishop:  BitBoard
-    public let knight:  BitBoard
-    public let rook:    BitBoard
-    public let pawn:    BitBoard
-    
-    private(set) lazy var all = king | queen | bishop | knight | rook | pawn
-    
-    public init(king: BitBoard = .empty, queen: BitBoard = .empty, bishop: BitBoard = .empty, knight: BitBoard = .empty, rook: BitBoard = .empty, pawn: BitBoard = .empty) {
-        self.king   = king
-        self.queen  = queen
-        self.bishop = bishop
-        self.knight = knight
-        self.rook   = rook
-        self.pawn   = pawn
-    }
-}
-
-/**
  Chessboard representation
  TODO PERFORMANCE: class?? final??
  */
 public class ChessBoard {
+
+    /**
+     Representation of chess piece color.
+     String enum with 'w' and 'b' values.
+     */
+    public enum Color: Int {
+        case white = 0
+        case black = 1
+
+        public static let values: [Color] = [.white, .black]
+        public static let count: Int = { return values.count }()
+
+        var description: String {
+            switch self {
+                case .white: return "w"
+                case .black: return "b"
+            }
+        }
+        
+    }
+
+    public enum Piece: Int {
+        case king = 0
+        case queen
+        case bishop
+        case knight
+        case rook
+        case pawn
+        
+        public static let values: [Piece] = [.king, .queen, .bishop, .knight, .rook, .pawn]
+        public static let count: Int = { return values.count }()
+        public static let castlingOptions: [Piece] = [.king, .queen]
+        
+        func description(color: Color) -> String {
+            switch color {
+                case .white:
+                    switch self {
+                        case .king:      return "K"
+                        case .queen:     return "Q"
+                        case .bishop:    return "B"
+                        case .knight:    return "N"
+                        case .rook:      return "R"
+                        case .pawn:      return "P"
+                    }
+                case .black:
+                    switch self {
+                        case .king:      return "k"
+                        case .queen:     return "q"
+                        case .bishop:    return "b"
+                        case .knight:    return "n"
+                        case .rook:      return "r"
+                        case .pawn:      return "p"
+                    }
+            }
+        }
+     }
     
-    public let nextMove:                Piece.Color //TODO: rename to Color?
-    public let whitePieces:             Pieces  //TODO: make pieces array?
-    public let blackPieces:             Pieces
-    public let whiteCastlingOptions:    CastlingOptions
-    public let blackCastlingOptions:    CastlingOptions
+    public let sideToMove:              Color
+    public let pieces:                  [[BitBoard]]
+    public let castlingOptions:         [[Bool]]
     public let enPassantTarget:         BitBoard.Index?
     public let halfMoveClock:           Int
     public let fullMoveNumber:          Int
     
     //TODO PERFORMANCE: lazy or not? vs computed
     private(set) lazy var zobristChecksum   = ZobristChecksum.compute(board: self)
-    private(set) lazy var allPieces         = whitePieces.all | blackPieces.all
-    private(set) lazy var emptyBoard        = ~allPieces
-    private(set) lazy var piecesToMove      = nextMove == .white ? whitePieces : blackPieces
-    private(set) lazy var opponentPieces    = nextMove == .white ? blackPieces.all : whitePieces.all //TODO rename to BitBOard
-    private(set) lazy var emptyOrOpponent   = nextMove == .white ? ~whitePieces.all : ~blackPieces.all
-    private(set) lazy var opponentColor     = nextMove == .white ? Piece.Color.black : Piece.Color.white
-    private(set) lazy var kingBoard         = piecesToMove.king
-    private(set) lazy var kingIndex         = BitBoard.Index(rawValue: kingBoard.trailingZeroBitCount)!  //TODO PERFORMANCE: Int??
+
+    private(set) lazy var whitePiecesBoard:             BitBoard    = pieces[Color.white].reduce(0, { $0 | $1 })
+    private(set) lazy var blackPiecesBoard:             BitBoard    = pieces[Color.black].reduce(0, { $0 | $1 })
+    private(set) lazy var allPiecesBoard:               BitBoard    = whitePiecesBoard | blackPiecesBoard
+    private(set) lazy var noPiecesBoard:                BitBoard    = ~allPiecesBoard
+    private(set) lazy var emptyOrOpponentPiecesBoard:   BitBoard    = sideToMove == .white ? ~whitePiecesBoard : ~blackPiecesBoard
+    private(set) lazy var opponentColor:                Color       = sideToMove == .white ? .black : .white
 
     static let moveGenerators: [MoveGenerator] = [
         MoveGeneratorPawn(),
@@ -155,21 +91,24 @@ public class ChessBoard {
     ]
     
     public init(
-        nextMove: Piece.Color = .white,
-        whitePieces: Pieces = Pieces(),
-        blackPieces: Pieces = Pieces(),
-        whiteCastlingOptions: CastlingOptions = CastlingOptions(),
-        blackCastlingOptions: CastlingOptions = CastlingOptions(),
-        enPassantTarget: BitBoard.Index? = nil,
-        halfMoveClock: Int = 0,
-        fullMoveNumber: Int = 1,
-        zobristChecksum: UInt64? = nil
+        sideToMove:             Color               = .white,
+        pieces:                 [[BitBoard]]        = [[BitBoard]](repeating: [BitBoard](repeating: .empty, count: ChessBoard.Piece.count), count: ChessBoard.Color.count),
+        castlingOptions:        [[Bool]]            = [[Bool]](repeating: [Bool](repeating: false, count: Piece.castlingOptions.count), count: ChessBoard.Color.count),
+        enPassantTarget:        BitBoard.Index?     = nil,
+        halfMoveClock:          Int                 = 0,
+        fullMoveNumber:         Int                 = 1,
+        zobristChecksum:        UInt64?             = nil
     ) {
-        self.nextMove =                 nextMove
-        self.whitePieces =              whitePieces
-        self.blackPieces =              blackPieces
-        self.whiteCastlingOptions =     whiteCastlingOptions
-        self.blackCastlingOptions =     blackCastlingOptions
+        assert(pieces.count == ChessBoard.Color.count)
+        assert(pieces[Color.white].count == ChessBoard.Piece.count)
+        assert(pieces[Color.black].count == ChessBoard.Piece.count)
+        assert(castlingOptions.count == ChessBoard.Color.count)
+        assert(castlingOptions[Color.white].count == Piece.castlingOptions.count)
+        assert(castlingOptions[Color.black].count == Piece.castlingOptions.count)
+
+        self.sideToMove =               sideToMove
+        self.pieces =                   pieces
+        self.castlingOptions =          castlingOptions
         self.enPassantTarget =          enPassantTarget
         self.halfMoveClock =            halfMoveClock
         self.fullMoveNumber =           fullMoveNumber
@@ -179,7 +118,7 @@ public class ChessBoard {
         }
     }
     
-    func isBitmaskUnderAttack(color: Piece.Color, board: BitBoard) -> Bool {
+    func isBitmaskUnderAttack(color: Color, board: BitBoard) -> Bool {
         //TODO PERFORMANCE: order of moveGenerators
         //TODO PERFORMANCE: lazy var instead of loop? how many times this is called?
         //TODO PERFORMANCE: is this used only for castling?
@@ -197,54 +136,91 @@ public class ChessBoard {
          Standard starting chessboard
      */
     public static let standard: ChessBoard = {
-        let fullCastlingOptions = CastlingOptions(isKingSideCastlingAvailable: true, isQueenSideCastlingAvailable: true)
+        let fullCastlingOptions  = [ [true, true], [true, true] ]
+        let pieces: [[BitBoard]] = [
+            [
+                BitBoard(.e1), //king
+                BitBoard(.d1), //queen
+                BitBoard(.c1, .f1), //bishop
+                BitBoard(.b1, .g1), //knight
+                BitBoard(.a1, .h1), //rook
+                BitBoard(.a2, .b2, .c2, .d2, .e2, .f2, .g2, .h2) //pawn
+            ],
+            [
+                BitBoard(.e8), //king
+                BitBoard(.d8), //queen
+                BitBoard(.c8, .f8), //bishop
+                BitBoard(.b8, .g8), //knight
+                BitBoard(.a8, .h8), //rook
+                BitBoard(.a7, .b7, .c7, .d7, .e7, .f7, .g7, .h7) //pawn
+            ]
+        ]
         
-        let whitePieces = Pieces(
-            king:   BitBoard(.e1),
-            queen:  BitBoard(.d1),
-            bishop: BitBoard(.c1, .f1),
-            knight: BitBoard(.b1, .g1),
-            rook:   BitBoard(.a1, .h1),
-            pawn:   BitBoard(.a2, .b2, .c2, .d2, .e2, .f2, .g2, .h2)
-        )
-
-        let blackPieces = Pieces(
-            king:   BitBoard(.e8),
-            queen:  BitBoard(.d8),
-            bishop: BitBoard(.c8, .f8),
-            knight: BitBoard(.b8, .g8),
-            rook:   BitBoard(.a8, .h8),
-            pawn:   BitBoard(.a7, .b7, .c7, .d7, .e7, .f7, .g7, .h7)
-        )
-
         return ChessBoard(
-            nextMove:               .white,
-            whitePieces:            whitePieces,
-            blackPieces:            blackPieces,
-            whiteCastlingOptions:   fullCastlingOptions,
-            blackCastlingOptions:   fullCastlingOptions
+            sideToMove:             .white,
+            pieces:                 pieces,
+            castlingOptions:        fullCastlingOptions
         )
     }()
     
-    /**
-         All pieces as a dictionary of [Piece: BitBoard]
-     */
-    public var pieces: [Piece: BitBoard] {
-        return [
-            .whiteKing:     whitePieces.king,
-            .whiteQueen:    whitePieces.queen,
-            .whiteBishop:   whitePieces.bishop,
-            .whiteKnight:   whitePieces.knight,
-            .whiteRook:     whitePieces.rook,
-            .whitePawn:     whitePieces.pawn,
-            
-            .blackKing:     blackPieces.king,
-            .blackQueen:    blackPieces.queen,
-            .blackBishop:   blackPieces.bishop,
-            .blackKnight:   blackPieces.knight,
-            .blackRook:     blackPieces.rook,
-            .blackPawn:     blackPieces.pawn,
-        ]
+    //TODO: fnc vs prop
+    func mirrorVertical() -> ChessBoard {
+        var pieces = self.pieces
+        
+        //pieces
+        ChessBoard.forAllPieces() {
+            color, piece in
+            pieces[color][piece] = pieces[color][piece].mirrorVertical
+        }
+        
+        return ChessBoard(
+            sideToMove:             sideToMove,
+            pieces:                 pieces,
+            castlingOptions:        castlingOptions
+        )
+    }
+    
+    //TODO: fnc vs prop
+    func mirrorHorizontal() -> ChessBoard {
+        var pieces = self.pieces
+        
+        //pieces
+        ChessBoard.forAllPieces() {
+            color, piece in
+            pieces[color][piece] = pieces[color][piece].mirrorHorizontal
+        }
+        
+        return ChessBoard(
+            sideToMove:             sideToMove,
+            pieces:                 pieces,
+            castlingOptions:        castlingOptions
+        )
+    }
+    
+    static func forAllPieces(function: (Color, Piece) -> Void) {
+        for color in Color.values {
+            for piece in ChessBoard.Piece.values {
+                function(color, piece)
+            }
+        }
+    }
+    
+    static func forAllCastlingOptions(function: (Color, Piece) -> Void) {
+        for color in Color.values {
+            for piece in ChessBoard.Piece.castlingOptions {
+                function(color, piece)
+            }
+        }
     }
 }
 
+extension Array {
+    subscript<T: RawRepresentable>(index: T) -> Element where T.RawValue == Int  {
+        get {
+            return self[index.rawValue] //TODO: remove .rawValue from everywhere
+        }
+        set(newValue) {
+            self[index.rawValue] = newValue
+        }
+    }
+}

@@ -41,33 +41,24 @@ class ZobristChecksum {
     static let rnd = PRNG(seed: 1070372)
 
     static let rndBlackSide             = ZobristChecksum.rnd.rand64()
-    static let rndCastlingWhiteKing     = ZobristChecksum.rnd.rand64()
-    static let rndCastlingWhiteQueen    = ZobristChecksum.rnd.rand64()
-    static let rndCastlingBlackKing     = ZobristChecksum.rnd.rand64()
-    static let rndCastlingBlackQueen    = ZobristChecksum.rnd.rand64()
-    static let rndEnPassantFile         = ZobristChecksum.rndArray(size: 8)
-    static let rndPieces                = ZobristChecksum.rndArray2D(size1: Piece.chessSet.count, size2: 64)
+    static let rndCastling              = ZobristChecksum.rndArray2D(ChessBoard.Color.count, ChessBoard.Piece.castlingOptions.count)
+    static let rndEnPassantFile         = ZobristChecksum.rndArray(8) //TODO: magic 8
+    static let rndPieces                = ZobristChecksum.rndArray3D(ChessBoard.Color.count, ChessBoard.Piece.count, 64) //TODO: Magic 64
 
     static func compute(board: ChessBoard) -> UInt64 {
         var checksum: UInt64 = 0
         
         //next move
-        if board.nextMove == .black {
+        if board.sideToMove == .black {
             checksum ^= rndBlackSide
         }
 
         //castling
-        if board.whiteCastlingOptions.isKingSideCastlingAvailable {
-            checksum ^= rndCastlingWhiteKing
-        }
-        if board.whiteCastlingOptions.isQueenSideCastlingAvailable {
-            checksum ^= rndCastlingWhiteQueen
-        }
-        if board.blackCastlingOptions.isKingSideCastlingAvailable {
-            checksum ^= rndCastlingBlackKing
-        }
-        if board.blackCastlingOptions.isQueenSideCastlingAvailable {
-            checksum ^= rndCastlingBlackQueen
+        ChessBoard.forAllCastlingOptions {
+            color, piece in
+            if board.castlingOptions[color][piece] {
+                checksum ^= rndCastling[color][piece]
+            }
         }
 
         //en passant
@@ -77,31 +68,19 @@ class ZobristChecksum {
         }
         
         //pieces
-        for (piece, var bitboard) in [
-            Piece.whiteKing:        board.whitePieces.king,
-            Piece.whiteQueen:       board.whitePieces.queen,
-            Piece.whiteBishop:      board.whitePieces.bishop,
-            Piece.whiteKnight:      board.whitePieces.knight,
-            Piece.whiteRook:        board.whitePieces.rook,
-            Piece.whitePawn:        board.whitePieces.pawn,
-
-            Piece.blackKing:        board.blackPieces.king,
-            Piece.blackQueen:       board.blackPieces.queen,
-            Piece.blackBishop:      board.blackPieces.bishop,
-            Piece.blackKnight:      board.blackPieces.knight,
-            Piece.blackRook:        board.blackPieces.rook,
-            Piece.blackPawn:        board.blackPieces.pawn,
-
-        ] {
+        ChessBoard.forAllPieces() {
+            color, piece in
+            var bitboard = board.pieces[color][piece]
+            
             while (bitboard != 0) {
-                checksum ^= rndPieces[piece.rawValue][bitboard.bitPop().rawValue]
+                checksum ^= rndPieces[color][piece][bitboard.bitPop()]
             }
         }
 
         return checksum
     }
     
-    private static func rndArray(size: Int) -> [UInt64] {
+    private static func rndArray(_ size: Int) -> [UInt64] {
         var result = [UInt64](repeating: 0, count: size)
         for i in 0 ..< size {
             result[i] = ZobristChecksum.rnd.rand64()
@@ -109,12 +88,21 @@ class ZobristChecksum {
         return result
     }
 
-    private static func rndArray2D(size1: Int, size2: Int) -> [[UInt64]] {
+    private static func rndArray2D(_ size1: Int, _ size2: Int) -> [[UInt64]] {
         var result = [[UInt64]]()
         for _ in 0 ..< size1 {
-            result.append(rndArray(size: size2))
+            result.append(rndArray(size2))
         }
         return result
     }
+    
+    private static func rndArray3D(_ size1: Int, _ size2: Int, _ size3: Int) -> [[[UInt64]]] {
+        var result = [[[UInt64]]]()
+        for _ in 0 ..< size1 {
+            result.append(rndArray2D(size2, size3))
+        }
+        return result
+    }
+
 }
 

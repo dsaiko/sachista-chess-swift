@@ -8,7 +8,7 @@ import Foundation
  */
 public extension BitBoard {
     
-    static private let a1NotationCodes = "a1".unicodeScalars.filter{$0.isASCII}.map{Int($0.value)}
+    static private let a1NotationCodes = "a1".unicodeScalars.map{Int($0.value)}
     
     public enum Index: Int, CustomStringConvertible, Comparable {
         case a1 = 00; case b1 = 01; case c1 = 02; case d1 = 03; case e1 = 04; case f1 = 05; case g1 = 06; case h1 = 07
@@ -20,6 +20,7 @@ public extension BitBoard {
         case a7 = 48; case b7 = 49; case c7 = 50; case d7 = 51; case e7 = 52; case f7 = 53; case g7 = 54; case h7 = 55
         case a8 = 56; case b8 = 57; case c8 = 58; case d8 = 59; case e8 = 60; case f8 = 61; case g8 = 62; case h8 = 63
         
+        //TODO: make LAZY STATIC
         public var bitBoard: BitBoard {
             return 1 << self.rawValue
         }
@@ -37,7 +38,7 @@ public extension BitBoard {
                 return nil
             }
 
-            let values = notation.unicodeScalars.filter{$0.isASCII}.map{Int($0.value)}
+            let values = notation.unicodeScalars.map{Int($0.value)}
 
             self.init(rawValue: Int(((values[0] - BitBoard.a1NotationCodes[0]) + ((values[1] - BitBoard.a1NotationCodes[1]) << 3))))
         }

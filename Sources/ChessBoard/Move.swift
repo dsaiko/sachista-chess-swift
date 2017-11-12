@@ -4,17 +4,18 @@
 import Foundation
 
 //TODO PERFORMANCE: try class?
+//TODO PERFORMANCE: Is piece necessary in Move?
+//TODO PERFORMANCE: Is isCapture necessary in Move? isEnPassant?
 public struct Move: CustomStringConvertible {
-    let piece:          Piece
-    
+    let piece:          ChessBoard.Piece
     let from:           BitBoard.Index
     let to:             BitBoard.Index
     
     let isCapture:      Bool
     let isEnpassant:    Bool
-    let promotionPiece: Piece?
+    let promotionPiece: ChessBoard.Piece?
 
-    public init(piece: Piece, from: BitBoard.Index, to: BitBoard.Index, isCapture: Bool = false, isEnpassant: Bool = false, promotionPiece: Piece? = nil) {
+    public init(piece: ChessBoard.Piece, from: BitBoard.Index, to: BitBoard.Index, isCapture: Bool = false, isEnpassant: Bool = false, promotionPiece: ChessBoard.Piece? = nil) {
         self.piece          = piece
         self.from           = from
         self.to             = to
@@ -24,13 +25,13 @@ public struct Move: CustomStringConvertible {
     }
     
     public var description: String {
-        return "\(from)\(isCapture ? "x" : "")\(to)\((promotionPiece?.description ?? "").lowercased())"
+        return "\(from)\(to)\((promotionPiece?.description(color: ChessBoard.Color.black) ?? ""))"
     }
 }
 
 protocol MoveGenerator {
     
-    func attacks(board: ChessBoard, color: Piece.Color) -> BitBoard
+    func attacks(board: ChessBoard, color: ChessBoard.Color) -> BitBoard
     
     //TODO PERFORMANCE: Move array??
     func moves(board: ChessBoard) -> [Move]
@@ -44,7 +45,7 @@ extension ChessBoard {
         return ChessBoard.moveGenerators.flatMap({ $0.moves(board: self) })
     }
     
-    func attacks(color: Piece.Color) -> BitBoard
+    func attacks(color: Color) -> BitBoard
     {
         return ChessBoard.moveGenerators.flatMap({ $0.attacks(board: self, color: color) }).reduce(BitBoard(0), { $0 | $1 })
     }
@@ -60,32 +61,14 @@ extension ChessBoard {
         let sourceBitBoard = sourceIndex.bitBoard
         let targetBitBoard = targetIndex.bitBoard
 
-        var halfMoveClock = self.halfMoveClock + 1
+        var halfMoveClock   = self.halfMoveClock + 1
         var zobristChecksum = self.zobristChecksum
         var enPassantTarget = self.enPassantTarget
-
-        var isWhiteKingSideCastlingAvailable    = self.whiteCastlingOptions.isKingSideCastlingAvailable
-        var isWhiteQueenSideCastlingAvailable   = self.whiteCastlingOptions.isQueenSideCastlingAvailable
-        var isBlackKingSideCastlingAvailable    = self.blackCastlingOptions.isKingSideCastlingAvailable
-        var isBlackQueenSideCastlingAvailable   = self.blackCastlingOptions.isQueenSideCastlingAvailable
+        var fullMoveNumber  = self.fullMoveNumber
+        var sideToMove      = self.sideToMove
+        var pieces          = self.pieces
+        var castlingOptions = self.castlingOptions
         
-        var fullMoveNumber                      = self.fullMoveNumber
-        var nextMove                            = self.nextMove
-        
-        var whiteKing                           = self.whitePieces.king
-        var whiteQueen                          = self.whitePieces.queen
-        var whiteBishop                         = self.whitePieces.bishop
-        var whiteKnight                         = self.whitePieces.knight
-        var whiteRook                           = self.whitePieces.rook
-        var whitePawn                           = self.whitePieces.pawn
-
-        var blackKing                           = self.blackPieces.king
-        var blackQueen                          = self.blackPieces.queen
-        var blackBishop                         = self.blackPieces.bishop
-        var blackKnight                         = self.blackPieces.knight
-        var blackRook                           = self.blackPieces.rook
-        var blackPawn                           = self.blackPieces.pawn
-
         //reset enPassant
         if let target = enPassantTarget {
             zobristChecksum ^= ZobristChecksum.rndEnPassantFile[target.fileIndex]
@@ -94,201 +77,112 @@ extension ChessBoard {
 
         //remove castling options, will set them at the end
         //TODO: move inline? + castling
-        if isWhiteKingSideCastlingAvailable {
-            zobristChecksum ^= ZobristChecksum.rndCastlingWhiteKing
-        }
-        if isWhiteQueenSideCastlingAvailable {
-            zobristChecksum ^= ZobristChecksum.rndCastlingWhiteQueen
-        }
-        if isBlackKingSideCastlingAvailable {
-            zobristChecksum ^= ZobristChecksum.rndCastlingBlackKing
-        }
-        if isBlackQueenSideCastlingAvailable {
-            zobristChecksum ^= ZobristChecksum.rndCastlingBlackQueen
+        //castling
+        ChessBoard.forAllCastlingOptions {
+            color, piece in
+            if castlingOptions[color][piece] {
+                zobristChecksum ^= ZobristChecksum.rndCastling[color][piece]
+            }
         }
         
-        //TODO PERFORMANCE: try to use the pieces map
-        switch move.piece {
-            case .whiteKing:     whiteKing          ^= sourceBitBoard | targetBitBoard
-            case .whiteQueen:    whiteQueen         ^= sourceBitBoard | targetBitBoard
-            case .whiteBishop:   whiteBishop        ^= sourceBitBoard | targetBitBoard
-            case .whiteKnight:   whiteKnight        ^= sourceBitBoard | targetBitBoard
-            case .whiteRook:     whiteRook          ^= sourceBitBoard | targetBitBoard
-            case .whitePawn:     whitePawn          ^= sourceBitBoard | targetBitBoard
-            
-            case .blackKing:     blackKing          ^= sourceBitBoard | targetBitBoard
-            case .blackQueen:    blackQueen         ^= sourceBitBoard | targetBitBoard
-            case .blackBishop:   blackBishop        ^= sourceBitBoard | targetBitBoard
-            case .blackKnight:   blackKnight        ^= sourceBitBoard | targetBitBoard
-            case .blackRook:     blackRook          ^= sourceBitBoard | targetBitBoard
-            case .blackPawn:     blackPawn          ^= sourceBitBoard | targetBitBoard
-        }
-        
-        zobristChecksum ^= ZobristChecksum.rndPieces[move.piece.rawValue][sourceIndex.rawValue] ^ ZobristChecksum.rndPieces[move.piece.rawValue][targetIndex.rawValue]
+        pieces[sideToMove][move.piece] ^= sourceBitBoard | targetBitBoard
+        zobristChecksum ^= ZobristChecksum.rndPieces[sideToMove][move.piece][sourceIndex.rawValue] ^ ZobristChecksum.rndPieces[sideToMove][move.piece][targetIndex.rawValue]
 
-        if move.piece == .whiteRook {
-            if sourceIndex == .a1 {
-                isWhiteQueenSideCastlingAvailable = false
-            } else if sourceIndex == .h1 {
-                isWhiteKingSideCastlingAvailable = false
-            }
-        } else if move.piece == .blackRook {
-            if sourceIndex == .a8 {
-                isBlackQueenSideCastlingAvailable = false
-            } else if sourceIndex == .h8 {
-                isBlackKingSideCastlingAvailable = false
-            }
-        } else if move.piece == .whiteKing {
-            isWhiteQueenSideCastlingAvailable = false
-            isWhiteKingSideCastlingAvailable = false
-            
-            if sourceIndex == .e1 {
-                //handle castling
-                if targetIndex == .c1 {
-                    whiteRook ^= BitBoard.a1 | BitBoard.d1
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteRook.rawValue][BitBoard.Index.a1.rawValue] ^ ZobristChecksum.rndPieces[Piece.whiteRook.rawValue][BitBoard.Index.d1.rawValue]
-                } else if targetIndex == .g1 {
-                    whiteRook ^= BitBoard.h1 | BitBoard.f1
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteRook.rawValue][BitBoard.Index.h1.rawValue] ^ ZobristChecksum.rndPieces[Piece.whiteRook.rawValue][BitBoard.Index.f1.rawValue]
+        if move.piece == .rook {
+            if sideToMove == .white {
+                if sourceIndex == .a1 {
+                    castlingOptions[Color.white][Piece.queen] = false
+                } else if sourceIndex == .h1 {
+                    castlingOptions[Color.white][Piece.king] = false
+                }
+            } else {
+                if sourceIndex == .a8 {
+                    castlingOptions[Color.black][Piece.queen] = false
+                } else if sourceIndex == .h8 {
+                    castlingOptions[Color.black][Piece.king] = false
                 }
             }
-        } else if move.piece == .blackKing {
-            isBlackQueenSideCastlingAvailable = false
-            isBlackKingSideCastlingAvailable = false
-            
-            if sourceIndex == .e8 {
-                //handle castling
-                if targetIndex == .c8 {
-                    blackRook ^= BitBoard.a8 | BitBoard.d8
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackRook.rawValue][BitBoard.Index.a8.rawValue] ^ ZobristChecksum.rndPieces[Piece.blackRook.rawValue][BitBoard.Index.d8.rawValue]
-                } else if targetIndex == .g8 {
-                    blackRook ^= BitBoard.h8 | BitBoard.f8
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackRook.rawValue][BitBoard.Index.h8.rawValue] ^ ZobristChecksum.rndPieces[Piece.blackRook.rawValue][BitBoard.Index.f8.rawValue]
+        } else if move.piece == .king {
+            castlingOptions[sideToMove] = [false, false]
+
+            if sideToMove == .white {
+                if sourceIndex == .e1 {
+                    //handle castling
+                    if targetIndex == .c1 {
+                        pieces[sideToMove][Piece.rook] ^= BitBoard.a1 | BitBoard.d1
+                        zobristChecksum ^= ZobristChecksum.rndPieces[sideToMove][Piece.rook][BitBoard.Index.a1] ^ ZobristChecksum.rndPieces[sideToMove][Piece.rook][BitBoard.Index.d1]
+                    } else if targetIndex == .g1 {
+                        pieces[sideToMove][Piece.rook] ^= BitBoard.h1 | BitBoard.f1
+                        zobristChecksum ^= ZobristChecksum.rndPieces[sideToMove][Piece.rook][BitBoard.Index.h1] ^ ZobristChecksum.rndPieces[sideToMove][Piece.rook][BitBoard.Index.f1]
+                    }
+                }
+            } else {
+                if sourceIndex == .e8 {
+                    //handle castling
+                    if targetIndex == .c8 {
+                        pieces[sideToMove][Piece.rook] ^= BitBoard.a8 | BitBoard.d8
+                        zobristChecksum ^= ZobristChecksum.rndPieces[sideToMove][Piece.rook][BitBoard.Index.a8] ^ ZobristChecksum.rndPieces[sideToMove][Piece.rook][BitBoard.Index.d8]
+                    } else if targetIndex == .g8 {
+                        pieces[sideToMove][Piece.rook] ^= BitBoard.h8 | BitBoard.f8
+                        zobristChecksum ^= ZobristChecksum.rndPieces[sideToMove][Piece.rook][BitBoard.Index.h8] ^ ZobristChecksum.rndPieces[sideToMove][Piece.rook][BitBoard.Index.f8]
+                    }
                 }
             }
-        } else if move.piece == .whitePawn {
+        } else if move.piece == .pawn {
             halfMoveClock = 0
 
             //initial pawn double move
             if abs(targetIndex.rawValue - sourceIndex.rawValue) > 10 {
-                enPassantTarget = BitBoard.Index(rawValue: sourceIndex.rawValue + 8)!
+                enPassantTarget = BitBoard.Index(rawValue: sourceIndex.rawValue + (sideToMove == .white ? 8 : -8))!
             } else if let promotionPiece = move.promotionPiece {
-                whitePawn ^= targetBitBoard
-                zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whitePawn.rawValue][targetIndex.rawValue]
-                
-                //TODO: SIMPLIFY!
-                if promotionPiece == .whiteQueen {
-                    whiteQueen |= targetBitBoard
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteQueen.rawValue][targetIndex.rawValue]
-                } else if promotionPiece == .whiteBishop {
-                    whiteBishop |= targetBitBoard
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteBishop.rawValue][targetIndex.rawValue]
-                } else if promotionPiece == .whiteKnight {
-                    whiteKnight |= targetBitBoard
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteKnight.rawValue][targetIndex.rawValue]
-                } else if promotionPiece == .whiteRook {
-                    whiteRook |= targetBitBoard
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteRook.rawValue][targetIndex.rawValue]
-                }
-            }
-        } else if move.piece == .blackPawn {
-            halfMoveClock = 0
-            
-            //initial pawn double move
-            if abs(targetIndex.rawValue - sourceIndex.rawValue) > 10 {
-                enPassantTarget = BitBoard.Index(rawValue: sourceIndex.rawValue + -8)!
-            } else if let promotionPiece = move.promotionPiece {
-                blackPawn ^= targetBitBoard
-                zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackPawn.rawValue][targetIndex.rawValue]
-                
-                //TODO: SIMPLIFY!
-                if promotionPiece == .blackQueen {
-                    blackQueen |= targetBitBoard
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackQueen.rawValue][targetIndex.rawValue]
-                } else if promotionPiece == .blackBishop {
-                    blackBishop |= targetBitBoard
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackBishop.rawValue][targetIndex.rawValue]
-                } else if promotionPiece == .blackKnight {
-                    blackKnight |= targetBitBoard
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackKnight.rawValue][targetIndex.rawValue]
-                } else if promotionPiece == .blackRook {
-                    blackRook |= targetBitBoard
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackRook.rawValue][targetIndex.rawValue]
-                }
+                pieces[sideToMove][Piece.pawn] ^= targetBitBoard
+                zobristChecksum ^= ZobristChecksum.rndPieces[sideToMove][Piece.pawn][targetIndex]
+
+                pieces[sideToMove][promotionPiece] |= targetBitBoard
+                zobristChecksum ^= ZobristChecksum.rndPieces[sideToMove][promotionPiece][targetIndex]
             }
         }
 
         if move.isCapture {
             halfMoveClock = 0
             
-            
             if move.isEnpassant {
                 //remove captured piece
-                if move.piece == .whitePawn {
-                    blackPawn ^= targetBitBoard.oneSouth
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackPawn.rawValue][targetIndex.rawValue - 8]
+                if sideToMove == .white {
+                    pieces[opponentColor][Piece.pawn] ^= targetBitBoard.oneSouth
+                    zobristChecksum ^= ZobristChecksum.rndPieces[opponentColor][Piece.pawn][targetIndex.rawValue - 8]
                 } else {
-                    whitePawn ^= targetBitBoard.oneNorth
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whitePawn.rawValue][targetIndex.rawValue + 8]
+                    pieces[opponentColor][Piece.pawn] ^= targetBitBoard.oneNorth
+                    zobristChecksum ^= ZobristChecksum.rndPieces[opponentColor][Piece.pawn][targetIndex.rawValue + 8]
                 }
-            } else if nextMove == .white {
-                //TODO: change to immadiate XOR and compare result
-                //TODO: simplify for both colors
-                //TODO: change order of comparisons, what about isEnpassant?
-                if (blackPawn & targetBitBoard) != 0 {
-                    blackPawn ^= targetBitBoard
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackPawn.rawValue][targetIndex.rawValue]
-                } else if (blackBishop & targetBitBoard) != 0 {
-                    blackBishop ^= targetBitBoard
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackBishop.rawValue][targetIndex.rawValue]
-                } else if (blackKnight & targetBitBoard) != 0 {
-                    blackKnight ^= targetBitBoard
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackKnight.rawValue][targetIndex.rawValue]
-                } else if (blackQueen & targetBitBoard) != 0 {
-                    blackQueen ^= targetBitBoard
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackQueen.rawValue][targetIndex.rawValue]
-                } else if (blackRook & targetBitBoard) != 0 {
-                    blackRook ^= targetBitBoard
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.blackRook.rawValue][targetIndex.rawValue]
-                    
-                    if targetIndex == .a8 {
-                        isBlackQueenSideCastlingAvailable = false
-                    } else if targetIndex == .h8 {
-                        isBlackKingSideCastlingAvailable = false
-                    }
-                }
-                
             } else {
-                if (whitePawn & targetBitBoard) != 0 {
-                    whitePawn ^= targetBitBoard
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whitePawn.rawValue][targetIndex.rawValue]
-                } else if (whiteBishop & targetBitBoard) != 0 {
-                    whiteBishop ^= targetBitBoard
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteBishop.rawValue][targetIndex.rawValue]
-                } else if (whiteKnight & targetBitBoard) != 0 {
-                    whiteKnight ^= targetBitBoard
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteKnight.rawValue][targetIndex.rawValue]
-                } else if (whiteQueen & targetBitBoard) != 0 {
-                    whiteQueen ^= targetBitBoard
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteQueen.rawValue][targetIndex.rawValue]
-                } else if (whiteRook & targetBitBoard) != 0 {
-                    whiteRook ^= targetBitBoard
-                    zobristChecksum ^= ZobristChecksum.rndPieces[Piece.whiteRook.rawValue][targetIndex.rawValue]
+                for piece in Piece.values {
+                    let bitboard = pieces[opponentColor][piece]
                     
-                    if targetIndex == .a1 {
-                        isWhiteQueenSideCastlingAvailable = false
-                    } else if targetIndex == .h1 {
-                        isWhiteKingSideCastlingAvailable = false
+                    //TODO: change to immadiate XOR and compare result
+                    //TODO: change order of comparisons, what about isEnpassant?
+                    if (bitboard & targetBitBoard) != 0 {
+                        pieces[opponentColor][piece] ^= targetBitBoard
+                        zobristChecksum ^= ZobristChecksum.rndPieces[opponentColor][piece][targetIndex]
+                        
+                        if piece == .rook {
+                            if targetIndex == .a8 || targetIndex == .a1 {
+                                castlingOptions[opponentColor][Piece.queen] = false
+                            } else if targetIndex == .h8 || targetIndex == .h1 {
+                                castlingOptions[opponentColor][Piece.king] = false
+                            }
+                        }
+                        break
                     }
                 }
             }
         }
 
-        if nextMove == .black {
+        if sideToMove == .black {
             fullMoveNumber += 1
         }
 
-        nextMove = self.opponentColor
+        sideToMove = self.opponentColor
         zobristChecksum ^= ZobristChecksum.rndBlackSide //switch the side
         
         //set enPassant
@@ -297,43 +191,18 @@ extension ChessBoard {
         }
         
         //set castling options
-        if isWhiteKingSideCastlingAvailable {
-            zobristChecksum ^= ZobristChecksum.rndCastlingWhiteKing
+        //castling
+        ChessBoard.forAllCastlingOptions {
+            color, piece in
+            if castlingOptions[color][piece] {
+                zobristChecksum ^= ZobristChecksum.rndCastling[color][piece]
+            }
         }
-        if isWhiteQueenSideCastlingAvailable {
-            zobristChecksum ^= ZobristChecksum.rndCastlingWhiteQueen
-        }
-        if isBlackKingSideCastlingAvailable {
-            zobristChecksum ^= ZobristChecksum.rndCastlingBlackKing
-        }
-        if isBlackQueenSideCastlingAvailable {
-            zobristChecksum ^= ZobristChecksum.rndCastlingBlackQueen
-        }
-        
-        let whitePieces = Pieces(
-            king:   whiteKing,
-            queen:  whiteQueen,
-            bishop: whiteBishop,
-            knight: whiteKnight,
-            rook:   whiteRook,
-            pawn:   whitePawn
-        )
-        
-        let blackPieces = Pieces(
-            king:   blackKing,
-            queen:  blackQueen,
-            bishop: blackBishop,
-            knight: blackKnight,
-            rook:   blackRook,
-            pawn:   blackPawn
-        )
         
         let newBoard = ChessBoard(
-            nextMove:               nextMove,
-            whitePieces:            whitePieces,
-            blackPieces:            blackPieces,
-            whiteCastlingOptions:   CastlingOptions(isKingSideCastlingAvailable: isWhiteKingSideCastlingAvailable, isQueenSideCastlingAvailable: isWhiteQueenSideCastlingAvailable),
-            blackCastlingOptions:   CastlingOptions(isKingSideCastlingAvailable: isBlackKingSideCastlingAvailable, isQueenSideCastlingAvailable: isBlackQueenSideCastlingAvailable),
+            sideToMove:             sideToMove,
+            pieces:                 pieces,
+            castlingOptions:        castlingOptions,
             enPassantTarget:        enPassantTarget,
             halfMoveClock:          halfMoveClock,
             fullMoveNumber:         fullMoveNumber,
@@ -353,45 +222,48 @@ extension ChessBoard {
     //TODO what should be fce and what property? general.
     func isOpponentsKingUnderCheck() -> Bool {
         
-        let opponentKing = (nextMove == .white ? blackPieces : whitePieces).king
-        if opponentKing == 0 { return false }
+        let opponentKing = pieces[opponentColor][Piece.king]
+        if opponentKing == .empty { return false } //TODO: 0 vs .empty
         
-        //this could be
-        //return (attacks(color: nextMove) & opponentKing) == 0
+        //debug check: only 1 king allowed
+        assert(opponentKing.nonzeroBitCount == 1, "There can be only one king on the board.")
+
+        //TODO: retest one liner performance
+        //this function could be one liner: return (attacks(color: sideToMove) & opponentKing) == 0
         //but following performs better
         
         let opponentKingIndex = opponentKing.trailingZeroBitCount
         
         //TODO: rawValue or Int??
         //TODO: simplify!
-        let opponentPawnCache = nextMove == .white ? MoveGeneratorPawn.cacheBlack : MoveGeneratorPawn.cacheWhite
-        if (piecesToMove.pawn & opponentPawnCache.attacks[opponentKingIndex]) != 0 {
+        let opponentPawnCache = sideToMove == .white ? MoveGeneratorPawn.cacheBlack : MoveGeneratorPawn.cacheWhite
+        if (pieces[sideToMove][Piece.pawn] & opponentPawnCache.attacks[opponentKingIndex]) != 0 {
             return true
         }
-        if (piecesToMove.knight & MoveGeneratorKnight.cache.moves[opponentKingIndex]) != 0 {
-            return true
-        }
-        
-        if (piecesToMove.king & MoveGeneratorKing.cache.moves[opponentKingIndex]) != 0 {
+        if (pieces[sideToMove][Piece.knight] & MoveGeneratorKnight.cache.moves[opponentKingIndex]) != 0 {
             return true
         }
         
-        let rooks = piecesToMove.rook | piecesToMove.queen
-        if (MoveGeneratorRook.cache.rankMoves[opponentKingIndex][Int((allPieces & MoveGeneratorRook.cache.rankMask[opponentKingIndex]) >> MoveGeneratorRook.cache.rankShift[opponentKingIndex])] & rooks) != 0 {
-            return true
-        }
-        if (MoveGeneratorRook.cache.fileMoves[opponentKingIndex][Int(((allPieces & MoveGeneratorRook.cache.fileMask[opponentKingIndex]) &* MoveGeneratorRook.cache.fileMagic[opponentKingIndex]) >> 57)] & rooks) != 0 {
+        if (pieces[sideToMove][Piece.king] & MoveGeneratorKing.cache.moves[opponentKingIndex]) != 0 {
             return true
         }
         
-        //TODO: is this already used at moveGenBishop, make lazy var
-        let bishops = piecesToMove.bishop | piecesToMove.queen
-        
-        if (MoveGeneratorBishop.cache.a8H1Moves[opponentKingIndex][Int(((allPieces & MoveGeneratorBishop.cache.a8H1Mask[opponentKingIndex]) &* MoveGeneratorBishop.cache.a8H1Magic[opponentKingIndex]) >> 57)] & bishops) != 0 {
+        let rooks = pieces[sideToMove][Piece.rook] | pieces[sideToMove][Piece.queen]
+        if (MoveGeneratorRook.cache.rankMoves[opponentKingIndex][Int((allPiecesBoard & MoveGeneratorRook.cache.rankMask[opponentKingIndex]) >> MoveGeneratorRook.cache.rankShift[opponentKingIndex])] & rooks) != 0 {
+            return true
+        }
+        if (MoveGeneratorRook.cache.fileMoves[opponentKingIndex][Int(((allPiecesBoard & MoveGeneratorRook.cache.fileMask[opponentKingIndex]) &* MoveGeneratorRook.cache.fileMagic[opponentKingIndex]) >> 57)] & rooks) != 0 {
             return true
         }
         
-        if (MoveGeneratorBishop.cache.a1H8Moves[opponentKingIndex][Int(((allPieces & MoveGeneratorBishop.cache.a1H8Mask[opponentKingIndex]) &* MoveGeneratorBishop.cache.a1H8Magic[opponentKingIndex]) >> 57)] & bishops) != 0 {
+        //TODO: is this already used at moveGenBishop, make lazy var?
+        let bishops = pieces[sideToMove][Piece.bishop] | pieces[sideToMove][Piece.queen]
+        
+        if (MoveGeneratorBishop.cache.a8H1Moves[opponentKingIndex][Int(((allPiecesBoard & MoveGeneratorBishop.cache.a8H1Mask[opponentKingIndex]) &* MoveGeneratorBishop.cache.a8H1Magic[opponentKingIndex]) >> 57)] & bishops) != 0 {
+            return true
+        }
+        
+        if (MoveGeneratorBishop.cache.a1H8Moves[opponentKingIndex][Int(((allPiecesBoard & MoveGeneratorBishop.cache.a1H8Mask[opponentKingIndex]) &* MoveGeneratorBishop.cache.a1H8Magic[opponentKingIndex]) >> 57)] & bishops) != 0 {
             return true
         }
         

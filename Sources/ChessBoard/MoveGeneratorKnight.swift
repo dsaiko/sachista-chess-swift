@@ -30,12 +30,8 @@ public class MoveGeneratorKnight: MoveGenerator {
     
     static let cache = Cache()
     
-    func attacks(board: ChessBoard, color: Piece.Color) -> BitBoard {
-        var pieces = color == .white ? board.whitePieces.knight : board.blackPieces.knight
-        if pieces == .empty {
-            return .empty
-        }
-
+    func attacks(board: ChessBoard, color: ChessBoard.Color) -> BitBoard {
+        var pieces = board.pieces[board.sideToMove][ChessBoard.Piece.knight]
         var attacks: BitBoard = .empty
         while pieces != .empty {
             attacks |= MoveGeneratorKnight.cache.moves[pieces.bitPop().rawValue]
@@ -46,19 +42,18 @@ public class MoveGeneratorKnight: MoveGenerator {
     
     func moves(board: ChessBoard) -> [Move] {
         var result  = [Move]()
-        let piece   = board.nextMove == .white ? Piece.whiteKnight : Piece.blackKnight
 
-        var pieces = board.piecesToMove.knight
+        var pieces = board.pieces[board.sideToMove][ChessBoard.Piece.knight]
         while pieces != .empty {
 
             let sourceIndex = pieces.bitPop()
-            var moves: BitBoard = MoveGeneratorKnight.cache.moves[sourceIndex.rawValue] & board.emptyOrOpponent
+            var moves: BitBoard = MoveGeneratorKnight.cache.moves[sourceIndex.rawValue] & board.emptyOrOpponentPiecesBoard
 
             while moves != .empty {
                 let targetIndex = moves.bitPop()
                 
-                let isCapture = (targetIndex.bitBoard & board.opponentPieces) != 0
-                result.append(Move(piece: piece, from: sourceIndex, to: targetIndex, isCapture: isCapture, isEnpassant: false, promotionPiece: nil))
+                let isCapture = (targetIndex.bitBoard & board.emptyOrOpponentPiecesBoard) != 0
+                result.append(Move(piece: ChessBoard.Piece.knight, from: sourceIndex, to: targetIndex, isCapture: isCapture, isEnpassant: false, promotionPiece: nil))
             }
         }
         

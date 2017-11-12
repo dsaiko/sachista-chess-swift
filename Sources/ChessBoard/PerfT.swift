@@ -105,11 +105,11 @@ public extension ChessBoard {
         var count: UInt64 = 0
         
         let attacks = self.attacks(color: opponentColor)
-        let isCheck = (attacks & self.kingBoard) != 0
+        let isCheck = (attacks & self.pieces[sideToMove][Piece.king]) != 0
         
         for move in pseudoLegalMoves() {
             let sourceBitBoard = move.from.bitBoard
-            let isKingMove = move.piece == . whiteKing || move.piece == .blackKing
+            let isKingMove = move.piece == Piece.king
             
             if isKingMove || isCheck || ((sourceBitBoard & attacks) != 0) || move.isEnpassant {
                 //need to validate move

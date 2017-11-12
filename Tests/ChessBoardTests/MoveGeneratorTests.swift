@@ -124,5 +124,10 @@ class MoveGeneratorTests: XCTestCase {
         XCTAssertEqual(193_690_690, ChessBoard(fenString: "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -")!.perft(depth: 5))
         XCTAssertEqual(89_941_194, ChessBoard(fenString: "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8")!.perft(depth: 5))
     }
+    
+    func testEnumCount() {
+        XCTAssertEqual(2, ChessBoard.Color.count)
+        XCTAssertEqual(6, ChessBoard.Piece.count)
+    }
 }
 

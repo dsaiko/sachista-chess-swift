@@ -13,9 +13,7 @@ extension ChessBoard: CustomStringConvertible {
     public var description: String {
         var result = ChessBoard.header
         
-        let mirroredPieces = pieces.flatMap {
-            return [$0: $1.mirrorVertical]
-        }
+        let mirroredPieces = self.mirrorVertical().pieces
         
         for i in 0 ..< BitBoard.bitWidth {
             if (i % 8) == 0 {
@@ -33,12 +31,16 @@ extension ChessBoard: CustomStringConvertible {
             let test: BitBoard = 1 << i
             
             let c: String? = {
-                for (piece, board) in mirroredPieces {
-                    if (board & test) != 0 {
-                        return piece.description
+                var description: String? = nil
+                
+                ChessBoard.forAllPieces() {
+                    color, piece in
+                    if (mirroredPieces[color][piece] & test) != 0 {
+                        description = piece.description(color: color)
                     }
                 }
-                return nil
+
+                return description
             }()
             
             result += "\(c ?? "-") "
@@ -56,9 +58,7 @@ extension ChessBoard: CustomStringConvertible {
     public var fenString: String {
         var result = ""
 
-        let mirroredPieces = pieces.flatMap {
-            return [$0: $1.mirrorVertical]
-        }
+        let mirroredPieces = self.mirrorVertical().pieces
         
         // 1) Output board setup
         var emptyCount = 0
@@ -84,12 +84,16 @@ extension ChessBoard: CustomStringConvertible {
             let test: BitBoard = 1 << i
             
             let c: String? = {
-                for (piece, board) in mirroredPieces {
-                    if (board & test) != 0 {
-                        return piece.description
+                var description: String? = nil
+                
+                ChessBoard.forAllPieces() {
+                    color, piece in
+                    if (mirroredPieces[color][piece] & test) != 0 {
+                        description = piece.description(color: color)
                     }
                 }
-                return nil
+                
+                return description
             }()
 
             outputItem(c)
@@ -97,14 +101,14 @@ extension ChessBoard: CustomStringConvertible {
         outputItem("")
         
         // 2) Output next move
-        result += " \(nextMove == .white ? Piece.Color.white.rawValue : Piece.Color.black.rawValue) "
+        result += " \(sideToMove.description) "
 
         // 3) output castling
         var castling = ""
-        castling += whiteCastlingOptions.isKingSideCastlingAvailable ? Piece.whiteKing.description : ""
-        castling += whiteCastlingOptions.isQueenSideCastlingAvailable ? Piece.whiteQueen.description : ""
-        castling += blackCastlingOptions.isKingSideCastlingAvailable ? Piece.blackKing.description : ""
-        castling += blackCastlingOptions.isQueenSideCastlingAvailable ? Piece.blackQueen.description : ""
+        castling += castlingOptions[Color.white][ChessBoard.Piece.king]    ?   Piece.king.description(color: .white)   : ""
+        castling += castlingOptions[Color.white][ChessBoard.Piece.queen]   ?   Piece.queen.description(color: .white)  : ""
+        castling += castlingOptions[Color.black][ChessBoard.Piece.king]    ?   Piece.king.description(color: .black)   : ""
+        castling += castlingOptions[Color.black][ChessBoard.Piece.queen]   ?   Piece.queen.description(color: .black)  : ""
 
         result += castling.isEmpty ? "-" : castling
 
@@ -143,43 +147,36 @@ extension ChessBoard: CustomStringConvertible {
             if let spaces = Int(String(c)) {
                 //if number of spaces
                 if spaces > 0 && spaces <= 8 {
-                    for piece in pieces.keys {
-                        pieces[piece]! <<= spaces
+                    //shift all pieces
+                    ChessBoard.forAllPieces() {
+                        color, piece in
+                        pieces[color][piece] <<= spaces
                     }
                 } else {
                     return nil
                 }
-            } else if let piece = Piece(description: String(c))  {
-                for piece in pieces.keys {
-                    pieces[piece]! <<= 1
+            } else {
+                let char = String(c)
+                let color: Color = char.uppercased() == char ? .white : .black
+                guard let piece = Piece.values.first(where: { $0.description(color: color) == char }) else {
+                    return nil
                 }
 
-                pieces[piece]! |= 1
-            } else {
-                return nil
+                //shift all pieces
+                ChessBoard.forAllPieces() {
+                    color, piece in
+                    pieces[color][piece] <<= 1
+                }
+
+                pieces[color][piece] |= 1
             }
         }
         
-        let whitePieces = Pieces(
-            king:   pieces[.whiteKing]!.mirrorHorizontal,
-            queen:  pieces[.whiteQueen]!.mirrorHorizontal,
-            bishop: pieces[.whiteBishop]!.mirrorHorizontal,
-            knight: pieces[.whiteKnight]!.mirrorHorizontal,
-            rook:   pieces[.whiteRook]!.mirrorHorizontal,
-            pawn:   pieces[.whitePawn]!.mirrorHorizontal
-        )
-        
-        let blackPieces = Pieces(
-            king:   pieces[.blackKing]!.mirrorHorizontal,
-            queen:  pieces[.blackQueen]!.mirrorHorizontal,
-            bishop: pieces[.blackBishop]!.mirrorHorizontal,
-            knight: pieces[.blackKnight]!.mirrorHorizontal,
-            rook:   pieces[.blackRook]!.mirrorHorizontal,
-            pawn:   pieces[.blackPawn]!.mirrorHorizontal
-        )
+        pieces = ChessBoard(pieces: pieces).mirrorHorizontal().pieces
 
         // 2) next move color
-        guard let nextMove = Piece.Color(rawValue: String(sections.removeFirst())) else {
+        let color = String(sections.removeFirst())
+        guard let sideToMove = Color.values.first(where: {$0.description == color }) else {
             return nil
         }
         
@@ -193,24 +190,25 @@ extension ChessBoard: CustomStringConvertible {
         if castling != "-" {
             for c in castling {
                 switch String(c) {
-                case Piece.whiteKing.description:
+                case Piece.king.description(color: .white):
                     whiteKingCastling = true
-                case Piece.whiteQueen.description:
+                case Piece.queen.description(color: .white):
                     whiteQueenCastling = true
-                case Piece.blackKing.description:
+                case Piece.king.description(color: .black):
                     blackKingCastling = true
-                case Piece.blackQueen.description:
+                case Piece.queen.description(color: .black):
                     blackQueenCastling = true
                 default:
                     return nil
                 }
             }
         }
+        
         //castling correction
-        whiteKingCastling  =  whiteKingCastling && ((whitePieces.king & .e1) != .empty) && ((whitePieces.rook & .h1) != .empty)
-        whiteQueenCastling =  whiteQueenCastling && ((whitePieces.king & .e1) != .empty) && ((whitePieces.rook & .a1) != .empty)
-        blackKingCastling  =  blackKingCastling && ((blackPieces.king & .e8) != .empty) && ((blackPieces.rook & .h8) != .empty)
-        blackQueenCastling =  blackQueenCastling && ((blackPieces.king & .e8) != .empty) && ((blackPieces.rook & .a8) != .empty)
+        whiteKingCastling  =  whiteKingCastling     && ((pieces[Color.white][Piece.king] & .e1) != .empty) && ((pieces[Color.white][Piece.rook] & .h1) != .empty)
+        whiteQueenCastling =  whiteQueenCastling    && ((pieces[Color.white][Piece.king] & .e1) != .empty) && ((pieces[Color.white][Piece.rook] & .a1) != .empty)
+        blackKingCastling  =  blackKingCastling     && ((pieces[Color.black][Piece.king] & .e8) != .empty) && ((pieces[Color.black][Piece.rook] & .h8) != .empty)
+        blackQueenCastling =  blackQueenCastling    && ((pieces[Color.black][Piece.king] & .e8) != .empty) && ((pieces[Color.black][Piece.rook] & .a8) != .empty)
 
         // 4) enPassantTarget
         let enPassantTargetString = sections.removeFirst()
@@ -246,11 +244,9 @@ extension ChessBoard: CustomStringConvertible {
         }
         
         self.init(
-            nextMove:               nextMove,
-            whitePieces:            whitePieces,
-            blackPieces:            blackPieces,
-            whiteCastlingOptions:   CastlingOptions(isKingSideCastlingAvailable: whiteKingCastling, isQueenSideCastlingAvailable: whiteQueenCastling),
-            blackCastlingOptions:   CastlingOptions(isKingSideCastlingAvailable: blackKingCastling, isQueenSideCastlingAvailable: blackQueenCastling),
+            sideToMove:             sideToMove,
+            pieces:                 pieces,
+            castlingOptions:        [[whiteKingCastling, whiteQueenCastling], [blackKingCastling, blackQueenCastling]],
             enPassantTarget:        enPassantTarget,
             halfMoveClock:          halfMoveClock,
             fullMoveNumber:         fullMoveNumber

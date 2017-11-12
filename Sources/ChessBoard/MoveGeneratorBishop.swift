@@ -237,13 +237,13 @@ public class MoveGeneratorBishop: MoveGenerator {
         return MoveGeneratorBishop.cache.a8H1Moves[sourceIndex][stateIndexA8H1] | MoveGeneratorBishop.cache.a1H8Moves[sourceIndex][stateIndexA1H8]
     }
     
-    func attacks(board: ChessBoard, color: Piece.Color) -> BitBoard {
-        var pieces = color == .white ? (board.whitePieces.bishop | board.whitePieces.queen) : (board.blackPieces.bishop | board.blackPieces.queen)
+    func attacks(board: ChessBoard, color: ChessBoard.Color) -> BitBoard {
+        var pieces = board.pieces[color][ChessBoard.Piece.bishop] | board.pieces[color][ChessBoard.Piece.queen]
         var attacks: BitBoard = .empty
         
         //for all bishops
         while (pieces) != .empty {
-            attacks |= pieceMoves(sourceIndex: pieces.bitPop().rawValue, allPieces: board.allPieces)
+            attacks |= pieceMoves(sourceIndex: pieces.bitPop().rawValue, allPieces: board.allPiecesBoard)
         }
         
         return attacks
@@ -252,20 +252,19 @@ public class MoveGeneratorBishop: MoveGenerator {
     func moves(board: ChessBoard) -> [Move] {
         var result  = [Move]()
         
-        for (piece, var pieces) in [
-            (board.nextMove == .white ? Piece.whiteBishop : Piece.blackBishop, board.piecesToMove.bishop),
-            (board.nextMove == .white ? Piece.whiteQueen : Piece.blackQueen, board.piecesToMove.queen)
-        ] {
+        for piece in [ChessBoard.Piece.bishop, ChessBoard.Piece.queen] {
+            var pieces = board.pieces[board.sideToMove][piece]
+            
             while pieces != .empty {
                 
                 //get next bishop
                 let sourceIndex = pieces.bitPop()
-                var moves: BitBoard = pieceMoves(sourceIndex: sourceIndex.rawValue, allPieces: board.allPieces) & board.emptyOrOpponent
+                var moves: BitBoard = pieceMoves(sourceIndex: sourceIndex.rawValue, allPieces: board.allPiecesBoard) & board.emptyOrOpponentPiecesBoard
                 
                 //for all moves
                 while moves != .empty {
                     let targetIndex = moves.bitPop()
-                    let isCapture = (targetIndex.bitBoard & board.opponentPieces) != 0
+                    let isCapture = (targetIndex.bitBoard & board.emptyOrOpponentPiecesBoard) != 0
                     result.append(Move(piece: piece, from: sourceIndex, to: targetIndex, isCapture: isCapture, isEnpassant: false, promotionPiece: nil))
                 }
             }
