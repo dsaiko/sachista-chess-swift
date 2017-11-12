@@ -5,8 +5,7 @@ import Foundation
 
 public final class MoveGeneratorPawn: MoveGenerator {
     
-    //TODO: struct?
-    final class Cache {
+    struct Cache {
         let moves          : [BitBoard]
         let doubleMoves    : [BitBoard]
         let attacks        : [BitBoard]

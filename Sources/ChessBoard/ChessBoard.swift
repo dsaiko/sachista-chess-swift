@@ -74,8 +74,6 @@ public final class ChessBoard {
     public let fullMoveNumber:          Int
     
     //TODO PERFORMANCE: lazy or not? vs computed
-    private(set) lazy var zobristChecksum   = ZobristChecksum.compute(board: self)
-
     private(set) lazy var opponentColor:                Color       = sideToMove == .white ? .black : .white
     private(set) lazy var whitePiecesBoard:             BitBoard    = pieces[Color.white].reduce(0, { $0 | $1 })
     private(set) lazy var blackPiecesBoard:             BitBoard    = pieces[Color.black].reduce(0, { $0 | $1 })
@@ -99,8 +97,7 @@ public final class ChessBoard {
         castlingOptions:        [[Bool]]            = [[Bool]](repeating: [Bool](repeating: false, count: Piece.castlingOptions.count), count: ChessBoard.Color.count),
         enPassantTarget:        BitBoard.Index?     = nil,
         halfMoveClock:          Int                 = 0,
-        fullMoveNumber:         Int                 = 1,
-        zobristChecksum:        UInt64?             = nil
+        fullMoveNumber:         Int                 = 1
     ) {
         assert(pieces.count == ChessBoard.Color.count)
         assert(pieces[Color.white].count == ChessBoard.Piece.count)
@@ -115,10 +112,6 @@ public final class ChessBoard {
         self.enPassantTarget =          enPassantTarget
         self.halfMoveClock =            halfMoveClock
         self.fullMoveNumber =           fullMoveNumber
-        
-        if let zobristChecksum = zobristChecksum {
-            self.zobristChecksum = zobristChecksum
-        }
     }
     
     func isBitmaskUnderAttack(color: Color, board: BitBoard) -> Bool {

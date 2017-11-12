@@ -15,8 +15,7 @@ public final class MoveGeneratorKing: MoveGenerator {
     let BLACK_OOO_EMPTY:     BitBoard = .b8 | .c8 | .d8
     let BLACK_OOO_ATTACKS:   BitBoard = .c8 | .d8 | .e8
 
-    //TODO: struct?
-    final class Cache {
+    struct Cache {
         let moves: [BitBoard]
         
         init() {

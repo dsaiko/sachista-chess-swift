@@ -58,31 +58,13 @@ extension ChessBoard {
         let targetBitBoard = targetIndex.bitBoard
 
         var halfMoveClock   = self.halfMoveClock + 1
-        var zobristChecksum = self.zobristChecksum
-        var enPassantTarget = self.enPassantTarget
+        var enPassantTarget: BitBoard.Index? = nil
         var fullMoveNumber  = self.fullMoveNumber
         var sideToMove      = self.sideToMove
         var pieces          = self.pieces
         var castlingOptions = self.castlingOptions
         
-        //reset enPassant
-        if let target = enPassantTarget {
-            zobristChecksum ^= ZobristChecksum.rndEnPassantFile[target.fileIndex]
-            enPassantTarget = nil
-        }
-
-        //remove castling options, will set them at the end
-        //TODO: move inline? + castling
-        //castling
-        ChessBoard.forAllCastlingOptions {
-            color, piece in
-            if castlingOptions[color][piece] {
-                zobristChecksum ^= ZobristChecksum.rndCastling[color][piece]
-            }
-        }
-        
         pieces[sideToMove][move.piece] ^= sourceBitBoard | targetBitBoard
-        zobristChecksum ^= ZobristChecksum.rndPieces[sideToMove][move.piece][sourceIndex] ^ ZobristChecksum.rndPieces[sideToMove][move.piece][targetIndex]
 
         if move.piece == .rook {
             if sideToMove == .white {
@@ -106,10 +88,8 @@ extension ChessBoard {
                     //handle castling
                     if targetIndex == .c1 {
                         pieces[sideToMove][Piece.rook] ^= BitBoard.a1 | BitBoard.d1
-                        zobristChecksum ^= ZobristChecksum.rndPieces[sideToMove][Piece.rook][BitBoard.Index.a1] ^ ZobristChecksum.rndPieces[sideToMove][Piece.rook][BitBoard.Index.d1]
                     } else if targetIndex == .g1 {
                         pieces[sideToMove][Piece.rook] ^= BitBoard.h1 | BitBoard.f1
-                        zobristChecksum ^= ZobristChecksum.rndPieces[sideToMove][Piece.rook][BitBoard.Index.h1] ^ ZobristChecksum.rndPieces[sideToMove][Piece.rook][BitBoard.Index.f1]
                     }
                 }
             } else {
@@ -117,10 +97,8 @@ extension ChessBoard {
                     //handle castling
                     if targetIndex == .c8 {
                         pieces[sideToMove][Piece.rook] ^= BitBoard.a8 | BitBoard.d8
-                        zobristChecksum ^= ZobristChecksum.rndPieces[sideToMove][Piece.rook][BitBoard.Index.a8] ^ ZobristChecksum.rndPieces[sideToMove][Piece.rook][BitBoard.Index.d8]
                     } else if targetIndex == .g8 {
                         pieces[sideToMove][Piece.rook] ^= BitBoard.h8 | BitBoard.f8
-                        zobristChecksum ^= ZobristChecksum.rndPieces[sideToMove][Piece.rook][BitBoard.Index.h8] ^ ZobristChecksum.rndPieces[sideToMove][Piece.rook][BitBoard.Index.f8]
                     }
                 }
             }
@@ -132,10 +110,8 @@ extension ChessBoard {
                 enPassantTarget = BitBoard.Index(rawValue: sourceIndex.rawValue + (sideToMove == .white ? 8 : -8))!
             } else if let promotionPiece = move.promotionPiece {
                 pieces[sideToMove][Piece.pawn] ^= targetBitBoard
-                zobristChecksum ^= ZobristChecksum.rndPieces[sideToMove][Piece.pawn][targetIndex]
 
                 pieces[sideToMove][promotionPiece] |= targetBitBoard
-                zobristChecksum ^= ZobristChecksum.rndPieces[sideToMove][promotionPiece][targetIndex]
             }
         }
 
@@ -147,10 +123,8 @@ extension ChessBoard {
                 //remove captured piece
                 if sideToMove == .white {
                     pieces[opponentColor][Piece.pawn] ^= targetBitBoard.oneSouth
-                    zobristChecksum ^= ZobristChecksum.rndPieces[opponentColor][Piece.pawn][targetIndex.rawValue - 8]
                 } else {
                     pieces[opponentColor][Piece.pawn] ^= targetBitBoard.oneNorth
-                    zobristChecksum ^= ZobristChecksum.rndPieces[opponentColor][Piece.pawn][targetIndex.rawValue + 8]
                 }
             } else {
                 for piece in Piece.values {
@@ -160,7 +134,6 @@ extension ChessBoard {
                     //TODO: change order of comparisons, what about isEnpassant?
                     if (bitboard & targetBitBoard) != 0 {
                         pieces[opponentColor][piece] ^= targetBitBoard
-                        zobristChecksum ^= ZobristChecksum.rndPieces[opponentColor][piece][targetIndex]
                         
                         if piece == .rook {
                             if sideToMove == .white {
@@ -188,21 +161,6 @@ extension ChessBoard {
         }
 
         sideToMove = self.opponentColor
-        zobristChecksum ^= ZobristChecksum.rndBlackSide //switch the side
-        
-        //set enPassant
-        if let target = enPassantTarget {
-            zobristChecksum ^= ZobristChecksum.rndEnPassantFile[target.fileIndex]
-        }
-        
-        //set castling options
-        //castling
-        ChessBoard.forAllCastlingOptions {
-            color, piece in
-            if castlingOptions[color][piece] {
-                zobristChecksum ^= ZobristChecksum.rndCastling[color][piece]
-            }
-        }
         
         let newBoard = ChessBoard(
             sideToMove:             sideToMove,
@@ -210,12 +168,9 @@ extension ChessBoard {
             castlingOptions:        castlingOptions,
             enPassantTarget:        enPassantTarget,
             halfMoveClock:          halfMoveClock,
-            fullMoveNumber:         fullMoveNumber,
-            zobristChecksum:        zobristChecksum
+            fullMoveNumber:         fullMoveNumber
         )
         
-        assert(zobristChecksum == ZobristChecksum.compute(board: newBoard))
-
         return newBoard
     }
 }

@@ -5,8 +5,7 @@ import Foundation
 
 public final class MoveGeneratorRook: MoveGenerator {
 
-    //TODO: struct?
-    final class Cache {
+    struct Cache {
         var rankShift: [Int]
         var rankMask:  [BitBoard]
         var fileMask:  [BitBoard]

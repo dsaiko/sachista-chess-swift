@@ -98,6 +98,8 @@ public extension ChessBoard {
         
         if(depth < 1) { return 1 }
         
+        let zobristChecksum = ZobristChecksum.compute(board: self)
+        
         if let cache = cache.get(checksum: zobristChecksum, depth: depth) {
             return cache
         }

@@ -5,8 +5,7 @@ import Foundation
 
 public final class MoveGeneratorBishop: MoveGenerator {
     
-    //TODO: struct?
-    final class Cache {
+    struct Cache {
         let a1H8Mask: [BitBoard]
         let a1H8Magic: [BitBoard]
         let a8H1Mask: [BitBoard]

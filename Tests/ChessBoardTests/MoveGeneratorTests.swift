@@ -91,19 +91,6 @@ class MoveGeneratorTests: XCTestCase {
         XCTAssertEqual(13,  numberOfMoves(file:         "moves-rook-08"))
     }
     
-    func testBlackCastling() {
-        let board = ChessBoard(fenString: "r3k2r/p1p2p1p/PpPp1P1N/1P1P2P1/BBP5/5N2/P2P2PP/R2Q1RK1 b kq - 0 1")!
-        XCTAssertEqual(board.zobristChecksum,  ZobristChecksum.compute(board: board))
-        XCTAssertEqual(8,  board.perft(depth: 1))
-        
-        for move in board.pseudoLegalMoves() {
-            if move.description == "e8c8" {
-                let newBoard = board.makeMove(move: move)
-                XCTAssertEqual(newBoard.zobristChecksum, ZobristChecksum.compute(board: newBoard))
-            }
-        }
-    }
-    
     func testBishop() {
         XCTAssertEqual(7,   numberOfMoves(file:         "moves-bishop-01"))
         XCTAssertEqual(13,  numberOfMoves(file:         "moves-bishop-02"))
@@ -117,6 +104,9 @@ class MoveGeneratorTests: XCTestCase {
     func testMove() {
         XCTAssertEqual("\(Move(piece: ChessBoard.Piece.pawn, from: .a2, to: .a3))", "a2a3")
         XCTAssertEqual("\(Move(piece: ChessBoard.Piece.pawn, from: .a7, to: .b8, promotionPiece: ChessBoard.Piece.queen))", "a7b8q")
+
+        let board = ChessBoard(fenString: "r3k2r/p1p2p1p/PpPp1P1N/1P1P2P1/BBP5/5N2/P2P2PP/R2Q1RK1 b kq - 0 1")!
+        XCTAssertEqual(8,  board.perft(depth: 1))
     }
     
     func testEnumCount() {
