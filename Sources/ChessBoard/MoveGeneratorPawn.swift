@@ -57,7 +57,7 @@ public final class MoveGeneratorPawn: MoveGenerator {
             let sourceIndex = pieces.bitPop()
 
             //one step forward if empty
-            var moves: BitBoard = cache.moves[sourceIndex.rawValue] & board.noPiecesBoard
+            var moves: BitBoard = cache.moves[sourceIndex] & board.noPiecesBoard
             
             //if one step forward was successful and we are on base rank, try double move
             //TODO PERFORMANCE: bitboard or one by one move?
@@ -74,7 +74,7 @@ public final class MoveGeneratorPawn: MoveGenerator {
             }
             
             //add attacks
-            let attacks = cache.attacks[sourceIndex.rawValue]
+            let attacks = cache.attacks[sourceIndex]
             moves |= attacks & board.opponentPiecesBoard
             
             //transform to array of moves

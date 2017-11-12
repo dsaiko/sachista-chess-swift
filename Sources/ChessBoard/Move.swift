@@ -86,7 +86,7 @@ extension ChessBoard {
         }
         
         pieces[sideToMove][move.piece] ^= sourceBitBoard | targetBitBoard
-        zobristChecksum ^= ZobristChecksum.rndPieces[sideToMove][move.piece][sourceIndex.rawValue] ^ ZobristChecksum.rndPieces[sideToMove][move.piece][targetIndex.rawValue]
+        zobristChecksum ^= ZobristChecksum.rndPieces[sideToMove][move.piece][sourceIndex] ^ ZobristChecksum.rndPieces[sideToMove][move.piece][targetIndex]
 
         if move.piece == .rook {
             if sideToMove == .white {

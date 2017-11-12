@@ -34,7 +34,7 @@ public final class MoveGeneratorKnight: MoveGenerator {
         var pieces = board.pieces[color][ChessBoard.Piece.knight]
         var attacks: BitBoard = .empty
         while pieces != .empty {
-            attacks |= MoveGeneratorKnight.cache.moves[pieces.bitPop().rawValue]
+            attacks |= MoveGeneratorKnight.cache.moves[pieces.bitPop()]
         }
         
         return attacks
@@ -47,7 +47,7 @@ public final class MoveGeneratorKnight: MoveGenerator {
         while pieces != .empty {
 
             let sourceIndex = pieces.bitPop()
-            var moves: BitBoard = MoveGeneratorKnight.cache.moves[sourceIndex.rawValue] & board.emptyOrOpponentPiecesBoard
+            var moves: BitBoard = MoveGeneratorKnight.cache.moves[sourceIndex] & board.emptyOrOpponentPiecesBoard
 
             while moves != .empty {
                 let targetIndex = moves.bitPop()
