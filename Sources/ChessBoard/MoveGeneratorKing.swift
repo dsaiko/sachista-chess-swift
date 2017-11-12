@@ -70,9 +70,7 @@ public final class MoveGeneratorKing: MoveGenerator {
         var moves = MoveGeneratorKing.cache.moves[sourceIndex] & board.emptyOrOpponentPiecesBoard
         while moves != .empty {
             let targetIndex = moves.bitPop()
-
-            let isCapture = (targetIndex.bitBoard & board.opponentPiecesBoard) != 0
-            result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: targetIndex, isCapture: isCapture, isEnpassant: false, promotionPiece: nil))
+            result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: targetIndex, isEnpassant: false, promotionPiece: nil))
         }
 
         //castling
@@ -81,26 +79,26 @@ public final class MoveGeneratorKing: MoveGenerator {
                 (board.allPiecesBoard & WHITE_OO_EMPTY == 0)   &&
                 !board.isBitmaskUnderAttack(color: .black, board: WHITE_OO_ATTACKS)
             {
-                result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .g1, isCapture: false, isEnpassant: false, promotionPiece: nil))
+                result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .g1, isEnpassant: false, promotionPiece: nil))
             }
             if  board.castlingOptions[board.sideToMove][ChessBoard.Piece.queen]    &&
                 (board.allPiecesBoard & WHITE_OOO_EMPTY == 0)   &&
                 !board.isBitmaskUnderAttack(color: .black, board: WHITE_OOO_ATTACKS)
             {
-                result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .c1, isCapture: false, isEnpassant: false, promotionPiece: nil))
+                result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .c1, isEnpassant: false, promotionPiece: nil))
             }
         } else {
             if  board.castlingOptions[board.sideToMove][ChessBoard.Piece.king]    &&
                 (board.allPiecesBoard & BLACK_OO_EMPTY == 0)   &&
                 !board.isBitmaskUnderAttack(color: .white, board: BLACK_OO_ATTACKS)
             {
-                result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .g8, isCapture: false, isEnpassant: false, promotionPiece: nil))
+                result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .g8, isEnpassant: false, promotionPiece: nil))
             }
             if  board.castlingOptions[board.sideToMove][ChessBoard.Piece.queen]    &&
                 (board.allPiecesBoard & BLACK_OOO_EMPTY == 0)   &&
                 !board.isBitmaskUnderAttack(color: .white, board: BLACK_OOO_ATTACKS)
             {
-                result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .c8, isCapture: false, isEnpassant: false, promotionPiece: nil))
+                result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .c8, isEnpassant: false, promotionPiece: nil))
             }
         }
         

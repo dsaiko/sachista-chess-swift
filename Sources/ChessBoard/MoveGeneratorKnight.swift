@@ -51,9 +51,7 @@ public final class MoveGeneratorKnight: MoveGenerator {
 
             while moves != .empty {
                 let targetIndex = moves.bitPop()
-                
-                let isCapture = (targetIndex.bitBoard & board.opponentPiecesBoard) != 0
-                result.append(Move(piece: ChessBoard.Piece.knight, from: sourceIndex, to: targetIndex, isCapture: isCapture, isEnpassant: false, promotionPiece: nil))
+                result.append(Move(piece: ChessBoard.Piece.knight, from: sourceIndex, to: targetIndex, isEnpassant: false, promotionPiece: nil))
             }
         }
         

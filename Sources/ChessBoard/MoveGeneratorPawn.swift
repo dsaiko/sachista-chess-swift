@@ -81,18 +81,16 @@ public final class MoveGeneratorPawn: MoveGenerator {
             while moves != .empty {
                 let targetIndex = moves.bitPop()
                 
-                //TODO PERFORMANCE: try to compute is capture in make move
-                let isCapture = (targetIndex.bitBoard & board.emptyOrOpponentPiecesBoard) != 0
                 let isPromotion = (board.sideToMove == .white && targetIndex >= .a8) || (board.sideToMove == .black && targetIndex <= .h1)
 
                 //promotion?
                 if isPromotion {
                     for piece in [ChessBoard.Piece.queen, ChessBoard.Piece.bishop, ChessBoard.Piece.knight, ChessBoard.Piece.rook] {
-                        result.append(Move(piece: ChessBoard.Piece.pawn, from: sourceIndex, to: targetIndex, isCapture: isCapture, isEnpassant: false, promotionPiece: piece))
+                        result.append(Move(piece: ChessBoard.Piece.pawn, from: sourceIndex, to: targetIndex, isEnpassant: false, promotionPiece: piece))
                     }
                 } else {
                     //normal move/capture
-                    result.append(Move(piece: ChessBoard.Piece.pawn, from: sourceIndex, to: targetIndex, isCapture: isCapture, isEnpassant: false, promotionPiece: nil))
+                    result.append(Move(piece: ChessBoard.Piece.pawn, from: sourceIndex, to: targetIndex, isEnpassant: false, promotionPiece: nil))
                 }
             }
             
@@ -101,7 +99,7 @@ public final class MoveGeneratorPawn: MoveGenerator {
             if let enPassantTarget = board.enPassantTarget {
                 moves = attacks & enPassantTarget.bitBoard
                 if moves != .empty {
-                    result.append(Move(piece: ChessBoard.Piece.pawn, from: sourceIndex, to: enPassantTarget, isCapture: true, isEnpassant: true, promotionPiece: nil))
+                    result.append(Move(piece: ChessBoard.Piece.pawn, from: sourceIndex, to: enPassantTarget, isEnpassant: true, promotionPiece: nil))
                 }
             }
         }

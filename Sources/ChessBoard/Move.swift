@@ -4,22 +4,18 @@
 import Foundation
 
 //TODO PERFORMANCE: try class?
-//TODO PERFORMANCE: Is piece necessary in Move?
-//TODO PERFORMANCE: Is isCapture necessary in Move? isEnPassant?
 public struct Move: CustomStringConvertible {
     let piece:          ChessBoard.Piece
     let from:           BitBoard.Index
     let to:             BitBoard.Index
     
-    let isCapture:      Bool
     let isEnpassant:    Bool
     let promotionPiece: ChessBoard.Piece?
 
-    public init(piece: ChessBoard.Piece, from: BitBoard.Index, to: BitBoard.Index, isCapture: Bool = false, isEnpassant: Bool = false, promotionPiece: ChessBoard.Piece? = nil) {
+    public init(piece: ChessBoard.Piece, from: BitBoard.Index, to: BitBoard.Index, isEnpassant: Bool = false, promotionPiece: ChessBoard.Piece? = nil) {
         self.piece          = piece
         self.from           = from
         self.to             = to
-        self.isCapture      = isCapture
         self.isEnpassant    = isEnpassant
         self.promotionPiece = promotionPiece
     }
@@ -143,7 +139,8 @@ extension ChessBoard {
             }
         }
 
-        if move.isCapture {
+        let isCapture = (targetIndex.bitBoard & opponentPiecesBoard) != 0
+        if isCapture {
             halfMoveClock = 0
             
             if move.isEnpassant {
