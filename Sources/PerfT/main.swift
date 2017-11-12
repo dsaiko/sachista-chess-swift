@@ -111,9 +111,8 @@ private final class PerfT {
         count          : \(count)
         verification   : \(verifyCount == nil ? "-" : (verifyCount == count ? "PASSED" : "ERROR!"))
         multi threaded : \(multiThreaded)
-        time           : \(format(timeInterval: timeInterval))
         finished       : \(Date())
-        
+        time           : \(format(timeInterval: timeInterval))
         """)
     }
 }
