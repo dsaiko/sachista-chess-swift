@@ -3,7 +3,6 @@
 
 import Foundation
 
-//TODO PERFORMANCE: try class?
 public struct Move: CustomStringConvertible {
     let piece:          ChessBoard.Piece
     let from:           BitBoard.Index

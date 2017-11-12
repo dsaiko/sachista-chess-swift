@@ -3,7 +3,7 @@
 
 import Foundation
 
-public final class MoveGeneratorBishop: MoveGenerator {
+struct MoveGeneratorBishop: MoveGenerator {
     
     struct Cache {
         let a1H8Mask: [BitBoard]

@@ -5,7 +5,6 @@ import Foundation
 
 /**
  Chessboard representation
- TODO PERFORMANCE: class?? final??
  */
 public struct ChessBoard {
 
@@ -73,14 +72,13 @@ public struct ChessBoard {
     public let halfMoveClock:           Int
     public let fullMoveNumber:          Int
     
-    //TODO PERFORMANCE: lazy or not? vs computed
-    var opponentColor:                Color       { return sideToMove == .white ? .black : .white }
-    var whitePiecesBoard:             BitBoard    { return pieces[Color.white].reduce(0, { $0 | $1 }) }
-    var blackPiecesBoard:             BitBoard    { return pieces[Color.black].reduce(0, { $0 | $1 }) }
-    var allPiecesBoard:               BitBoard    { return whitePiecesBoard | blackPiecesBoard }
-    var noPiecesBoard:                BitBoard    { return ~allPiecesBoard }
-    var emptyOrOpponentPiecesBoard:   BitBoard    { return sideToMove == .white ? ~whitePiecesBoard : ~blackPiecesBoard }
-    var opponentPiecesBoard:          BitBoard    { return sideToMove == .white ? blackPiecesBoard : whitePiecesBoard }
+    public let opponentColor:                Color
+    public let whitePiecesBoard:             BitBoard
+    public let blackPiecesBoard:             BitBoard
+    public let allPiecesBoard:               BitBoard
+    public let noPiecesBoard:                BitBoard
+    public let emptyOrOpponentPiecesBoard:   BitBoard
+    public let opponentPiecesBoard:          BitBoard
 
 
     static let moveGenerators: [MoveGenerator] = [
@@ -99,19 +97,27 @@ public struct ChessBoard {
         halfMoveClock:          Int                 = 0,
         fullMoveNumber:         Int                 = 1
     ) {
-        assert(pieces.count == ChessBoard.Color.count)
-        assert(pieces[Color.white].count == ChessBoard.Piece.count)
-        assert(pieces[Color.black].count == ChessBoard.Piece.count)
-        assert(castlingOptions.count == ChessBoard.Color.count)
-        assert(castlingOptions[Color.white].count == Piece.castlingOptions.count)
-        assert(castlingOptions[Color.black].count == Piece.castlingOptions.count)
+        assert(pieces.count                         == ChessBoard.Color.count)
+        assert(pieces[Color.white].count            == ChessBoard.Piece.count)
+        assert(pieces[Color.black].count            == ChessBoard.Piece.count)
+        assert(castlingOptions.count                == ChessBoard.Color.count)
+        assert(castlingOptions[Color.white].count   == Piece.castlingOptions.count)
+        assert(castlingOptions[Color.black].count   == Piece.castlingOptions.count)
 
-        self.sideToMove =               sideToMove
-        self.pieces =                   pieces
-        self.castlingOptions =          castlingOptions
-        self.enPassantTarget =          enPassantTarget
-        self.halfMoveClock =            halfMoveClock
-        self.fullMoveNumber =           fullMoveNumber
+        self.sideToMove =                   sideToMove
+        self.pieces =                       pieces
+        self.castlingOptions =              castlingOptions
+        self.enPassantTarget =              enPassantTarget
+        self.halfMoveClock =                halfMoveClock
+        self.fullMoveNumber =               fullMoveNumber
+        
+        self.opponentColor =                sideToMove == .white ? .black : .white
+        self.whitePiecesBoard =             pieces[Color.white].reduce(0, { $0 | $1 })
+        self.blackPiecesBoard =             pieces[Color.black].reduce(0, { $0 | $1 })
+        self.allPiecesBoard =               whitePiecesBoard | blackPiecesBoard
+        self.noPiecesBoard =                ~allPiecesBoard
+        self.emptyOrOpponentPiecesBoard =   sideToMove == .white ? ~whitePiecesBoard : ~blackPiecesBoard
+        self.opponentPiecesBoard =          sideToMove == .white ? blackPiecesBoard : whitePiecesBoard
     }
     
     func isBitmaskUnderAttack(color: Color, board: BitBoard) -> Bool {

@@ -3,7 +3,7 @@
 
 import Foundation
 
-public final class MoveGeneratorKnight: MoveGenerator {
+struct MoveGeneratorKnight: MoveGenerator {
     
     struct Cache {
         let moves: [BitBoard]

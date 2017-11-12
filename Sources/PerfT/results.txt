@@ -1,3 +1,15 @@
+*************** ChessBoard migrated to struct
+Running PerfT -v=706045033 6 "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1" ...
+---------
+Result:
+fen            : r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1
+depth          : 6
+count          : 706045033
+verification   : PASSED
+multi threaded : false
+finished       : 2017-11-12 22:47:02 +0000
+time           : 00:01:13.160
+
 *************** All classes final
 Running PerfT -v=706045033 6 "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1" ...
 ---------

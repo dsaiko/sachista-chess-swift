@@ -3,7 +3,7 @@
 
 import Foundation
 
-public final class MoveGeneratorKing: MoveGenerator {
+struct MoveGeneratorKing: MoveGenerator {
     
     let WHITE_OO_EMPTY:      BitBoard = .f1 | .g1
     let WHITE_OO_ATTACKS:    BitBoard = .e1 | .f1 | .g1

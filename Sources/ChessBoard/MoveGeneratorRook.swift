@@ -3,7 +3,7 @@
 
 import Foundation
 
-public final class MoveGeneratorRook: MoveGenerator {
+struct MoveGeneratorRook: MoveGenerator {
 
     struct Cache {
         var rankShift: [Int]

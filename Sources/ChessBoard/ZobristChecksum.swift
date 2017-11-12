@@ -19,7 +19,7 @@ import Foundation
 /// For further analysis see
 ///   <http://vigna.di.unimi.it/ftp/papers/xorshift.pdf>
 
-final class PRNG {
+struct PRNG {
     
     var x: UInt64
     
@@ -28,7 +28,7 @@ final class PRNG {
         x = seed
     }
     
-    func rand64() -> UInt64 {
+    mutating func rand64() -> UInt64 {
         x ^= x >> 12
         x ^= x << 25
         x ^= x >> 27
@@ -36,9 +36,9 @@ final class PRNG {
     }
 }
 
-final class ZobristChecksum {
+struct ZobristChecksum {
 
-    static let rnd = PRNG(seed: 1070372)
+    static var rnd = PRNG(seed: 1070372)
 
     static let rndBlackSide             = ZobristChecksum.rnd.rand64()
     static let rndCastling              = ZobristChecksum.rndArray2D(ChessBoard.Color.count, ChessBoard.Piece.castlingOptions.count)
