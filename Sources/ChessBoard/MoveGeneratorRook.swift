@@ -197,7 +197,7 @@ public class MoveGeneratorRook: MoveGenerator {
                 //for all moves
                 while moves != .empty {
                     let targetIndex = moves.bitPop()
-                    let isCapture = (targetIndex.bitBoard & board.emptyOrOpponentPiecesBoard) != 0
+                    let isCapture = (targetIndex.bitBoard & board.opponentPiecesBoard) != 0
                     result.append(Move(piece: piece, from: sourceIndex, to: targetIndex, isCapture: isCapture, isEnpassant: false, promotionPiece: nil))
                 }
             }

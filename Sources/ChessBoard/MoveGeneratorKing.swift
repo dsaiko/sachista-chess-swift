@@ -43,7 +43,7 @@ public class MoveGeneratorKing: MoveGenerator {
     static let cache = Cache()
     
     func attacks(board: ChessBoard, color: ChessBoard.Color) -> BitBoard {
-        let king = board.pieces[board.sideToMove][ChessBoard.Piece.king]
+        let king = board.pieces[color][ChessBoard.Piece.king]
         if king == .empty {
             return .empty
         }
@@ -71,7 +71,7 @@ public class MoveGeneratorKing: MoveGenerator {
         while moves != .empty {
             let targetIndex = moves.bitPop()
 
-            let isCapture = (targetIndex.bitBoard & board.emptyOrOpponentPiecesBoard) != 0
+            let isCapture = (targetIndex.bitBoard & board.opponentPiecesBoard) != 0
             result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: targetIndex, isCapture: isCapture, isEnpassant: false, promotionPiece: nil))
         }
 

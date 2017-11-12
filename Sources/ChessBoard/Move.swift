@@ -229,11 +229,12 @@ extension ChessBoard {
         assert(opponentKing.nonzeroBitCount == 1, "There can be only one king on the board.")
 
         //TODO: retest one liner performance
-        //this function could be one liner: return (attacks(color: sideToMove) & opponentKing) == 0
+        //this function could be one liner:
+        //return (attacks(color: sideToMove) & opponentKing) != 0
         //but following performs better
         
         let opponentKingIndex = opponentKing.trailingZeroBitCount
-        
+
         //TODO: rawValue or Int??
         //TODO: simplify!
         let opponentPawnCache = sideToMove == .white ? MoveGeneratorPawn.cacheBlack : MoveGeneratorPawn.cacheWhite
@@ -243,11 +244,11 @@ extension ChessBoard {
         if (pieces[sideToMove][Piece.knight] & MoveGeneratorKnight.cache.moves[opponentKingIndex]) != 0 {
             return true
         }
-        
+
         if (pieces[sideToMove][Piece.king] & MoveGeneratorKing.cache.moves[opponentKingIndex]) != 0 {
             return true
         }
-        
+
         let rooks = pieces[sideToMove][Piece.rook] | pieces[sideToMove][Piece.queen]
         if (MoveGeneratorRook.cache.rankMoves[opponentKingIndex][Int((allPiecesBoard & MoveGeneratorRook.cache.rankMask[opponentKingIndex]) >> MoveGeneratorRook.cache.rankShift[opponentKingIndex])] & rooks) != 0 {
             return true
@@ -255,18 +256,18 @@ extension ChessBoard {
         if (MoveGeneratorRook.cache.fileMoves[opponentKingIndex][Int(((allPiecesBoard & MoveGeneratorRook.cache.fileMask[opponentKingIndex]) &* MoveGeneratorRook.cache.fileMagic[opponentKingIndex]) >> 57)] & rooks) != 0 {
             return true
         }
-        
+
         //TODO: is this already used at moveGenBishop, make lazy var?
         let bishops = pieces[sideToMove][Piece.bishop] | pieces[sideToMove][Piece.queen]
-        
+
         if (MoveGeneratorBishop.cache.a8H1Moves[opponentKingIndex][Int(((allPiecesBoard & MoveGeneratorBishop.cache.a8H1Mask[opponentKingIndex]) &* MoveGeneratorBishop.cache.a8H1Magic[opponentKingIndex]) >> 57)] & bishops) != 0 {
             return true
         }
-        
+
         if (MoveGeneratorBishop.cache.a1H8Moves[opponentKingIndex][Int(((allPiecesBoard & MoveGeneratorBishop.cache.a1H8Mask[opponentKingIndex]) &* MoveGeneratorBishop.cache.a1H8Magic[opponentKingIndex]) >> 57)] & bishops) != 0 {
             return true
         }
-        
+
         return false
     }
 

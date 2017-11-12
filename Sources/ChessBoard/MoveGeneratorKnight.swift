@@ -31,7 +31,7 @@ public class MoveGeneratorKnight: MoveGenerator {
     static let cache = Cache()
     
     func attacks(board: ChessBoard, color: ChessBoard.Color) -> BitBoard {
-        var pieces = board.pieces[board.sideToMove][ChessBoard.Piece.knight]
+        var pieces = board.pieces[color][ChessBoard.Piece.knight]
         var attacks: BitBoard = .empty
         while pieces != .empty {
             attacks |= MoveGeneratorKnight.cache.moves[pieces.bitPop().rawValue]
@@ -52,7 +52,7 @@ public class MoveGeneratorKnight: MoveGenerator {
             while moves != .empty {
                 let targetIndex = moves.bitPop()
                 
-                let isCapture = (targetIndex.bitBoard & board.emptyOrOpponentPiecesBoard) != 0
+                let isCapture = (targetIndex.bitBoard & board.opponentPiecesBoard) != 0
                 result.append(Move(piece: ChessBoard.Piece.knight, from: sourceIndex, to: targetIndex, isCapture: isCapture, isEnpassant: false, promotionPiece: nil))
             }
         }

@@ -75,7 +75,7 @@ public class MoveGeneratorPawn: MoveGenerator {
             
             //add attacks
             let attacks = cache.attacks[sourceIndex.rawValue]
-            moves |= attacks & board.emptyOrOpponentPiecesBoard
+            moves |= attacks & board.opponentPiecesBoard
             
             //transform to array of moves
             while moves != .empty {
