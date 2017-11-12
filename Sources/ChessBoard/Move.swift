@@ -139,8 +139,8 @@ extension ChessBoard {
             }
         }
 
-        let isCapture = (targetIndex.bitBoard & opponentPiecesBoard) != 0
-        if isCapture {
+        let isCapture = (targetBitBoard & opponentPiecesBoard) != 0
+        if isCapture || move.isEnpassant {
             halfMoveClock = 0
             
             if move.isEnpassant {
