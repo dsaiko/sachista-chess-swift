@@ -121,7 +121,7 @@ public extension ChessBoard {
                     if depth == 1 {
                         count += 1
                     } else {
-                        count += nextBoard.perft(depth: depth - 1)
+                        count += nextBoard.perft0(depth: depth - 1, cache: cache)
                     }
                 }
             } else {
@@ -130,7 +130,7 @@ public extension ChessBoard {
                 } else {
                     //do not need to validate legality of the move
                     let nextBoard = makeMove(move: move)
-                    count += nextBoard.perft(depth: depth - 1)
+                    count += nextBoard.perft0(depth: depth - 1, cache: cache)
                 }
             }
         }
