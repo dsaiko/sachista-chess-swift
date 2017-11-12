@@ -7,7 +7,7 @@ import Foundation
  Chessboard representation
  TODO PERFORMANCE: class?? final??
  */
-public final class ChessBoard {
+public struct ChessBoard {
 
     /**
      Representation of chess piece color.
@@ -74,13 +74,13 @@ public final class ChessBoard {
     public let fullMoveNumber:          Int
     
     //TODO PERFORMANCE: lazy or not? vs computed
-    private(set) lazy var opponentColor:                Color       = sideToMove == .white ? .black : .white
-    private(set) lazy var whitePiecesBoard:             BitBoard    = pieces[Color.white].reduce(0, { $0 | $1 })
-    private(set) lazy var blackPiecesBoard:             BitBoard    = pieces[Color.black].reduce(0, { $0 | $1 })
-    private(set) lazy var allPiecesBoard:               BitBoard    = whitePiecesBoard | blackPiecesBoard
-    private(set) lazy var noPiecesBoard:                BitBoard    = ~allPiecesBoard
-    private(set) lazy var emptyOrOpponentPiecesBoard:   BitBoard    = sideToMove == .white ? ~whitePiecesBoard : ~blackPiecesBoard
-    private(set) lazy var opponentPiecesBoard:          BitBoard    = sideToMove == .white ? blackPiecesBoard : whitePiecesBoard
+    var opponentColor:                Color       { return sideToMove == .white ? .black : .white }
+    var whitePiecesBoard:             BitBoard    { return pieces[Color.white].reduce(0, { $0 | $1 }) }
+    var blackPiecesBoard:             BitBoard    { return pieces[Color.black].reduce(0, { $0 | $1 }) }
+    var allPiecesBoard:               BitBoard    { return whitePiecesBoard | blackPiecesBoard }
+    var noPiecesBoard:                BitBoard    { return ~allPiecesBoard }
+    var emptyOrOpponentPiecesBoard:   BitBoard    { return sideToMove == .white ? ~whitePiecesBoard : ~blackPiecesBoard }
+    var opponentPiecesBoard:          BitBoard    { return sideToMove == .white ? blackPiecesBoard : whitePiecesBoard }
 
 
     static let moveGenerators: [MoveGenerator] = [
