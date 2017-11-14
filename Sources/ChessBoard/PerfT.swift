@@ -18,10 +18,9 @@ public extension ChessBoard {
     /**
      Simple PerfT in-memory cache
      */
-    class InMemoryPerftCache: PerftCache {
+    final class InMemoryPerftCache: PerftCache {
         
         public static let DEFAULT_CACHE_SIZE: UInt64        = 64 * 1024 * 1024
-        public static let defaultInMemorySynchronizedCache  = SynchronizedInMemoryPerftCache(cacheSize: InMemoryPerftCache.DEFAULT_CACHE_SIZE)
         public static let defaultInMemoryCache              = InMemoryPerftCache(cacheSize: InMemoryPerftCache.DEFAULT_CACHE_SIZE)
 
         /**
@@ -59,8 +58,6 @@ public extension ChessBoard {
             return (cacheSize - 1 - UInt64(depth)) & checksum
         }
         
-        public static let `default` = InMemoryPerftCache(cacheSize: 16*1024*1024)
-        
         public func put(checksum: UInt64, depth: Int, count: UInt64) {
             let index = self.index(checksum: checksum, depth: depth)
             cache[index] = Record(checksum: checksum, depth: depth, count: count)
@@ -77,39 +74,6 @@ public extension ChessBoard {
         }
     }
     
-    /**
-     Simple PerfT in-memory cache
-     */
-    public final class SynchronizedInMemoryPerftCache: InMemoryPerftCache {
-        
-        /**
-         Synchronization lock
-         */
-        private let lock = DispatchQueue(label: "\(SynchronizedInMemoryPerftCache.self)")
-        
-        override public func put(checksum: UInt64, depth: Int, count: UInt64) {
-            let index = self.index(checksum: checksum, depth: depth)
-            
-            lock.sync {
-                cache[index] = Record(checksum: checksum, depth: depth, count: count)
-            }
-        }
-        
-        override public func get(checksum: UInt64, depth: Int) -> UInt64? {
-            var record: Record?
-            let index = self.index(checksum: checksum, depth: depth)
-            
-            lock.sync {
-                record = cache[index]
-            }
-            
-            if let record = record, record.checksum == checksum && record.depth == depth {
-                return record.count
-            } else {
-                return nil
-            }
-        }
-    }
     
     /**
      Single thread perft minimax
@@ -162,8 +126,8 @@ public extension ChessBoard {
     /**
      Multi threaded perft
      */
-    public func perftN(depth: Int, cache: PerftCache = InMemoryPerftCache.defaultInMemorySynchronizedCache) -> UInt64 {
-        if depth <= 1 { return perft1(depth:depth, cache: cache) }
+    public func perftN(depth: Int) -> UInt64 {
+        if depth <= 1 { return perft1(depth:depth) }
         
         var nextBoards = [ChessBoard]()
         
@@ -180,6 +144,7 @@ public extension ChessBoard {
             i in
             
             let board = nextBoards[i]
+            let cache = InMemoryPerftCache(cacheSize: InMemoryPerftCache.DEFAULT_CACHE_SIZE)
             let count = board.perft1(depth: depth - 1, cache: cache)
             
             OSAtomicAdd64(Int64(count), &totalCount)
