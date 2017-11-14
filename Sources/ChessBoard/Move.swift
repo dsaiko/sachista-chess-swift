@@ -28,21 +28,34 @@ protocol MoveGenerator {
     
     func attacks(board: ChessBoard, color: ChessBoard.Color) -> BitBoard
     
-    //TODO PERFORMANCE: Move array??
-    func moves(board: ChessBoard) -> [Move]
+    func moves(board: ChessBoard, result: inout [Move])
 }
 
 extension ChessBoard {
     
+    private static let MOVES_ARRAY_INITIAL_CAPACITY = 32
+    
     func pseudoLegalMoves() -> [Move]
     {
         //moves without validation of attack to king
-        return ChessBoard.moveGenerators.flatMap({ $0.moves(board: self) })
+        var moves = [Move]()
+        moves.reserveCapacity(ChessBoard.MOVES_ARRAY_INITIAL_CAPACITY)
+        
+        for moveGenerator in ChessBoard.moveGenerators {
+            moveGenerator.moves(board: self, result: &moves)
+        }
+        
+        return moves
     }
     
     func attacks(color: Color) -> BitBoard
     {
-        return ChessBoard.moveGenerators.flatMap({ $0.attacks(board: self, color: color) }).reduce(BitBoard(0), { $0 | $1 })
+        var result: BitBoard = .empty
+        
+        for moveGenerator in ChessBoard.moveGenerators {
+            result |= moveGenerator.attacks(board: self, color: color)
+        }
+        return result
     }
     
     //TODO PERFORMANCE: try mutable chessboard

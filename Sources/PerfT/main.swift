@@ -66,6 +66,10 @@ private final class PerfT {
         
         self.depth = depth!
 
+        if fen == "" {
+            fen = ChessBoard.standard.fenString
+        }
+        
         guard let chessBoard = ChessBoard(fenString: fen) else {
             print("Error: Invalid FEN parameter!")
             showUsage()
@@ -95,9 +99,9 @@ private final class PerfT {
         
         let count: UInt64 = {
             if multiThreaded {
-                return board.perft(depth: depth)
+                return board.perft1(depth: depth)
             } else {
-                return board.perft0(depth: depth)
+                return board.perftN(depth: depth)
             }
         }()
         

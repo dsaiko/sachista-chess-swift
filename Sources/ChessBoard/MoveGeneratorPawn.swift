@@ -47,10 +47,9 @@ struct MoveGeneratorPawn: MoveGenerator {
         }
     }
     
-    func moves(board: ChessBoard) -> [Move] {
+    func moves(board: ChessBoard, result: inout [Move]) {
         let cache   = board.sideToMove == .white ? MoveGeneratorPawn.cacheWhite : MoveGeneratorPawn.cacheBlack
         var pieces  = board.pieces[board.sideToMove][ChessBoard.Piece.pawn]
-        var result  = [Move]()
 
         while pieces != .empty {
             let sourceIndex = pieces.bitPop()
@@ -102,7 +101,5 @@ struct MoveGeneratorPawn: MoveGenerator {
                 }
             }
         }
-        
-        return result
    }
 }

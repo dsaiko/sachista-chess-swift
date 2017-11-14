@@ -248,8 +248,7 @@ struct MoveGeneratorBishop: MoveGenerator {
         return attacks
     }
     
-    func moves(board: ChessBoard) -> [Move] {
-        var result  = [Move]()
+    func moves(board: ChessBoard, result: inout [Move]) {
         
         for piece in [ChessBoard.Piece.bishop, ChessBoard.Piece.queen] {
             var pieces = board.pieces[board.sideToMove][piece]
@@ -267,8 +266,6 @@ struct MoveGeneratorBishop: MoveGenerator {
                 }
             }
         }
-
-        return result
     }
     
 }

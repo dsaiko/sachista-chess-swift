@@ -39,8 +39,7 @@ struct MoveGeneratorKnight: MoveGenerator {
         return attacks
     }
     
-    func moves(board: ChessBoard) -> [Move] {
-        var result  = [Move]()
+    func moves(board: ChessBoard, result: inout [Move]) {
 
         var pieces = board.pieces[board.sideToMove][ChessBoard.Piece.knight]
         while pieces != .empty {
@@ -53,8 +52,6 @@ struct MoveGeneratorKnight: MoveGenerator {
                 result.append(Move(piece: ChessBoard.Piece.knight, from: sourceIndex, to: targetIndex, isEnpassant: false, promotionPiece: nil))
             }
         }
-        
-        return result
     }
 }
 

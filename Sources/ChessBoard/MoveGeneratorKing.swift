@@ -53,14 +53,12 @@ struct MoveGeneratorKing: MoveGenerator {
         return MoveGeneratorKing.cache.moves[king.trailingZeroBitCount]
     }
     
-    func moves(board: ChessBoard) -> [Move] {
-        var result  = [Move]()
-        
+    func moves(board: ChessBoard, result: inout [Move]) {
         
         let kingBitBoard = board.pieces[board.sideToMove][ChessBoard.Piece.king]
         
         if kingBitBoard == .empty {
-            return result
+            return
         }
 
         assert(kingBitBoard.nonzeroBitCount == 1, "There can be only one king on the board.")
@@ -100,8 +98,6 @@ struct MoveGeneratorKing: MoveGenerator {
                 result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .c8, isEnpassant: false, promotionPiece: nil))
             }
         }
-        
-        return result
     }
 }
 
