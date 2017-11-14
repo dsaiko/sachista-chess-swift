@@ -32,12 +32,12 @@ class MoveGeneratorTests: XCTestCase {
     
     func numberOfLegalMoves(file: String) -> UInt64 {
         let board = boardFrom(file: file)
-        return board.perft(depth: 1)
+        return board.perft1(depth: 1)
     }
 
     func numberOfLegalMoves(fen: String) -> UInt64 {
         let board = ChessBoard(fenString: fen)!
-        return board.perft(depth: 1)
+        return board.perft1(depth: 1)
     }
     
     func testPawns() {
@@ -106,7 +106,7 @@ class MoveGeneratorTests: XCTestCase {
         XCTAssertEqual("\(Move(piece: ChessBoard.Piece.pawn, from: .a7, to: .b8, promotionPiece: ChessBoard.Piece.queen))", "a7b8q")
 
         let board = ChessBoard(fenString: "r3k2r/p1p2p1p/PpPp1P1N/1P1P2P1/BBP5/5N2/P2P2PP/R2Q1RK1 b kq - 0 1")!
-        XCTAssertEqual(8,  board.perft(depth: 1))
+        XCTAssertEqual(8,  board.perft1(depth: 1))
     }
     
     func testEnumCount() {

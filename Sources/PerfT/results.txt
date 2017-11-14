@@ -6,6 +6,5 @@ depth          : 6
 count          : 706045033
 verification   : PASSED
 multi threaded : false
-finished       : 2017-11-14 19:18:18 +0000
-time           : 00:01:12.808
-
+finished       : 2017-11-14 19:30:38 +0000
+time           : 00:01:42.938

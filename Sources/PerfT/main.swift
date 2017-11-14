@@ -99,9 +99,9 @@ private final class PerfT {
         
         let count: UInt64 = {
             if multiThreaded {
-                return board.perft1(depth: depth)
-            } else {
                 return board.perftN(depth: depth)
+            } else {
+                return board.perft1(depth: depth)
             }
         }()
         

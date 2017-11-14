@@ -20,7 +20,10 @@ public extension ChessBoard {
      */
     class InMemoryPerftCache: PerftCache {
         
-        public static let DEFAULT_CACHE_SIZE: UInt64 = 64 * 1024 * 1024
+        public static let DEFAULT_CACHE_SIZE: UInt64        = 64 * 1024 * 1024
+        public static let defaultInMemorySynchronizedCache  = SynchronizedInMemoryPerftCache(cacheSize: InMemoryPerftCache.DEFAULT_CACHE_SIZE)
+        public static let defaultInMemoryCache              = InMemoryPerftCache(cacheSize: InMemoryPerftCache.DEFAULT_CACHE_SIZE)
+
         /**
          Cache record
          */
@@ -111,7 +114,7 @@ public extension ChessBoard {
     /**
      Single thread perft minimax
      */
-    public func perft1(depth: Int, cache: PerftCache = InMemoryPerftCache(cacheSize: InMemoryPerftCache.DEFAULT_CACHE_SIZE)) -> UInt64 {
+    public func perft1(depth: Int, cache: PerftCache = InMemoryPerftCache.defaultInMemoryCache) -> UInt64 {
         
         if(depth < 1) { return 1 }
         
@@ -159,7 +162,7 @@ public extension ChessBoard {
     /**
      Multi threaded perft
      */
-    public func perftN(depth: Int, cache: PerftCache = SynchronizedInMemoryPerftCache(cacheSize: InMemoryPerftCache.DEFAULT_CACHE_SIZE)) -> UInt64 {
+    public func perftN(depth: Int, cache: PerftCache = InMemoryPerftCache.defaultInMemorySynchronizedCache) -> UInt64 {
         if depth <= 1 { return perft1(depth:depth, cache: cache) }
         
         var nextBoards = [ChessBoard]()
