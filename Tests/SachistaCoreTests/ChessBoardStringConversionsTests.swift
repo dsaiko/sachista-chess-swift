@@ -8,7 +8,7 @@
 import Foundation
 
 import XCTest
-@testable import ChessBoard
+@testable import SachistaCore
 
 extension ChessBoard {
     

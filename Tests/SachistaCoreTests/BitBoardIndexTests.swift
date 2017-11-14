@@ -2,7 +2,7 @@
 //  Licensed under https://opensource.org/licenses/MIT
 
 import XCTest
-@testable import ChessBoard
+@testable import SachistaCore
 
 class BitBoardIndexTests: XCTestCase {
     

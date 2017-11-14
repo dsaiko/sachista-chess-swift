@@ -2,7 +2,7 @@
 //  Licensed under https://opensource.org/licenses/MIT
 
 import Foundation
-import ChessBoard
+import SachistaCore
 
 /**
  Performance tests executable

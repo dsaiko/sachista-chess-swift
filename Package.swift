@@ -4,26 +4,26 @@
 import PackageDescription
 
 let package = Package(
-    name: "SachistaChess2",
+    name: "sachista-chess-swift",
     products: [
         .library(
-            name: "ChessBoard",
-            targets: ["ChessBoard"]),
+            name: "sachista-core",
+            targets: ["SachistaCore"]),
         .executable(
-            name: "PerfT",
-            targets: ["PerfT"]),
+            name: "sachista-perft",
+            targets: ["SachistaPerft"]),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
-            name: "ChessBoard",
+            name: "SachistaCore",
             dependencies: []),
         .testTarget(
-            name: "ChessBoardTests",
-            dependencies: ["ChessBoard"]),
+            name: "SachistaCoreTests",
+            dependencies: ["SachistaCore"]),
         .target(
-    	    name: "PerfT",
-    	    dependencies: ["ChessBoard"]),
+    	    name: "SachistaPerft",
+    	    dependencies: ["SachistaCore"]),
     ]
 )
