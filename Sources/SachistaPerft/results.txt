@@ -19,3 +19,19 @@ verification   : PASSED
 multi threaded : false
 finished       : 2017-11-14 19:30:38 +0000
 time           : 00:01:42.938
+
+
+
+------------:
+
+Running SachistaPerft -v=706045033 6 "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1" ...
+---------
+Result:
+fen            : r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1
+depth          : 6
+count          : 706045033
+verification   : PASSED
+multi threaded : false
+finished       : 2017-11-17 22:21:28 +0000
+time           : 00:01:48.060
+Program ended with exit code: 0

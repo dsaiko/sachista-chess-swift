@@ -84,11 +84,11 @@ struct MoveGeneratorPawn: MoveGenerator {
                 //promotion?
                 if isPromotion {
                     for piece in [ChessBoard.Piece.queen, ChessBoard.Piece.bishop, ChessBoard.Piece.knight, ChessBoard.Piece.rook] {
-                        result.append(Move(piece: ChessBoard.Piece.pawn, from: sourceIndex, to: targetIndex, isEnpassant: false, promotionPiece: piece))
+                        result.append(Move(piece: ChessBoard.Piece.pawn, from: sourceIndex, to: targetIndex, promotionPiece: piece))
                     }
                 } else {
                     //normal move/capture
-                    result.append(Move(piece: ChessBoard.Piece.pawn, from: sourceIndex, to: targetIndex, isEnpassant: false, promotionPiece: nil))
+                    result.append(Move(piece: ChessBoard.Piece.pawn, from: sourceIndex, to: targetIndex))
                 }
             }
             
@@ -97,7 +97,7 @@ struct MoveGeneratorPawn: MoveGenerator {
             if let enPassantTarget = board.enPassantTarget {
                 moves = attacks & enPassantTarget.bitBoard
                 if moves != .empty {
-                    result.append(Move(piece: ChessBoard.Piece.pawn, from: sourceIndex, to: enPassantTarget, isEnpassant: true, promotionPiece: nil))
+                    result.append(Move(piece: ChessBoard.Piece.pawn, from: sourceIndex, to: enPassantTarget, isEnpassant: 1))
                 }
             }
         }

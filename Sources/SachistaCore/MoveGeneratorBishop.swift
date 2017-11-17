@@ -262,7 +262,7 @@ struct MoveGeneratorBishop: MoveGenerator {
                 //for all moves
                 while moves != .empty {
                     let targetIndex = moves.bitPop()
-                    result.append(Move(piece: piece, from: sourceIndex, to: targetIndex, isEnpassant: false, promotionPiece: nil))
+                    result.append(Move(piece: piece, from: sourceIndex, to: targetIndex))
                 }
             }
         }

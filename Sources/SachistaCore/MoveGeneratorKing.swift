@@ -67,7 +67,7 @@ struct MoveGeneratorKing: MoveGenerator {
         var moves = MoveGeneratorKing.cache.moves[sourceIndex] & board.emptyOrOpponentPiecesBoard
         while moves != .empty {
             let targetIndex = moves.bitPop()
-            result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: targetIndex, isEnpassant: false, promotionPiece: nil))
+            result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: targetIndex))
         }
 
         //castling
@@ -76,26 +76,26 @@ struct MoveGeneratorKing: MoveGenerator {
                 (board.allPiecesBoard & WHITE_OO_EMPTY == 0)   &&
                 !board.isBitmaskUnderAttack(color: .black, board: WHITE_OO_ATTACKS)
             {
-                result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .g1, isEnpassant: false, promotionPiece: nil))
+                result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .g1))
             }
             if  board.castlingOptions[board.sideToMove][ChessBoard.Piece.queen]    &&
                 (board.allPiecesBoard & WHITE_OOO_EMPTY == 0)   &&
                 !board.isBitmaskUnderAttack(color: .black, board: WHITE_OOO_ATTACKS)
             {
-                result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .c1, isEnpassant: false, promotionPiece: nil))
+                result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .c1))
             }
         } else {
             if  board.castlingOptions[board.sideToMove][ChessBoard.Piece.king]    &&
                 (board.allPiecesBoard & BLACK_OO_EMPTY == 0)   &&
                 !board.isBitmaskUnderAttack(color: .white, board: BLACK_OO_ATTACKS)
             {
-                result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .g8, isEnpassant: false, promotionPiece: nil))
+                result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .g8))
             }
             if  board.castlingOptions[board.sideToMove][ChessBoard.Piece.queen]    &&
                 (board.allPiecesBoard & BLACK_OOO_EMPTY == 0)   &&
                 !board.isBitmaskUnderAttack(color: .white, board: BLACK_OOO_ATTACKS)
             {
-                result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .c8, isEnpassant: false, promotionPiece: nil))
+                result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .c8))
             }
         }
     }

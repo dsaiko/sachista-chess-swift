@@ -49,7 +49,7 @@ struct MoveGeneratorKnight: MoveGenerator {
 
             while moves != .empty {
                 let targetIndex = moves.bitPop()
-                result.append(Move(piece: ChessBoard.Piece.knight, from: sourceIndex, to: targetIndex, isEnpassant: false, promotionPiece: nil))
+                result.append(Move(piece: ChessBoard.Piece.knight, from: sourceIndex, to: targetIndex))
             }
         }
     }
