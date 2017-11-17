@@ -22,7 +22,7 @@ public extension BitBoard {
         
         //TODO: make LAZY STATIC
         public var bitBoard: BitBoard {
-            return 1 << self.rawValue
+            return 1 &<< self.rawValue
         }
         
         public var fileIndex: Int {
@@ -40,13 +40,13 @@ public extension BitBoard {
 
             let values = notation.unicodeScalars.map{Int($0.value)}
 
-            self.init(rawValue: Int(((values[0] - BitBoard.a1NotationCodes[0]) + ((values[1] - BitBoard.a1NotationCodes[1]) << 3))))
+            self.init(rawValue: Int(((values[0] &- BitBoard.a1NotationCodes[0]) &+ ((values[1] &- BitBoard.a1NotationCodes[1]) &<< 3))))
         }
         
         public var description: String {
             //can use unwrapped optionals as we know the values of enum cases
-            let file = Character(UnicodeScalar(Int(self.rawValue % 8) + BitBoard.a1NotationCodes[0])!)
-            let rank = Character(UnicodeScalar(Int(self.rawValue / 8) + BitBoard.a1NotationCodes[1])!)
+            let file = Character(UnicodeScalar(Int(self.rawValue % 8) &+ BitBoard.a1NotationCodes[0])!)
+            let rank = Character(UnicodeScalar(Int(self.rawValue / 8) &+ BitBoard.a1NotationCodes[1])!)
             return "\(file)\(rank)"
         }
         

@@ -39,13 +39,13 @@ struct MoveGeneratorRook: MoveGenerator {
                 let fileIndex = BitBoard.Index(rawValue: i)!.fileIndex
                 
                 //get 6-bit mask for a rank
-                rankMask[i] = BitBoard(126) << (rankIndex << 3)
+                rankMask[i] = BitBoard(126) &<< (rankIndex &<< 3)
                 
                 //compute needed rank shift
-                rankShift[i] = (rankIndex << 3) + 1
+                rankShift[i] = (rankIndex &<< 3) &+ 1
                 
                 //get 6-bit mask for a file
-                fileMask[i] = fileA6 << fileIndex
+                fileMask[i] = fileA6 &<< fileIndex
                 
                 //index magic number directly fo field
                 fileMagic[i] = MAGIC_FILE[fileIndex]
@@ -162,8 +162,8 @@ struct MoveGeneratorRook: MoveGenerator {
     //TODO PERFORMANCE: try experimenting with inline?
     func pieceMoves(sourceIndex: Int, allPieces: BitBoard) -> BitBoard {
         //use magic multipliers to get occupancy state index
-        let stateIndexRank = Int((allPieces & MoveGeneratorRook.cache.rankMask[sourceIndex]) >> MoveGeneratorRook.cache.rankShift[sourceIndex])
-        let stateIndexFile = Int(((allPieces & MoveGeneratorRook.cache.fileMask[sourceIndex]) &* MoveGeneratorRook.cache.fileMagic[sourceIndex]) >> 57) //TODO: MAGIC 57
+        let stateIndexRank = Int((allPieces & MoveGeneratorRook.cache.rankMask[sourceIndex]) &>> MoveGeneratorRook.cache.rankShift[sourceIndex])
+        let stateIndexFile = Int(((allPieces & MoveGeneratorRook.cache.fileMask[sourceIndex]) &* MoveGeneratorRook.cache.fileMagic[sourceIndex]) &>> 57) //TODO: MAGIC 57
         
         //get possible attacks for field / occupancy state index
         return MoveGeneratorRook.cache.rankMoves[sourceIndex][stateIndexRank] | MoveGeneratorRook.cache.fileMoves[sourceIndex][stateIndexFile]

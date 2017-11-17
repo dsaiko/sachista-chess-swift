@@ -69,7 +69,7 @@ extension ChessBoard {
         let sourceBitBoard = sourceIndex.bitBoard
         let targetBitBoard = targetIndex.bitBoard
 
-        var halfMoveClock   = self.halfMoveClock + 1
+        var halfMoveClock   = self.halfMoveClock &+ 1
         var enPassantTarget: BitBoard.Index? = nil
         var fullMoveNumber  = self.fullMoveNumber
         var sideToMove      = self.sideToMove
@@ -118,8 +118,8 @@ extension ChessBoard {
             halfMoveClock = 0
 
             //initial pawn double move
-            if abs(targetIndex.rawValue - sourceIndex.rawValue) > 10 {
-                enPassantTarget = BitBoard.Index(rawValue: sourceIndex.rawValue + (sideToMove == .white ? 8 : -8))!
+            if abs(targetIndex.rawValue &- sourceIndex.rawValue) > 10 {
+                enPassantTarget = BitBoard.Index(rawValue: sourceIndex.rawValue &+ (sideToMove == .white ? 8 : -8))!
             } else if let promotionPiece = move.promotionPiece {
                 pieces[sideToMove][Piece.pawn] ^= targetBitBoard
 
@@ -169,7 +169,7 @@ extension ChessBoard {
         }
 
         if sideToMove == .black {
-            fullMoveNumber += 1
+            fullMoveNumber = fullMoveNumber &+ 1
         }
 
         sideToMove = self.opponentColor
@@ -222,21 +222,21 @@ extension ChessBoard {
         }
 
         let rooks = pieces[sideToMove][Piece.rook] | pieces[sideToMove][Piece.queen]
-        if (MoveGeneratorRook.cache.rankMoves[opponentKingIndex][Int((allPiecesBoard & MoveGeneratorRook.cache.rankMask[opponentKingIndex]) >> MoveGeneratorRook.cache.rankShift[opponentKingIndex])] & rooks) != 0 {
+        if (MoveGeneratorRook.cache.rankMoves[opponentKingIndex][Int((allPiecesBoard & MoveGeneratorRook.cache.rankMask[opponentKingIndex]) &>> MoveGeneratorRook.cache.rankShift[opponentKingIndex])] & rooks) != 0 {
             return true
         }
-        if (MoveGeneratorRook.cache.fileMoves[opponentKingIndex][Int(((allPiecesBoard & MoveGeneratorRook.cache.fileMask[opponentKingIndex]) &* MoveGeneratorRook.cache.fileMagic[opponentKingIndex]) >> 57)] & rooks) != 0 {
+        if (MoveGeneratorRook.cache.fileMoves[opponentKingIndex][Int(((allPiecesBoard & MoveGeneratorRook.cache.fileMask[opponentKingIndex]) &* MoveGeneratorRook.cache.fileMagic[opponentKingIndex]) &>> 57)] & rooks) != 0 {
             return true
         }
 
         //TODO: is this already used at moveGenBishop, make lazy var?
         let bishops = pieces[sideToMove][Piece.bishop] | pieces[sideToMove][Piece.queen]
 
-        if (MoveGeneratorBishop.cache.a8H1Moves[opponentKingIndex][Int(((allPiecesBoard & MoveGeneratorBishop.cache.a8H1Mask[opponentKingIndex]) &* MoveGeneratorBishop.cache.a8H1Magic[opponentKingIndex]) >> 57)] & bishops) != 0 {
+        if (MoveGeneratorBishop.cache.a8H1Moves[opponentKingIndex][Int(((allPiecesBoard & MoveGeneratorBishop.cache.a8H1Mask[opponentKingIndex]) &* MoveGeneratorBishop.cache.a8H1Magic[opponentKingIndex]) &>> 57)] & bishops) != 0 {
             return true
         }
 
-        if (MoveGeneratorBishop.cache.a1H8Moves[opponentKingIndex][Int(((allPiecesBoard & MoveGeneratorBishop.cache.a1H8Mask[opponentKingIndex]) &* MoveGeneratorBishop.cache.a1H8Magic[opponentKingIndex]) >> 57)] & bishops) != 0 {
+        if (MoveGeneratorBishop.cache.a1H8Moves[opponentKingIndex][Int(((allPiecesBoard & MoveGeneratorBishop.cache.a1H8Mask[opponentKingIndex]) &* MoveGeneratorBishop.cache.a1H8Magic[opponentKingIndex]) &>> 57)] & bishops) != 0 {
             return true
         }
 

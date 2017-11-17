@@ -55,7 +55,7 @@ public extension ChessBoard {
          Index of the record
          */
         @inline(__always) func index(checksum: UInt64, depth: Int) -> UInt64 {
-            return (cacheSize - 1 - UInt64(depth)) & checksum
+            return (cacheSize &- 1 &- UInt64(depth)) & checksum
         }
         
         public func put(checksum: UInt64, depth: Int, count: UInt64) {
@@ -103,18 +103,18 @@ public extension ChessBoard {
                 let nextBoard = makeMove(move: move)
                 if !nextBoard.isOpponentsKingUnderCheck() {
                     if depth == 1 {
-                        count += 1
+                        count = count &+ 1
                     } else {
-                        count += nextBoard.perft1(depth: depth - 1, cache: cache)
+                        count = count &+ nextBoard.perft1(depth: depth &- 1, cache: cache)
                     }
                 }
             } else {
                 if depth == 1 {
-                    count += 1
+                    count = count &+ 1
                 } else {
                     //do not need to validate legality of the move
                     let nextBoard = makeMove(move: move)
-                    count += nextBoard.perft1(depth: depth - 1, cache: cache)
+                    count = count &+ nextBoard.perft1(depth: depth &- 1, cache: cache)
                 }
             }
         }
@@ -145,7 +145,7 @@ public extension ChessBoard {
             
             let board = nextBoards[i]
             let cache = InMemoryPerftCache(cacheSize: InMemoryPerftCache.DEFAULT_CACHE_SIZE)
-            let count = board.perft1(depth: depth - 1, cache: cache)
+            let count = board.perft1(depth: depth &- 1, cache: cache)
             
             OSAtomicAdd64(Int64(count), &totalCount)
         }

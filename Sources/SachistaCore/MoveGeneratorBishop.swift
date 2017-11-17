@@ -68,8 +68,8 @@ struct MoveGeneratorBishop: MoveGenerator {
                 let fileIndex = BitBoard.Index(rawValue: i)!.fileIndex
                 
                 //compute index of diagonal for the field
-                a8H1Index[i] = fileIndex + rankIndex % 8
-                a1H8Index[i] = fileIndex + 7 - rankIndex % 8
+                a8H1Index[i] = fileIndex &+ rankIndex % 8
+                a1H8Index[i] = fileIndex &+ 7 &- rankIndex % 8
                 
                 //compute 6-bit diagonal for the field
                 a8H1Mask[i] = BitBoard.a8h1[a8H1Index[i]] & ~BitBoard.frame
@@ -109,7 +109,7 @@ struct MoveGeneratorBishop: MoveGenerator {
                         if (m & 1) != 0 {
                             board |= diagonal
                         }
-                        m >>= 1
+                        m &>>= 1
                     }
                     
                     //make it 6-bit only
@@ -177,7 +177,7 @@ struct MoveGeneratorBishop: MoveGenerator {
                         if (m & 1) != 0 {
                             board |= diagonal
                         }
-                        m >>= 1
+                        m &>>= 1
                     }
                     
                     //make it 6-bit only
@@ -229,8 +229,8 @@ struct MoveGeneratorBishop: MoveGenerator {
     //TODO PERFORMANCE: try experimenting with inline?
     func pieceMoves(sourceIndex: Int, allPieces: BitBoard) -> BitBoard {
         
-        let stateIndexA8H1 = Int(((allPieces & MoveGeneratorBishop.cache.a8H1Mask[sourceIndex]) &* MoveGeneratorBishop.cache.a8H1Magic[sourceIndex]) >> 57)
-        let stateIndexA1H8 = Int(((allPieces & MoveGeneratorBishop.cache.a1H8Mask[sourceIndex]) &* MoveGeneratorBishop.cache.a1H8Magic[sourceIndex]) >> 57)
+        let stateIndexA8H1 = Int(((allPieces & MoveGeneratorBishop.cache.a8H1Mask[sourceIndex]) &* MoveGeneratorBishop.cache.a8H1Magic[sourceIndex]) &>> 57)
+        let stateIndexA1H8 = Int(((allPieces & MoveGeneratorBishop.cache.a1H8Mask[sourceIndex]) &* MoveGeneratorBishop.cache.a1H8Magic[sourceIndex]) &>> 57)
         
         //add attacks
         return MoveGeneratorBishop.cache.a8H1Moves[sourceIndex][stateIndexA8H1] | MoveGeneratorBishop.cache.a1H8Moves[sourceIndex][stateIndexA1H8]

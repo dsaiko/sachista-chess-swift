@@ -28,7 +28,7 @@ extension ChessBoard: CustomStringConvertible {
                 result += " "
             }
             
-            let test: BitBoard = 1 << i
+            let test: BitBoard = 1 &<< i
             
             let c: String? = {
                 var description: String? = nil
@@ -81,7 +81,7 @@ extension ChessBoard: CustomStringConvertible {
                 outputItem("/")
             }
             
-            let test: BitBoard = 1 << i
+            let test: BitBoard = 1 &<< i
             
             let c: String? = {
                 var description: String? = nil
@@ -150,7 +150,7 @@ extension ChessBoard: CustomStringConvertible {
                     //shift all pieces
                     ChessBoard.forAllPieces() {
                         color, piece in
-                        pieces[color][piece] <<= spaces
+                        pieces[color][piece] &<<= spaces
                     }
                 } else {
                     return nil
@@ -165,7 +165,7 @@ extension ChessBoard: CustomStringConvertible {
                 //shift all pieces
                 ChessBoard.forAllPieces() {
                     color, piece in
-                    pieces[color][piece] <<= 1
+                    pieces[color][piece] &<<= 1
                 }
 
                 pieces[color][piece] |= 1
