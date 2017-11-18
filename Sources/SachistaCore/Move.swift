@@ -8,10 +8,10 @@ public struct Move: CustomStringConvertible {
     let from:           BitBoard.Index
     let to:             BitBoard.Index
     
-    let isEnpassant:    Int
+    let isEnpassant:    Bool
     let promotionPiece: ChessBoard.Piece?
 
-    public init(piece: ChessBoard.Piece, from: BitBoard.Index, to: BitBoard.Index, isEnpassant: Int = 0, promotionPiece: ChessBoard.Piece? = nil) {
+    public init(piece: ChessBoard.Piece, from: BitBoard.Index, to: BitBoard.Index, isEnpassant: Bool = false, promotionPiece: ChessBoard.Piece? = nil) {
         self.piece          = piece
         self.from           = from
         self.to             = to
@@ -128,10 +128,10 @@ extension ChessBoard {
         }
 
         let isCapture = (targetBitBoard & opponentPiecesBoard) != 0
-        if isCapture || move.isEnpassant != 0 {
+        if isCapture || move.isEnpassant {
             halfMoveClock = 0
             
-            if move.isEnpassant != 0 {
+            if move.isEnpassant {
                 //remove captured piece
                 if sideToMove == .white {
                     pieces[opponentColor][Piece.pawn] ^= targetBitBoard.oneSouth

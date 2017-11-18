@@ -97,7 +97,7 @@ public extension ChessBoard {
             let sourceBitBoard = move.from.bitBoard
             let isKingMove = move.piece == Piece.king
             
-            if isKingMove || isCheck || ((sourceBitBoard & attacks) != 0) || move.isEnpassant != 0{
+            if isKingMove || isCheck || ((sourceBitBoard & attacks) != 0) || move.isEnpassant {
                 //need to validate move
                 
                 let nextBoard = makeMove(move: move)

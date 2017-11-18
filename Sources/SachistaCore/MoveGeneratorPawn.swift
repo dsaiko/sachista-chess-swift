@@ -97,7 +97,7 @@ struct MoveGeneratorPawn: MoveGenerator {
             if let enPassantTarget = board.enPassantTarget {
                 moves = attacks & enPassantTarget.bitBoard
                 if moves != .empty {
-                    result.append(Move(piece: ChessBoard.Piece.pawn, from: sourceIndex, to: enPassantTarget, isEnpassant: 1))
+                    result.append(Move(piece: ChessBoard.Piece.pawn, from: sourceIndex, to: enPassantTarget, isEnpassant: true))
                 }
             }
         }
