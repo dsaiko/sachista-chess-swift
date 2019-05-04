@@ -10,7 +10,7 @@ public extension BitBoard {
     
     static private let a1NotationCodes = "a1".unicodeScalars.map{Int($0.value)}
     
-    public enum Index: Int, CustomStringConvertible, Comparable {
+    enum Index: Int, CustomStringConvertible, Comparable {
         case a1 = 00; case b1 = 01; case c1 = 02; case d1 = 03; case e1 = 04; case f1 = 05; case g1 = 06; case h1 = 07
         case a2 = 08; case b2 = 09; case c2 = 10; case d2 = 11; case e2 = 12; case f2 = 13; case g2 = 14; case h2 = 15
         case a3 = 16; case b3 = 17; case c3 = 18; case d3 = 19; case e3 = 20; case f3 = 21; case g3 = 22; case h3 = 23

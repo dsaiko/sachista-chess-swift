@@ -5,18 +5,18 @@ import Foundation
 
 public extension BitBoard {
     
-    public var oneNorth:       BitBoard { return self &<< 8 }
-    public var oneSouth:       BitBoard { return self &>> 8 }
+    var oneNorth:       BitBoard { return self &<< 8 }
+    var oneSouth:       BitBoard { return self &>> 8 }
     
-    public var oneEast:        BitBoard { return (self &<< 1) & ~.fileA }
-    public var oneNorthEast:   BitBoard { return (self &<< 9) & ~.fileA }
-    public var oneSouthEast:   BitBoard { return (self &>> 7) & ~.fileA }
+    var oneEast:        BitBoard { return (self &<< 1) & ~.fileA }
+    var oneNorthEast:   BitBoard { return (self &<< 9) & ~.fileA }
+    var oneSouthEast:   BitBoard { return (self &>> 7) & ~.fileA }
     
-    public var oneWest:        BitBoard { return (self &>> 1) & ~.fileH }
-    public var oneSouthWest:   BitBoard { return (self &>> 9) & ~.fileH }
-    public var oneNorthWest:   BitBoard { return (self &<< 7) & ~.fileH }
+    var oneWest:        BitBoard { return (self &>> 1) & ~.fileH }
+    var oneSouthWest:   BitBoard { return (self &>> 9) & ~.fileH }
+    var oneNorthWest:   BitBoard { return (self &<< 7) & ~.fileH }
 
-    public func shift(dx: Int, dy: Int) -> BitBoard {
+    func shift(dx: Int, dy: Int) -> BitBoard {
         var board = self
         
         //up or down
@@ -31,7 +31,7 @@ public extension BitBoard {
     }
     
     
-    public var mirrorVertical: BitBoard {
+    var mirrorVertical: BitBoard {
         //return board with ranks (rows) in reverse order
         var result: BitBoard = 0
         let board = self
@@ -48,7 +48,7 @@ public extension BitBoard {
         return result
     }
     
-    public var flipA1H8: BitBoard {
+    var flipA1H8: BitBoard {
         //Flips around A1H8 diagonal
         let k1 = BitBoard(0x5500550055005500)
         let k2 = BitBoard(0x3333000033330000)
@@ -66,7 +66,7 @@ public extension BitBoard {
         return b
     }
     
-    public var mirrorHorizontal: BitBoard {
+    var mirrorHorizontal: BitBoard {
         //mirrors the bitboard horizontally
         let k1 = BitBoard(0x5555555555555555)
         let k2 = BitBoard(0x3333333333333333)
@@ -84,7 +84,7 @@ public extension BitBoard {
      BitBoard as string representation
      - Note: can not override description from UInt64
      */
-    public var stringBoard: String {
+    var stringBoard: String {
         let reversedRanks = self.mirrorVertical
         var result = ""
         
@@ -119,7 +119,7 @@ public extension BitBoard {
     /**
      Returns all fields which are set on the board as array of BitBoard.Index
      */
-    public var indeces: [Index] {
+    var indeces: [Index] {
         var result = [Index]()
         
         var board = self
@@ -134,7 +134,7 @@ public extension BitBoard {
      - Returns: Index of first bit set. This bit is reset on "self"
      - Requires: self != 0
      */
-    public mutating func bitPop() -> BitBoard.Index {
+    mutating func bitPop() -> BitBoard.Index {
         assert(self != 0)
         
         let i = self.trailingZeroBitCount

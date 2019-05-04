@@ -97,12 +97,12 @@ public struct ChessBoard {
         halfMoveClock:          Int                 = 0,
         fullMoveNumber:         Int                 = 1
     ) {
-        assert(pieces.count                         == ChessBoard.Color.count)
-        assert(pieces[Color.white].count            == ChessBoard.Piece.count)
-        assert(pieces[Color.black].count            == ChessBoard.Piece.count)
-        assert(castlingOptions.count                == ChessBoard.Color.count)
-        assert(castlingOptions[Color.white].count   == Piece.castlingOptions.count)
-        assert(castlingOptions[Color.black].count   == Piece.castlingOptions.count)
+//        assert(pieces.count                         == ChessBoard.Color.count)
+//        assert(pieces[Color.white].count            == ChessBoard.Piece.count)
+//        assert(pieces[Color.black].count            == ChessBoard.Piece.count)
+//        assert(castlingOptions.count                == ChessBoard.Color.count)
+//        assert(castlingOptions[Color.white].count   == Piece.castlingOptions.count)
+//        assert(castlingOptions[Color.black].count   == Piece.castlingOptions.count)
 
         self.sideToMove =                   sideToMove
         self.pieces =                       pieces

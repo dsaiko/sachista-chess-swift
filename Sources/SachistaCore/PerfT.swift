@@ -78,7 +78,7 @@ public extension ChessBoard {
     /**
      Single thread perft minimax
      */
-    public func perft1(depth: Int, cache: PerftCache = InMemoryPerftCache.defaultInMemoryCache) -> UInt64 {
+    func perft1(depth: Int, cache: PerftCache = InMemoryPerftCache.defaultInMemoryCache) -> UInt64 {
         
         if(depth < 1) { return 1 }
         
@@ -126,7 +126,7 @@ public extension ChessBoard {
     /**
      Multi threaded perft
      */
-    public func perftN(depth: Int) -> UInt64 {
+    func perftN(depth: Int) -> UInt64 {
         if depth <= 1 { return perft1(depth:depth) }
         
         var nextBoards = [ChessBoard]()

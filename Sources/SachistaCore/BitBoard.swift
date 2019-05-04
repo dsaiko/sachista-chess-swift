@@ -10,72 +10,72 @@ public typealias BitBoard = UInt64
  */
 public extension BitBoard {
     
-    public static let a1 = BitBoard(1) &<< 0
-    public static let b1 = BitBoard(1) &<< 1
-    public static let c1 = BitBoard(1) &<< 2
-    public static let d1 = BitBoard(1) &<< 3
-    public static let e1 = BitBoard(1) &<< 4
-    public static let f1 = BitBoard(1) &<< 5
-    public static let g1 = BitBoard(1) &<< 6
-    public static let h1 = BitBoard(1) &<< 7
-    public static let a2 = BitBoard(1) &<< 8
-    public static let b2 = BitBoard(1) &<< 9
-    public static let c2 = BitBoard(1) &<< 10
-    public static let d2 = BitBoard(1) &<< 11
-    public static let e2 = BitBoard(1) &<< 12
-    public static let f2 = BitBoard(1) &<< 13
-    public static let g2 = BitBoard(1) &<< 14
-    public static let h2 = BitBoard(1) &<< 15
-    public static let a3 = BitBoard(1) &<< 16
-    public static let b3 = BitBoard(1) &<< 17
-    public static let c3 = BitBoard(1) &<< 18
-    public static let d3 = BitBoard(1) &<< 19
-    public static let e3 = BitBoard(1) &<< 20
-    public static let f3 = BitBoard(1) &<< 21
-    public static let g3 = BitBoard(1) &<< 22
-    public static let h3 = BitBoard(1) &<< 23
-    public static let a4 = BitBoard(1) &<< 24
-    public static let b4 = BitBoard(1) &<< 25
-    public static let c4 = BitBoard(1) &<< 26
-    public static let d4 = BitBoard(1) &<< 27
-    public static let e4 = BitBoard(1) &<< 28
-    public static let f4 = BitBoard(1) &<< 29
-    public static let g4 = BitBoard(1) &<< 30
-    public static let h4 = BitBoard(1) &<< 31
-    public static let a5 = BitBoard(1) &<< 32
-    public static let b5 = BitBoard(1) &<< 33
-    public static let c5 = BitBoard(1) &<< 34
-    public static let d5 = BitBoard(1) &<< 35
-    public static let e5 = BitBoard(1) &<< 36
-    public static let f5 = BitBoard(1) &<< 37
-    public static let g5 = BitBoard(1) &<< 38
-    public static let h5 = BitBoard(1) &<< 39
-    public static let a6 = BitBoard(1) &<< 40
-    public static let b6 = BitBoard(1) &<< 41
-    public static let c6 = BitBoard(1) &<< 42
-    public static let d6 = BitBoard(1) &<< 43
-    public static let e6 = BitBoard(1) &<< 44
-    public static let f6 = BitBoard(1) &<< 45
-    public static let g6 = BitBoard(1) &<< 46
-    public static let h6 = BitBoard(1) &<< 47
-    public static let a7 = BitBoard(1) &<< 48
-    public static let b7 = BitBoard(1) &<< 49
-    public static let c7 = BitBoard(1) &<< 50
-    public static let d7 = BitBoard(1) &<< 51
-    public static let e7 = BitBoard(1) &<< 52
-    public static let f7 = BitBoard(1) &<< 53
-    public static let g7 = BitBoard(1) &<< 54
-    public static let h7 = BitBoard(1) &<< 55
-    public static let a8 = BitBoard(1) &<< 56
-    public static let b8 = BitBoard(1) &<< 57
-    public static let c8 = BitBoard(1) &<< 58
-    public static let d8 = BitBoard(1) &<< 59
-    public static let e8 = BitBoard(1) &<< 60
-    public static let f8 = BitBoard(1) &<< 61
-    public static let g8 = BitBoard(1) &<< 62
-    public static let h8 = BitBoard(1) &<< 63
+    static let a1 = BitBoard(1) &<< 0
+    static let b1 = BitBoard(1) &<< 1
+    static let c1 = BitBoard(1) &<< 2
+    static let d1 = BitBoard(1) &<< 3
+    static let e1 = BitBoard(1) &<< 4
+    static let f1 = BitBoard(1) &<< 5
+    static let g1 = BitBoard(1) &<< 6
+    static let h1 = BitBoard(1) &<< 7
+    static let a2 = BitBoard(1) &<< 8
+    static let b2 = BitBoard(1) &<< 9
+    static let c2 = BitBoard(1) &<< 10
+    static let d2 = BitBoard(1) &<< 11
+    static let e2 = BitBoard(1) &<< 12
+    static let f2 = BitBoard(1) &<< 13
+    static let g2 = BitBoard(1) &<< 14
+    static let h2 = BitBoard(1) &<< 15
+    static let a3 = BitBoard(1) &<< 16
+    static let b3 = BitBoard(1) &<< 17
+    static let c3 = BitBoard(1) &<< 18
+    static let d3 = BitBoard(1) &<< 19
+    static let e3 = BitBoard(1) &<< 20
+    static let f3 = BitBoard(1) &<< 21
+    static let g3 = BitBoard(1) &<< 22
+    static let h3 = BitBoard(1) &<< 23
+    static let a4 = BitBoard(1) &<< 24
+    static let b4 = BitBoard(1) &<< 25
+    static let c4 = BitBoard(1) &<< 26
+    static let d4 = BitBoard(1) &<< 27
+    static let e4 = BitBoard(1) &<< 28
+    static let f4 = BitBoard(1) &<< 29
+    static let g4 = BitBoard(1) &<< 30
+    static let h4 = BitBoard(1) &<< 31
+    static let a5 = BitBoard(1) &<< 32
+    static let b5 = BitBoard(1) &<< 33
+    static let c5 = BitBoard(1) &<< 34
+    static let d5 = BitBoard(1) &<< 35
+    static let e5 = BitBoard(1) &<< 36
+    static let f5 = BitBoard(1) &<< 37
+    static let g5 = BitBoard(1) &<< 38
+    static let h5 = BitBoard(1) &<< 39
+    static let a6 = BitBoard(1) &<< 40
+    static let b6 = BitBoard(1) &<< 41
+    static let c6 = BitBoard(1) &<< 42
+    static let d6 = BitBoard(1) &<< 43
+    static let e6 = BitBoard(1) &<< 44
+    static let f6 = BitBoard(1) &<< 45
+    static let g6 = BitBoard(1) &<< 46
+    static let h6 = BitBoard(1) &<< 47
+    static let a7 = BitBoard(1) &<< 48
+    static let b7 = BitBoard(1) &<< 49
+    static let c7 = BitBoard(1) &<< 50
+    static let d7 = BitBoard(1) &<< 51
+    static let e7 = BitBoard(1) &<< 52
+    static let f7 = BitBoard(1) &<< 53
+    static let g7 = BitBoard(1) &<< 54
+    static let h7 = BitBoard(1) &<< 55
+    static let a8 = BitBoard(1) &<< 56
+    static let b8 = BitBoard(1) &<< 57
+    static let c8 = BitBoard(1) &<< 58
+    static let d8 = BitBoard(1) &<< 59
+    static let e8 = BitBoard(1) &<< 60
+    static let f8 = BitBoard(1) &<< 61
+    static let g8 = BitBoard(1) &<< 62
+    static let h8 = BitBoard(1) &<< 63
 
-    public static let rank: [BitBoard] = [
+    static let rank: [BitBoard] = [
         a1 | b1 | c1 | d1 | e1 | f1 | g1 | h1,
         a2 | b2 | c2 | d2 | e2 | f2 | g2 | h2,
         a3 | b3 | c3 | d3 | e3 | f3 | g3 | h3,
@@ -86,7 +86,7 @@ public extension BitBoard {
         a8 | b8 | c8 | d8 | e8 | f8 | g8 | h8
     ]
 
-    public static let file: [BitBoard] = [
+    static let file: [BitBoard] = [
         a1 | a2 | a3 | a4 | a5 | a6 | a7 | a8,
         b1 | b2 | b3 | b4 | b5 | b6 | b7 | b8,
         c1 | c2 | c3 | c4 | c5 | c6 | c7 | c8,
@@ -97,18 +97,18 @@ public extension BitBoard {
         h1 | h2 | h3 | h4 | h5 | h6 | h7 | h8
     ]
 
-    public static let fileA = file[0]
-    public static let fileH = file[7]
+    static let fileA = file[0]
+    static let fileH = file[7]
 
-    public static let rank1 = rank[0]
-    public static let rank8 = rank[7]
+    static let rank1 = rank[0]
+    static let rank8 = rank[7]
 
-    public static let frame = rank1 | rank8 | fileA | fileH
+    static let frame = rank1 | rank8 | fileA | fileH
     
-    public static let universe = ~BitBoard(0)
-    public static let empty = BitBoard(0)
+    static let universe = ~BitBoard(0)
+    static let empty = BitBoard(0)
 
-    public static let a1h8: [BitBoard] = [
+    static let a1h8: [BitBoard] = [
         a8,
         a7 | b8,
         a6 | b7 | c8,
@@ -126,7 +126,7 @@ public extension BitBoard {
         h1
     ]
     
-    public static let a8h1: [BitBoard] = [
+    static let a8h1: [BitBoard] = [
         a1,
         a2 | b1,
         a3 | b2 | c1,
@@ -144,7 +144,7 @@ public extension BitBoard {
         h8
     ]
 
-    public init?(_ notation: String...) {
+    init?(_ notation: String...) {
         var result: BitBoard = .empty
         
         for board in notation.map({Index(notation: $0)}).map({$0?.bitBoard}) {
@@ -157,7 +157,7 @@ public extension BitBoard {
         self = result
     }
 
-    public init(_ indeces: Index...) {
+    init(_ indeces: Index...) {
         var result: BitBoard = .empty
         
         for index in indeces {
