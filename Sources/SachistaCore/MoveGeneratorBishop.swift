@@ -237,12 +237,13 @@ struct MoveGeneratorBishop: MoveGenerator {
     }
     
     func attacks(board: ChessBoard, color: ChessBoard.Color) -> BitBoard {
-        var pieces = board.pieces[color][ChessBoard.Piece.bishop] | board.pieces[color][ChessBoard.Piece.queen]
+        let pieces = board.piecesBy(color: color)
+        var bishops = pieces.bishop | pieces.queen
         var attacks: BitBoard = .empty
         
         //for all bishops
-        while (pieces) != .empty {
-            attacks |= pieceMoves(sourceIndex: pieces.bitPop().rawValue, allPieces: board.allPiecesBoard)
+        while bishops != .empty {
+            attacks |= pieceMoves(sourceIndex: bishops.bitPop().rawValue, allPieces: board.allPiecesBoard)
         }
         
         return attacks
@@ -250,19 +251,22 @@ struct MoveGeneratorBishop: MoveGenerator {
     
     func moves(board: ChessBoard, result: inout [Move]) {
         
-        for piece in [ChessBoard.Piece.bishop, ChessBoard.Piece.queen] {
-            var pieces = board.pieces[board.sideToMove][piece]
+        let pieces = board.piecesBy(color: board.sideToMove)
+        
+        for bishops in [(ChessBoard.Piece.bishop, pieces.bishop), (ChessBoard.Piece.queen, pieces.queen)] {
             
-            while pieces != .empty {
+            var p = bishops.1
+            
+            while p != .empty {
                 
                 //get next bishop
-                let sourceIndex = pieces.bitPop()
+                let sourceIndex = p.bitPop()
                 var moves: BitBoard = pieceMoves(sourceIndex: sourceIndex.rawValue, allPieces: board.allPiecesBoard) & board.emptyOrOpponentPiecesBoard
                 
                 //for all moves
                 while moves != .empty {
                     let targetIndex = moves.bitPop()
-                    result.append(Move(piece: piece, from: sourceIndex, to: targetIndex))
+                    result.append(Move(piece: bishops.0, from: sourceIndex, to: targetIndex))
                 }
             }
         }

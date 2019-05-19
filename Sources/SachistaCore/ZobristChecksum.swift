@@ -54,9 +54,10 @@ struct ZobristChecksum {
         }
 
         //castling
-        ChessBoard.forAllCastlingOptions {
-            color, piece in
-            if board.castlingOptions[color][piece] {
+        board.iterateCastling() {
+            color, piece, castling in
+            
+            if castling {
                 checksum ^= rndCastling[color][piece]
             }
         }
@@ -68,15 +69,14 @@ struct ZobristChecksum {
         }
         
         //pieces
-        ChessBoard.forAllPieces() {
-            color, piece in
-            var bitboard = board.pieces[color][piece]
-            
-            while (bitboard != 0) {
-                checksum ^= rndPieces[color][piece][bitboard.bitPop()]
+        board.iteratePieces() {
+            color, piece, board in
+
+            var b = board
+            while b != 0 {
+                checksum ^= rndPieces[color][piece][b.bitPop()]
             }
         }
-
         return checksum
     }
     

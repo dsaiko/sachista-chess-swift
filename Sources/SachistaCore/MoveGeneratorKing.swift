@@ -42,7 +42,7 @@ struct MoveGeneratorKing: MoveGenerator {
     static let cache = Cache()
     
     func attacks(board: ChessBoard, color: ChessBoard.Color) -> BitBoard {
-        let king = board.pieces[color][ChessBoard.Piece.king]
+        let king = board.piecesBy(color: color).king
         if king == .empty {
             return .empty
         }
@@ -55,7 +55,7 @@ struct MoveGeneratorKing: MoveGenerator {
     
     func moves(board: ChessBoard, result: inout [Move]) {
         
-        let kingBitBoard = board.pieces[board.sideToMove][ChessBoard.Piece.king]
+        let kingBitBoard = board.piecesBy(color: board.sideToMove).king
         
         if kingBitBoard == .empty {
             return
@@ -72,26 +72,26 @@ struct MoveGeneratorKing: MoveGenerator {
 
         //castling
         if board.sideToMove == .white {
-            if  board.castlingOptions[board.sideToMove][ChessBoard.Piece.king]    &&
+            if  board.castlingOptions.white.kingside    &&
                 (board.allPiecesBoard & WHITE_OO_EMPTY == 0)   &&
                 !board.isBitmaskUnderAttack(color: .black, board: WHITE_OO_ATTACKS)
             {
                 result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .g1))
             }
-            if  board.castlingOptions[board.sideToMove][ChessBoard.Piece.queen]    &&
+            if  board.castlingOptions.white.queenside &&
                 (board.allPiecesBoard & WHITE_OOO_EMPTY == 0)   &&
                 !board.isBitmaskUnderAttack(color: .black, board: WHITE_OOO_ATTACKS)
             {
                 result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .c1))
             }
         } else {
-            if  board.castlingOptions[board.sideToMove][ChessBoard.Piece.king]    &&
+            if  board.castlingOptions.black.kingside &&
                 (board.allPiecesBoard & BLACK_OO_EMPTY == 0)   &&
                 !board.isBitmaskUnderAttack(color: .white, board: BLACK_OO_ATTACKS)
             {
                 result.append(Move(piece: ChessBoard.Piece.king, from: sourceIndex, to: .g8))
             }
-            if  board.castlingOptions[board.sideToMove][ChessBoard.Piece.queen]    &&
+            if  board.castlingOptions.black.queenside &&
                 (board.allPiecesBoard & BLACK_OOO_EMPTY == 0)   &&
                 !board.isBitmaskUnderAttack(color: .white, board: BLACK_OOO_ATTACKS)
             {

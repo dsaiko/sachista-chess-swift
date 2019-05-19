@@ -30,7 +30,7 @@ struct MoveGeneratorKnight: MoveGenerator {
     static let cache = Cache()
     
     func attacks(board: ChessBoard, color: ChessBoard.Color) -> BitBoard {
-        var pieces = board.pieces[color][ChessBoard.Piece.knight]
+        var pieces = board.piecesBy(color: color).knight
         var attacks: BitBoard = .empty
         while pieces != .empty {
             attacks |= MoveGeneratorKnight.cache.moves[pieces.bitPop()]
@@ -41,7 +41,7 @@ struct MoveGeneratorKnight: MoveGenerator {
     
     func moves(board: ChessBoard, result: inout [Move]) {
 
-        var pieces = board.pieces[board.sideToMove][ChessBoard.Piece.knight]
+        var pieces = board.piecesBy(color: board.sideToMove).knight
         while pieces != .empty {
 
             let sourceIndex = pieces.bitPop()

@@ -76,41 +76,68 @@ extension ChessBoard {
         var pieces          = self.pieces
         var castlingOptions = self.castlingOptions
         
-        pieces[sideToMove][move.piece] ^= sourceBitBoard | targetBitBoard
+        func modifyPiece(color: Color, piece: Piece, f:(inout BitBoard) -> Void) {
+            if color == .white {
+                switch piece {
+                case .king:     f(&pieces.white.king)
+                case .queen:    f(&pieces.white.queen)
+                case .rook:     f(&pieces.white.rook)
+                case .knight:   f(&pieces.white.knight)
+                case .bishop:   f(&pieces.white.bishop)
+                case .pawn:     f(&pieces.white.pawn)
+                }
+            } else {
+                switch piece {
+                case .king:     f(&pieces.black.king)
+                case .queen:    f(&pieces.black.queen)
+                case .rook:     f(&pieces.black.rook)
+                case .knight:   f(&pieces.black.knight)
+                case .bishop:   f(&pieces.black.bishop)
+                case .pawn:     f(&pieces.black.pawn)
+                }
+            }
+            
+        }
+        
+        modifyPiece(color: sideToMove, piece: move.piece) { $0 ^= sourceBitBoard | targetBitBoard }
 
         if move.piece == .rook {
             if sideToMove == .white {
                 if sourceIndex == .a1 {
-                    castlingOptions[Color.white][Piece.queen] = false
+                    castlingOptions.white.queenside = false
                 } else if sourceIndex == .h1 {
-                    castlingOptions[Color.white][Piece.king] = false
+                    castlingOptions.white.kingside = false
                 }
             } else {
                 if sourceIndex == .a8 {
-                    castlingOptions[Color.black][Piece.queen] = false
+                    castlingOptions.black.queenside = false
                 } else if sourceIndex == .h8 {
-                    castlingOptions[Color.black][Piece.king] = false
+                    castlingOptions.black.kingside = false
                 }
             }
         } else if move.piece == .king {
-            castlingOptions[sideToMove] = [false, false]
+            if sideToMove == .white {
+                castlingOptions.white = (false, false)
+            } else {
+                castlingOptions.black = (false, false)
+            }
 
             if sideToMove == .white {
                 if sourceIndex == .e1 {
                     //handle castling
                     if targetIndex == .c1 {
-                        pieces[sideToMove][Piece.rook] ^= BitBoard.a1 | BitBoard.d1
+                        pieces.white.rook ^= BitBoard.a1 | BitBoard.d1
                     } else if targetIndex == .g1 {
-                        pieces[sideToMove][Piece.rook] ^= BitBoard.h1 | BitBoard.f1
+                        pieces.white.rook ^= BitBoard.h1 | BitBoard.f1
                     }
                 }
             } else {
                 if sourceIndex == .e8 {
                     //handle castling
                     if targetIndex == .c8 {
-                        pieces[sideToMove][Piece.rook] ^= BitBoard.a8 | BitBoard.d8
+                        pieces.black.rook ^= BitBoard.a8 | BitBoard.d8
                     } else if targetIndex == .g8 {
-                        pieces[sideToMove][Piece.rook] ^= BitBoard.h8 | BitBoard.f8
+                        pieces.black.rook ^= BitBoard.h8 | BitBoard.f8
                     }
                 }
             }
@@ -121,9 +148,8 @@ extension ChessBoard {
             if abs(targetIndex.rawValue &- sourceIndex.rawValue) > 10 {
                 enPassantTarget = BitBoard.Index(rawValue: sourceIndex.rawValue &+ (sideToMove == .white ? 8 : -8))!
             } else if let promotionPiece = move.promotionPiece {
-                pieces[sideToMove][Piece.pawn] ^= targetBitBoard
-
-                pieces[sideToMove][promotionPiece] |= targetBitBoard
+                modifyPiece(color: sideToMove, piece: Piece.pawn) { $0 ^= targetBitBoard }
+                modifyPiece(color: sideToMove, piece: promotionPiece) { $0 |= targetBitBoard }
             }
         }
 
@@ -134,34 +160,38 @@ extension ChessBoard {
             if move.isEnpassant {
                 //remove captured piece
                 if sideToMove == .white {
-                    pieces[opponentColor][Piece.pawn] ^= targetBitBoard.oneSouth
+                    pieces.black.pawn ^= targetBitBoard.oneSouth
                 } else {
-                    pieces[opponentColor][Piece.pawn] ^= targetBitBoard.oneNorth
+                    pieces.white.pawn ^= targetBitBoard.oneNorth
                 }
             } else {
+                var found = false
                 for piece in Piece.values {
-                    let bitboard = pieces[opponentColor][piece]
-                    
-                    //TODO: change to immadiate XOR and compare result
-                    //TODO: change order of comparisons, what about isEnpassant?
-                    if (bitboard & targetBitBoard) != 0 {
-                        pieces[opponentColor][piece] ^= targetBitBoard
+                    modifyPiece(color: opponentColor, piece: piece) {
+                        bitboard in
                         
-                        if piece == .rook {
-                            if sideToMove == .white {
-                                if targetIndex == .a8 {
-                                    castlingOptions[opponentColor][Piece.queen] = false
-                                } else if targetIndex == .h8 {
-                                    castlingOptions[opponentColor][Piece.king] = false
-                                }
-                            } else {
-                                if targetIndex == .a1 {
-                                    castlingOptions[opponentColor][Piece.queen] = false
-                                } else if targetIndex == .h1 {
-                                    castlingOptions[opponentColor][Piece.king] = false
+                        if (bitboard & targetBitBoard) != 0 {
+                            bitboard ^= targetBitBoard
+                            
+                            if piece == .rook {
+                                if sideToMove == .white {
+                                    if targetIndex == .a8 {
+                                        castlingOptions.black.queenside = false
+                                    } else if targetIndex == .h8 {
+                                        castlingOptions.black.kingside = false
+                                    }
+                                } else {
+                                    if targetIndex == .a1 {
+                                        castlingOptions.white.queenside = false
+                                    } else if targetIndex == .h1 {
+                                        castlingOptions.white.kingside = false
+                                    }
                                 }
                             }
+                            found = true
                         }
+                    }
+                    if found {
                         break
                     }
                 }
@@ -194,7 +224,7 @@ extension ChessBoard {
     //TODO what should be fce and what property? general.
     func isOpponentsKingUnderCheck() -> Bool {
         
-        let opponentKing = pieces[opponentColor][Piece.king]
+        let opponentKing = piecesBy(color: opponentColor).king
         if opponentKing == .empty { return false } //TODO: 0 vs .empty
         
         //debug check: only 1 king allowed
@@ -206,22 +236,23 @@ extension ChessBoard {
         //but following performs better
         
         let opponentKingIndex = opponentKing.trailingZeroBitCount
-
+        let myPieces = piecesBy(color: sideToMove)
+        
         //TODO: rawValue or Int??
         //TODO: simplify!
         let opponentPawnCache = sideToMove == .white ? MoveGeneratorPawn.cacheBlack : MoveGeneratorPawn.cacheWhite
-        if (pieces[sideToMove][Piece.pawn] & opponentPawnCache.attacks[opponentKingIndex]) != 0 {
+        if (myPieces.pawn & opponentPawnCache.attacks[opponentKingIndex]) != 0 {
             return true
         }
-        if (pieces[sideToMove][Piece.knight] & MoveGeneratorKnight.cache.moves[opponentKingIndex]) != 0 {
-            return true
-        }
-
-        if (pieces[sideToMove][Piece.king] & MoveGeneratorKing.cache.moves[opponentKingIndex]) != 0 {
+        if (myPieces.knight & MoveGeneratorKnight.cache.moves[opponentKingIndex]) != 0 {
             return true
         }
 
-        let rooks = pieces[sideToMove][Piece.rook] | pieces[sideToMove][Piece.queen]
+        if (myPieces.king & MoveGeneratorKing.cache.moves[opponentKingIndex]) != 0 {
+            return true
+        }
+
+        let rooks = myPieces.rook | myPieces.queen
         if (MoveGeneratorRook.cache.rankMoves[opponentKingIndex][Int((allPiecesBoard & MoveGeneratorRook.cache.rankMask[opponentKingIndex]) &>> MoveGeneratorRook.cache.rankShift[opponentKingIndex])] & rooks) != 0 {
             return true
         }
@@ -230,7 +261,7 @@ extension ChessBoard {
         }
 
         //TODO: is this already used at moveGenBishop, make lazy var?
-        let bishops = pieces[sideToMove][Piece.bishop] | pieces[sideToMove][Piece.queen]
+        let bishops = myPieces.bishop | myPieces.queen
 
         if (MoveGeneratorBishop.cache.a8H1Moves[opponentKingIndex][Int(((allPiecesBoard & MoveGeneratorBishop.cache.a8H1Mask[opponentKingIndex]) &* MoveGeneratorBishop.cache.a8H1Magic[opponentKingIndex]) &>> 57)] & bishops) != 0 {
             return true

@@ -170,12 +170,14 @@ struct MoveGeneratorRook: MoveGenerator {
     }
     
     func attacks(board: ChessBoard, color: ChessBoard.Color) -> BitBoard {
-        var pieces = board.pieces[color][ChessBoard.Piece.rook] | board.pieces[color][ChessBoard.Piece.queen]
+        let pieces = board.piecesBy(color: color)
+        
+        var rooks = pieces.rook | pieces.queen
         var attacks: BitBoard = .empty
         
         //for all rooks
-        while pieces != .empty {
-            attacks |= pieceMoves(sourceIndex: pieces.bitPop().rawValue, allPieces: board.allPiecesBoard)
+        while rooks != .empty {
+            attacks |= pieceMoves(sourceIndex: rooks.bitPop().rawValue, allPieces: board.allPiecesBoard)
         }
         
         return attacks
@@ -183,19 +185,21 @@ struct MoveGeneratorRook: MoveGenerator {
     
     func moves(board: ChessBoard, result: inout [Move]) {
         
-        for piece in [ChessBoard.Piece.rook, ChessBoard.Piece.queen] {
-            var pieces = board.pieces[board.sideToMove][piece]
+        let pieces = board.piecesBy(color: board.sideToMove)
+        
+        for rooks in [(ChessBoard.Piece.rook, pieces.rook), (ChessBoard.Piece.queen, pieces.queen)] {
+            var p = rooks.1
 
             //for all rooks
-            while pieces != .empty {
+            while p != .empty {
                 //get next rook
-                let sourceIndex = pieces.bitPop()
+                let sourceIndex = p.bitPop()
                 var moves: BitBoard = pieceMoves(sourceIndex: sourceIndex.rawValue, allPieces: board.allPiecesBoard) & board.emptyOrOpponentPiecesBoard
                 
                 //for all moves
                 while moves != .empty {
                     let targetIndex = moves.bitPop()
-                    result.append(Move(piece: piece, from: sourceIndex, to: targetIndex))
+                    result.append(Move(piece: rooks.0, from: sourceIndex, to: targetIndex))
                 }
             }
         }

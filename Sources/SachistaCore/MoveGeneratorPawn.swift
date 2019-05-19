@@ -40,16 +40,15 @@ struct MoveGeneratorPawn: MoveGenerator {
     
     func attacks(board: ChessBoard, color: ChessBoard.Color) -> BitBoard {
         if color == .white {
-            //TODO: with local variable instead of [][][].o | [][][].o ?
-            return board.pieces[color][ChessBoard.Piece.pawn].oneNorthEast | board.pieces[color][ChessBoard.Piece.pawn].oneNorthWest
+            return board.pieces.white.pawn.oneNorthEast | board.pieces.white.pawn.oneNorthWest
         } else {
-            return board.pieces[color][ChessBoard.Piece.pawn].oneSouthEast | board.pieces[color][ChessBoard.Piece.pawn].oneSouthWest
+            return board.pieces.black.pawn.oneSouthEast | board.pieces.black.pawn.oneSouthWest
         }
     }
     
     func moves(board: ChessBoard, result: inout [Move]) {
         let cache   = board.sideToMove == .white ? MoveGeneratorPawn.cacheWhite : MoveGeneratorPawn.cacheBlack
-        var pieces  = board.pieces[board.sideToMove][ChessBoard.Piece.pawn]
+        var pieces  = board.piecesBy(color: board.sideToMove).pawn
 
         while pieces != .empty {
             let sourceIndex = pieces.bitPop()

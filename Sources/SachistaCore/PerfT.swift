@@ -91,7 +91,7 @@ public extension ChessBoard {
         var count: UInt64 = 0
         
         let attacks = self.attacks(color: opponentColor)
-        let isCheck = (attacks & self.pieces[sideToMove][Piece.king]) != 0
+        let isCheck = (attacks & self.piecesBy(color: sideToMove).king) != 0
         
         for move in pseudoLegalMoves() {
             let sourceBitBoard = move.from.bitBoard
